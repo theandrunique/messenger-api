@@ -13,7 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\MessengerAPI.Application\MessengerAPI.Application.csproj" />
+    <ProjectReference Include="..\MessengerAPI.Infrastructure\MessengerAPI.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
