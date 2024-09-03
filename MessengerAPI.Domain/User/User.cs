@@ -1,0 +1,56 @@
+using MessengerAPI.Domain.User.Entities;
+using MessengerAPI.Domain.User.ValueObjects;
+
+namespace MessengerAPI.Domain.User;
+
+public class User
+{
+    private readonly List<Email> _emails = new();
+    private readonly List<Phone> _phones = new();
+    private readonly List<ProfilePhoto> _profilePhotos = new();
+
+    public IReadOnlyList<Email> Emails => _emails.ToList();
+    public IReadOnlyList<Phone> Phones => _phones.ToList();
+    public IReadOnlyList<ProfilePhoto> ProfilePhotos => _profilePhotos.ToList();
+
+    public Guid Id { get; private set; }
+    public string Username { get; private set; }
+    public DateTime UsernameUpdatedAt { get; private set; }
+    public string PasswordHash { get; private set; }
+    public DateTime PasswordUpdatedAt { get; private set; }
+    public TimeIntervals TerminateSessions { get; private set; }
+    public string? Bio { get; private set; }
+    public string GlobalName { get; private set; }
+    public bool IsActive { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public string? Key { get; private set; }
+    public bool TwoFactorAuthentication { get; private set; }
+
+    public static User Create(
+        string username,
+        string passwordHash,
+        string globalName)
+    {
+        User user = new User
+        {
+            Id = Guid.NewGuid(),
+            Username = username,
+            UsernameUpdatedAt = DateTime.UtcNow,
+            PasswordHash = passwordHash,
+            PasswordUpdatedAt = DateTime.UtcNow,
+            TerminateSessions = TimeIntervals.Month6,
+            GlobalName = globalName,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            TwoFactorAuthentication = false
+        };
+
+        return user;
+    }
+    public User() {}
+
+    public void AddEmail(Email email)
+    {
+        _emails.Add(email);
+    }
+}
