@@ -1,7 +1,9 @@
 using System.Text;
 using MessengerAPI.Application.Common.Interfaces.Auth;
+using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Common.Persistance;
+using MessengerAPI.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +28,8 @@ public static class DependencyInjection
     public static IServiceCollection AddPersistance(this IServiceCollection services)
     {
         services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=app.db"));
+
+        services.AddScoped<IUserRepository, UserRepository>();
 
         return services;
     }

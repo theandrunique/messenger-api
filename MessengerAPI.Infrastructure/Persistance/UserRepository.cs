@@ -1,38 +1,41 @@
 ﻿using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.User;
+using MessengerAPI.Infrastructure.Common.Persistance;
+using Microsoft.EntityFrameworkCore;
 
 namespace MessengerAPI.Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly List<User> _users = new();
-    public Task<User?> AddAsync(User user)
+    private readonly AppDbContext _context;
+
+    public UserRepository(AppDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
 
-    public Task<User> AddUserAsync(User user)
+    public async Task<User?> AddAsync(User user)
     {
-        throw new NotImplementedException();
+        await _context.AddAsync(user);
+        await _context.SaveChangesAsync();
+        return user;
+    }
+
+    public async Task<User?> GetByIdAsync(Guid id)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        return user;
     }
 
     public Task<User?> GetByEmailAsync(string email)
     {
-        throw new NotImplementedException();
+        var user = _context.Users.FirstOrDefaultAsync(u => u.Emails.Any(e => e.Data == email));
+        return user;
     }
 
-    public Task<User?> GetByIdAsync(Guid id)
+    public async Task<User?> GetByUsernameAsync(string username)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<User?> GetByUsernameAsync(Guid id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<User> GetUserByEmailAsync(string email)
-    {
-        throw new NotImplementedException();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        return user;
     }
 }
