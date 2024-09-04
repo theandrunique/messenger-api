@@ -5,6 +5,8 @@ using MessengerAPI.Application.Auth.Commands.Register;
 using MessengerAPI.Presentation.Schemas.Auth;
 using MessengerAPI.Application.Auth.Commands.Login;
 using MessengerAPI.Presentation.Common;
+using MessengerAPI.Application.Auth.Commands.RefreshToken;
+using MessengerAPI.Application.Auth.Common;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -43,14 +45,22 @@ public class AuthController : ApiController
 
         return loginResult.Match(
             success => {
-                var cookieOptions = new CookieOptions
-                {
-                    HttpOnly = true,
-                    // Secure = true,
-                };
-
-                Response.Cookies.Append(CookieConstants.RefreshToken, success.RefreshToken, cookieOptions);
+                AddRefreshTokenToCookies(success.RefreshToken);
                 return Ok(success);
+            },
+            errors => Problem(errors));
+    }
+
+    [HttpPost("token")]
+    public async Task<IActionResult> Token([FromBody] RefreshTokenRequestSchema schema)
+    {
+        var command = new RefreshTokenCommand(schema.RefreshToken);
+        var result = await _mediator.Send(command);
+
+        return result.Match(
+            success => {
+                AddRefreshTokenToCookies(success.RefreshToken);
+                return Ok(new TokenPairResponse(success.AccessToken, success.RefreshToken));
             },
             errors => Problem(errors));
     }
@@ -60,5 +70,15 @@ public class AuthController : ApiController
     {
         string? refreshToken = Request.Cookies[CookieConstants.RefreshToken];
         return Ok(new TokenResponseSchema(refreshToken));
+    }
+
+    private void AddRefreshTokenToCookies(string refreshToken)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            // Secure = true,
+        };
+        Response.Cookies.Append(CookieConstants.RefreshToken, refreshToken, cookieOptions);
     }
 }
