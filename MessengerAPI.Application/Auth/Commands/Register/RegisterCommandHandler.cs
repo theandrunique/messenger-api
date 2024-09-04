@@ -1,6 +1,6 @@
 using ErrorOr;
 using MediatR;
-using MessengerAPI.Application.Common;
+using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.User;
 

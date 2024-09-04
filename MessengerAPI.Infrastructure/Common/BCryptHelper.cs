@@ -1,4 +1,4 @@
-using MessengerAPI.Application.Common;
+using MessengerAPI.Application.Common.Interfaces;
 using BC = BCrypt.Net.BCrypt;
 
 namespace MessengerAPI.Infrastructure.Common;

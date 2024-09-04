@@ -1,5 +1,6 @@
 ﻿using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.User;
+using MessengerAPI.Domain.User.Entities;
 using MessengerAPI.Infrastructure.Common.Persistance;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,9 +40,21 @@ public class UserRepository : IUserRepository
         return user;
     }
 
+    public async Task<Session?> GetSessionByTokenId(Guid tokenId)
+    {
+        var session = await _context.Sessions.FirstOrDefaultAsync(s => s.TokenId == tokenId);
+        return session;
+    }
+
     public async Task UpdateAsync(User user)
     {
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
+    }
+
+    public Task UpdateSessionAsync(Session session)
+    {
+        _context.Sessions.Update(session);
+        return _context.SaveChangesAsync();
     }
 }

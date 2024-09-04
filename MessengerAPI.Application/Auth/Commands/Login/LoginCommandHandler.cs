@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Auth;
@@ -9,8 +10,7 @@ using MessengerAPI.Domain.User;
 
 namespace MessengerAPI.Application.Auth.Commands.Login;
 
-
-public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginCommandResult>>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPairResponse>>
 {
     IHashHelper _hashHelper;
     IUserRepository _userRepository;
@@ -27,7 +27,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginCo
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public async Task<ErrorOr<LoginCommandResult>> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<TokenPairResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         User? user;
         if (request.Login.Contains("@"))
@@ -48,13 +48,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<LoginCo
 
         await _userRepository.UpdateAsync(user);
 
-        var payload = new Dictionary<string, object>
-        {
-            { "jti", session.Id },
-        };
-        var refreshToken = _jweHelper.Encrypt(payload);
+        var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId));
         var accessToken = _jwtTokenGenerator.Generate(user.Id.ToString());
 
-        return new LoginCommandResult(refreshToken, accessToken);
+        return new TokenPairResponse(accessToken, refreshToken);
     }
 }

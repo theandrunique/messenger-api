@@ -1,4 +1,4 @@
-namespace MessengerAPI.Application.Common;
+namespace MessengerAPI.Application.Common.Interfaces;
 
 public interface IHashHelper
 {
