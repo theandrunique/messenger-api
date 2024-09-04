@@ -1,4 +1,4 @@
-namespace MessengerAPI.Domain.Common.Entities;
+namespace MessengerAPI.Domain.User.Entities;
 
 public class Session
 {
@@ -13,5 +13,18 @@ public class Session
     public void UpdateLastUsedAt(DateTime lastUsedAt)
     {
         LastUsedAt = lastUsedAt;
+    }
+
+    public static Session CreateNew(string deviceName, string clientName, string location)
+    {
+        var session = new Session
+        {
+            DeviceName = deviceName,
+            ClientName = clientName,
+            Location = location,
+            LastUsedAt = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
+        };
+        return session;
     }
 }

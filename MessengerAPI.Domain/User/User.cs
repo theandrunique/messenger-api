@@ -8,10 +8,12 @@ public class User
     private readonly List<Email> _emails = new();
     private readonly List<Phone> _phones = new();
     private readonly List<ProfilePhoto> _profilePhotos = new();
+    private readonly List<Session> _sessions = new();
 
     public IReadOnlyList<Email> Emails => _emails.ToList();
     public IReadOnlyList<Phone> Phones => _phones.ToList();
     public IReadOnlyList<ProfilePhoto> ProfilePhotos => _profilePhotos.ToList();
+    public IReadOnlyList<Session> Sessions => _sessions.ToList();
 
     public Guid Id { get; private set; }
     public string Username { get; private set; }
@@ -52,5 +54,12 @@ public class User
     public void AddEmail(Email email)
     {
         _emails.Add(email);
+    }
+
+    public Session CreateSession(string deviceName, string clientName, string location)
+    {
+        var session = Session.CreateNew(deviceName, clientName, location);
+        _sessions.Add(session);
+        return session;
     }
 }
