@@ -4,6 +4,7 @@ using MediatR;
 using MessengerAPI.Application.Auth.Commands.Register;
 using MessengerAPI.Presentation.Schemas.Auth;
 using ErrorOr;
+using MessengerAPI.Application.Auth.Commands.Login;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -33,6 +34,14 @@ public class AuthController : ApiController
     [HttpPost("sign-in")]
     public async Task<IActionResult> SignIn([FromForm] SignInSchema schema)
     {
-        return Problem(new List<Error>());
+        var userAgent = Request.Headers["User-Agent"].ToString();
+        var ipAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+
+        var command = new LoginCommand(schema.Login, schema.Password, userAgent, ipAddress);
+        var loginResult = await _mediator.Send(command);
+
+        return loginResult.Match(
+            success => Ok(success),
+            errors => Problem(errors));
     }
 }
