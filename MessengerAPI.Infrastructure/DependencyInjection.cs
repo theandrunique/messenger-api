@@ -1,7 +1,9 @@
 using System.Text;
+using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Infrastructure.Auth;
+using MessengerAPI.Infrastructure.Common;
 using MessengerAPI.Infrastructure.Common.Persistance;
 using MessengerAPI.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -21,6 +23,8 @@ public static class DependencyInjection
     {
         services.AddAuth(config);
         services.AddPersistance();
+
+        services.AddSingleton<IHashHelper, BCryptHelper>();
 
         return services;
     }
