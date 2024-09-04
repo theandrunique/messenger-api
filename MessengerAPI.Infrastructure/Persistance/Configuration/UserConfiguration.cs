@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MessengerAPI.Infrastructure.Persistance.Configuration;
 
-public class UserConfigurations : IEntityTypeConfiguration<User>
+public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
@@ -23,6 +23,10 @@ public class UserConfigurations : IEntityTypeConfiguration<User>
         builder.HasMany(u => u.ProfilePhotos)
             .WithOne()
             .HasForeignKey(p => p.UserId);
+        
+        builder.HasMany(u => u.Sessions)
+            .WithOne()
+            .HasForeignKey(s => s.UserId);
         
         ConfigureEmails(builder);
         ConfigurePhones(builder);
