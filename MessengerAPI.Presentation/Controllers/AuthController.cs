@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using MediatR;
 using MessengerAPI.Application.Auth.Commands.Register;
 using MessengerAPI.Presentation.Schemas.Auth;
-using ErrorOr;
 using MessengerAPI.Application.Auth.Commands.Login;
+using MessengerAPI.Presentation.Common;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -38,10 +38,27 @@ public class AuthController : ApiController
         var ipAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
 
         var command = new LoginCommand(schema.Login, schema.Password, userAgent, ipAddress);
+
         var loginResult = await _mediator.Send(command);
 
         return loginResult.Match(
-            success => Ok(success),
+            success => {
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    // Secure = true,
+                };
+
+                Response.Cookies.Append(CookieConstants.RefreshToken, success.RefreshToken, cookieOptions);
+                return Ok(success);
+            },
             errors => Problem(errors));
+    }
+
+    [HttpGet("token")]
+    public IActionResult Token()
+    {
+        string? refreshToken = Request.Cookies[CookieConstants.RefreshToken];
+        return Ok(new TokenResponseSchema(refreshToken));
     }
 }
