@@ -1,5 +1,6 @@
 using System.Text;
 using MessengerAPI.Application.Common;
+using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Infrastructure.Auth;
@@ -25,6 +26,8 @@ public static class DependencyInjection
         services.AddPersistance();
 
         services.AddSingleton<IHashHelper, BCryptHelper>();
+        services.AddScoped<IUserAgentParser, UserAgentParser>();
+        services.AddScoped<IJweHelper, JweHelper>();
 
         return services;
     }

@@ -120,6 +120,29 @@ namespace MessengerAPI.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Session",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    DeviceName = table.Column<string>(type: "TEXT", nullable: false),
+                    ClientName = table.Column<string>(type: "TEXT", nullable: false),
+                    Location = table.Column<string>(type: "TEXT", nullable: false),
+                    LastUsedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Session", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Session_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Email_Data",
                 table: "Email",
@@ -154,6 +177,11 @@ namespace MessengerAPI.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Session_UserId",
+                table: "Session",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_Username",
                 table: "Users",
                 column: "Username",
@@ -171,6 +199,9 @@ namespace MessengerAPI.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProfilePhoto");
+
+            migrationBuilder.DropTable(
+                name: "Session");
 
             migrationBuilder.DropTable(
                 name: "FileData");

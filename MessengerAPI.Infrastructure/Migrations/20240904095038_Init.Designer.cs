@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MessengerAPI.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240903091824_Init")]
+    [Migration("20240904095038_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -67,6 +67,40 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ProfilePhoto");
+                });
+
+            modelBuilder.Entity("MessengerAPI.Domain.User.Entities.Session", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClientName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeviceName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LastUsedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Session");
                 });
 
             modelBuilder.Entity("MessengerAPI.Domain.User.User", b =>
@@ -137,6 +171,15 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("File");
+                });
+
+            modelBuilder.Entity("MessengerAPI.Domain.User.Entities.Session", b =>
+                {
+                    b.HasOne("MessengerAPI.Domain.User.User", null)
+                        .WithMany("Sessions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MessengerAPI.Domain.User.User", b =>
@@ -216,6 +259,8 @@ namespace MessengerAPI.Infrastructure.Migrations
             modelBuilder.Entity("MessengerAPI.Domain.User.User", b =>
                 {
                     b.Navigation("ProfilePhotos");
+
+                    b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618
         }
