@@ -121,11 +121,12 @@ namespace MessengerAPI.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Session",
+                name: "Sessions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     UserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TokenId = table.Column<Guid>(type: "TEXT", nullable: false),
                     DeviceName = table.Column<string>(type: "TEXT", nullable: false),
                     ClientName = table.Column<string>(type: "TEXT", nullable: false),
                     Location = table.Column<string>(type: "TEXT", nullable: false),
@@ -134,9 +135,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Session", x => x.Id);
+                    table.PrimaryKey("PK_Sessions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Session_Users_UserId",
+                        name: "FK_Sessions_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -177,8 +178,8 @@ namespace MessengerAPI.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Session_UserId",
-                table: "Session",
+                name: "IX_Sessions_UserId",
+                table: "Sessions",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -201,7 +202,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "ProfilePhoto");
 
             migrationBuilder.DropTable(
-                name: "Session");
+                name: "Sessions");
 
             migrationBuilder.DropTable(
                 name: "FileData");

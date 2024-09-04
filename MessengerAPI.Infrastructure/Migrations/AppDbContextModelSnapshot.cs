@@ -90,6 +90,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("TokenId")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
 
@@ -97,7 +100,7 @@ namespace MessengerAPI.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Session");
+                    b.ToTable("Sessions");
                 });
 
             modelBuilder.Entity("MessengerAPI.Domain.User.User", b =>
