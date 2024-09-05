@@ -1,9 +1,11 @@
+using MessengerAPI.Domain.User.ValueObjects;
+
 namespace MessengerAPI.Domain.User.Entities;
 
 public class Session
 {
-    public Guid Id { get; private set; }
-    public Guid UserId { get; private set; }
+    public SessionId Id { get; private set; }
+    public UserId UserId { get; private set; }
     public Guid TokenId { get; private set; }
     public string DeviceName { get; private set; }
     public string ClientName { get; private set; }
@@ -21,6 +23,7 @@ public class Session
     {
         var session = new Session
         {
+            Id = new SessionId(Guid.NewGuid()),
             TokenId = Guid.NewGuid(),
             DeviceName = deviceName,
             ClientName = clientName,

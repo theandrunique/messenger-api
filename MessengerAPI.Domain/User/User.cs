@@ -15,7 +15,7 @@ public class User
     public IReadOnlyList<ProfilePhoto> ProfilePhotos => _profilePhotos.ToList();
     public IReadOnlyList<Session> Sessions => _sessions.ToList();
 
-    public Guid Id { get; private set; }
+    public UserId Id { get; private set; }
     public string Username { get; private set; }
     public DateTime UsernameUpdatedAt { get; private set; }
     public string PasswordHash { get; private set; }
@@ -35,7 +35,7 @@ public class User
     {
         User user = new User
         {
-            Id = Guid.NewGuid(),
+            Id = new UserId(Guid.NewGuid()),
             Username = username,
             UsernameUpdatedAt = DateTime.UtcNow,
             PasswordHash = passwordHash,
@@ -49,7 +49,7 @@ public class User
 
         return user;
     }
-    public User() {}
+    public User() { }
 
     public void AddEmail(Email email)
     {

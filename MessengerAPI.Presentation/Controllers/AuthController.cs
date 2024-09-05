@@ -6,7 +6,6 @@ using MessengerAPI.Presentation.Schemas.Auth;
 using MessengerAPI.Application.Auth.Commands.Login;
 using MessengerAPI.Presentation.Common;
 using MessengerAPI.Application.Auth.Commands.RefreshToken;
-using MessengerAPI.Application.Auth.Common;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -25,7 +24,7 @@ public class AuthController : ApiController
     public async Task<IActionResult> SignUp([FromForm] SignUpSchema schema)
     {
         var command = new RegisterCommand(schema.Username, schema.GlobalName, schema.Password);
-    
+
         var registerResult = await _mediator.Send(command);
 
         return registerResult.Match(
@@ -44,7 +43,8 @@ public class AuthController : ApiController
         var loginResult = await _mediator.Send(command);
 
         return loginResult.Match(
-            success => {
+            success =>
+            {
                 AddRefreshTokenToCookies(success.RefreshToken);
                 return Ok(success);
             },
@@ -52,15 +52,16 @@ public class AuthController : ApiController
     }
 
     [HttpPost("token")]
-    public async Task<IActionResult> Token([FromBody] RefreshTokenRequestSchema schema)
+    public async Task<IActionResult> RefreshToken([FromForm] RefreshTokenRequestSchema schema)
     {
         var command = new RefreshTokenCommand(schema.RefreshToken);
         var result = await _mediator.Send(command);
 
         return result.Match(
-            success => {
+            success =>
+            {
                 AddRefreshTokenToCookies(success.RefreshToken);
-                return Ok(new TokenPairResponse(success.AccessToken, success.RefreshToken));
+                return Ok(success);
             },
             errors => Problem(errors));
     }

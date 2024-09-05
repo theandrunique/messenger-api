@@ -1,3 +1,5 @@
+using MessengerAPI.Domain.Common.Entities;
+using MessengerAPI.Domain.Common.ValueObjects;
 using MessengerAPI.Domain.User;
 using MessengerAPI.Domain.User.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,8 @@ public class AppDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Session> Sessions { get; set; }
+    public DbSet<Chat> Chats { get; set; }
+    public DbSet<ReactionGroup> ReactionGroups { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {

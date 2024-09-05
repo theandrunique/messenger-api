@@ -1,5 +1,4 @@
 using System.Text;
-using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
@@ -64,7 +63,7 @@ public static class DependencyInjection
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(jwtSettings.Secret))
             });
-        
+
         return services;
     }
 }
