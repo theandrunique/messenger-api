@@ -6,6 +6,8 @@ using MessengerAPI.Presentation.Schemas.Auth;
 using MessengerAPI.Application.Auth.Commands.Login;
 using MessengerAPI.Presentation.Common;
 using MessengerAPI.Application.Auth.Commands.RefreshToken;
+using AutoMapper;
+using MessengerAPI.Presentation.Schemas.Common;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -14,10 +16,12 @@ namespace MessengerAPI.Presentation.Controllers;
 public class AuthController : ApiController
 {
     private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
 
-    public AuthController(IMediator mediator)
+    public AuthController(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator;
+        _mapper = mapper;
     }
 
     [HttpPost("sign-up")]
@@ -28,7 +32,7 @@ public class AuthController : ApiController
         var registerResult = await _mediator.Send(command);
 
         return registerResult.Match(
-            success => Ok(success),
+            success => Ok(_mapper.Map<UserPrivateSchema>(success)),
             errors => Problem(errors));
     }
 

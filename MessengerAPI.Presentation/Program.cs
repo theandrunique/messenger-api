@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using MessengerAPI.Application;
 using MessengerAPI.Infrastructure;
+using MessengerAPI.Presentation.Common.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMappings();
 
 
 builder.Services
