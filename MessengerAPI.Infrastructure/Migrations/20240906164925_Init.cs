@@ -293,30 +293,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MessageReactions",
-                columns: table => new
-                {
-                    MessageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ReactionId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MessageReactions", x => new { x.MessageId, x.ReactionId });
-                    table.ForeignKey(
-                        name: "FK_MessageReactions_Message_MessageId",
-                        column: x => x.MessageId,
-                        principalTable: "Message",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MessageReactions_Reaction_ReactionId",
-                        column: x => x.ReactionId,
-                        principalTable: "Reaction",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PinnedMessageIds",
                 columns: table => new
                 {
@@ -336,6 +312,38 @@ namespace MessengerAPI.Infrastructure.Migrations
                         name: "FK_PinnedMessageIds_Message_MessageId",
                         column: x => x.MessageId,
                         principalTable: "Message",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserReactions",
+                columns: table => new
+                {
+                    MessageId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ReactionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserReactions", x => new { x.MessageId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_UserReactions_Message_MessageId",
+                        column: x => x.MessageId,
+                        principalTable: "Message",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserReactions_Reaction_ReactionId",
+                        column: x => x.ReactionId,
+                        principalTable: "Reaction",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserReactions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -392,11 +400,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                 column: "FileDataId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MessageReactions_ReactionId",
-                table: "MessageReactions",
-                column: "ReactionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Phone_Data",
                 table: "Phone",
                 column: "Data",
@@ -431,6 +434,16 @@ namespace MessengerAPI.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Sessions_UserId",
                 table: "Sessions",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserReactions_ReactionId",
+                table: "UserReactions",
+                column: "ReactionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserReactions_UserId",
+                table: "UserReactions",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -483,9 +496,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "MessageAttachments");
 
             migrationBuilder.DropTable(
-                name: "MessageReactions");
-
-            migrationBuilder.DropTable(
                 name: "Phone");
 
             migrationBuilder.DropTable(
@@ -496,6 +506,9 @@ namespace MessengerAPI.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sessions");
+
+            migrationBuilder.DropTable(
+                name: "UserReactions");
 
             migrationBuilder.DropTable(
                 name: "Reaction");

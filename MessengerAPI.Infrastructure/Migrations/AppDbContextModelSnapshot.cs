@@ -32,21 +32,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.ToTable("MessageAttachments");
                 });
 
-            modelBuilder.Entity("MessageReactions", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ReactionId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("MessageId", "ReactionId");
-
-                    b.HasIndex("ReactionId");
-
-                    b.ToTable("MessageReactions");
-                });
-
             modelBuilder.Entity("MessengerAPI.Domain.Chat.Entities.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -301,21 +286,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MessageReactions", b =>
-                {
-                    b.HasOne("MessengerAPI.Domain.Chat.Entities.Message", null)
-                        .WithMany()
-                        .HasForeignKey("MessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MessengerAPI.Domain.Common.Entities.Reaction", null)
-                        .WithMany()
-                        .HasForeignKey("ReactionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("MessengerAPI.Domain.Chat.Entities.Message", b =>
                 {
                     b.HasOne("MessengerAPI.Domain.Common.ValueObjects.Chat", null)
@@ -329,6 +299,50 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsMany("MessengerAPI.Domain.Chat.ValueObjects.UserReaction", "Reactions", b1 =>
+                        {
+                            b1.Property<int>("MessageId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<int>("ReactionId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<DateTime>("Timestamp")
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("MessageId", "UserId");
+
+                            b1.HasIndex("ReactionId");
+
+                            b1.HasIndex("UserId");
+
+                            b1.ToTable("UserReactions", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("MessageId");
+
+                            b1.HasOne("MessengerAPI.Domain.Common.Entities.Reaction", "Reaction")
+                                .WithMany()
+                                .HasForeignKey("ReactionId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b1.HasOne("MessengerAPI.Domain.User.User", "User")
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b1.Navigation("Reaction");
+
+                            b1.Navigation("User");
+                        });
+
+                    b.Navigation("Reactions");
 
                     b.Navigation("Sender");
                 });

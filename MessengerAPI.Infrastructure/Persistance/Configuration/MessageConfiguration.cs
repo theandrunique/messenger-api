@@ -1,7 +1,7 @@
 using MessengerAPI.Domain.Chat.Entities;
 using MessengerAPI.Domain.Chat.ValueObjects;
 using MessengerAPI.Domain.Common.Entities;
-using MessengerAPI.Domain.Common.ValueObjects;
+using MessengerAPI.Domain.User;
 using MessengerAPI.Domain.User.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -25,18 +25,22 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.Property(m => m.ReplyTo)
             .HasConversion(v => v.Value, v => new MessageId(v));
         
-        builder.HasMany(m => m.Reactions)
-            .WithMany()
-            .UsingEntity<Dictionary<string, object>>(
-                "MessageReactions",
-                j => j.HasOne<Reaction>().WithMany().HasForeignKey("ReactionId"),
-                j => j.HasOne<Message>().WithMany().HasForeignKey("MessageId"),
-                j =>
-                {
-                    j.HasKey("MessageId", "ReactionId");
-                    j.Property<int>("MessageId");
-                    j.Property<int>("ReactionId");
-                });
+        builder.OwnsMany(u => u.Reactions, urb =>
+        {
+            urb.ToTable("UserReactions");
+
+            urb.WithOwner().HasForeignKey("MessageId");
+
+            urb.HasOne(r => r.Reaction)
+                .WithMany()
+                .HasForeignKey("ReactionId");
+
+            urb.HasOne<User>(r => r.User)
+                .WithMany()
+                .HasForeignKey("UserId");
+            
+            urb.HasKey("MessageId", "UserId");
+        });
 
         builder.HasMany(m => m.Attachments)
             .WithMany()

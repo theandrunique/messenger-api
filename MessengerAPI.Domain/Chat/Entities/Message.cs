@@ -6,10 +6,10 @@ namespace MessengerAPI.Domain.Chat.Entities;
 
 public class Message
 {
-    private readonly List<Reaction> _reactions = new List<Reaction>();
+    private readonly List<UserReaction> _reactions = new List<UserReaction>();
     private readonly List<FileData> _attachments = new List<FileData>();
 
-    public IReadOnlyCollection<Reaction> Reactions => _reactions.ToList();
+    public IReadOnlyCollection<UserReaction> Reactions => _reactions.ToList();
     public IReadOnlyCollection<FileData> Attachments => _attachments.ToList();
     public User.User Sender { get; private set; }
 
