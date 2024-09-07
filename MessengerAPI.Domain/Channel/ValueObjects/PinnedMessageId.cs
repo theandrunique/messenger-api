@@ -1,4 +1,4 @@
-namespace MessengerAPI.Domain.Chat.ValueObjects;
+namespace MessengerAPI.Domain.Channel.ValueObjects;
 
 public class PinnedMessageId
 {

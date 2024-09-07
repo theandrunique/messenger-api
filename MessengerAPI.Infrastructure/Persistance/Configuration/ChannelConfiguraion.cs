@@ -1,6 +1,6 @@
-using MessengerAPI.Domain.Chat.Entities;
-using MessengerAPI.Domain.Chat.ValueObjects;
-using MessengerAPI.Domain.Common.ValueObjects;
+using MessengerAPI.Domain.Channel;
+using MessengerAPI.Domain.Channel.Entities;
+using MessengerAPI.Domain.Channel.ValueObjects;
 using MessengerAPI.Domain.User;
 using MessengerAPI.Domain.User.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MessengerAPI.Infrastructure.Persistance.Configuration;
 
-public class ChatConfiguration : IEntityTypeConfiguration<Chat>
+public class ChannelConfiguration : IEntityTypeConfiguration<Channel>
 {
-    public void Configure(EntityTypeBuilder<Chat> builder)
+    public void Configure(EntityTypeBuilder<Channel> builder)
     {
         builder.HasKey(c => c.Id);
         builder.Property(c => c.Id)
-            .HasConversion(v => v.Value, v => new ChatId(v));
+            .HasConversion(v => v.Value, v => new ChannelId(v));
 
         builder.HasOne<User>()
             .WithMany()
@@ -30,28 +30,28 @@ public class ChatConfiguration : IEntityTypeConfiguration<Chat>
 
         builder.HasMany(c => c.Messages)
             .WithOne()
-            .HasForeignKey(c => c.ChatId);
-        
+            .HasForeignKey(c => c.ChannelId);
+
         builder.OwnsMany(c => c.MemberIds, memberIdsBuilder =>
         {
-            memberIdsBuilder.ToTable("ChatMemberIds");
+            memberIdsBuilder.ToTable("ChannelMemberIds");
 
             memberIdsBuilder.Property(u => u.UserId)
                 .HasColumnName("UserId")
                 .HasConversion(v => v.Value, v => new UserId(v));
-            
+
             memberIdsBuilder.HasOne<User>()
                 .WithMany()
                 .HasForeignKey("UserId");
 
-            memberIdsBuilder.WithOwner().HasForeignKey("ChatId");
+            memberIdsBuilder.WithOwner().HasForeignKey("ChannelId");
 
-            memberIdsBuilder.HasKey("UserId", "ChatId");
+            memberIdsBuilder.HasKey("UserId", "ChannelId");
         });
 
         builder.OwnsMany(c => c.AdminIds, adminIdsBuilder =>
         {
-            adminIdsBuilder.ToTable("ChatAdminIds");
+            adminIdsBuilder.ToTable("ChannelAdminIds");
 
             adminIdsBuilder.Property(u => u.UserId)
                 .HasColumnName("UserId")
@@ -61,9 +61,9 @@ public class ChatConfiguration : IEntityTypeConfiguration<Chat>
                 .WithMany()
                 .HasForeignKey("UserId");
 
-            adminIdsBuilder.WithOwner().HasForeignKey("ChatId");
+            adminIdsBuilder.WithOwner().HasForeignKey("ChannelId");
 
-            adminIdsBuilder.HasKey("UserId", "ChatId");
+            adminIdsBuilder.HasKey("UserId", "ChannelId");
         });
 
         builder.OwnsMany(c => c.PinnedMessageIds, pmb =>
@@ -73,14 +73,14 @@ public class ChatConfiguration : IEntityTypeConfiguration<Chat>
             pmb.Property(m => m.MessageId)
                 .HasColumnName("MessageId")
                 .HasConversion(v => v.Value, v => new MessageId(v));
-            
+
             pmb.HasOne<Message>()
                 .WithMany()
                 .HasForeignKey("MessageId");
 
-            pmb.WithOwner().HasForeignKey("ChatId");
+            pmb.WithOwner().HasForeignKey("ChannelId");
 
-            pmb.HasKey("MessageId", "ChatId");
+            pmb.HasKey("MessageId", "ChannelId");
         });
     }
 }

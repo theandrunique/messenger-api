@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MessengerAPI.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240907130516_Init")]
+    [Migration("20240907153539_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -35,12 +35,43 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.ToTable("MessageAttachments");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.Chat.Entities.Message", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.Channel.Channel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ImageId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("LastMessageId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("OwnerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImageId");
+
+                    b.HasIndex("LastMessageId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Channels");
+                });
+
+            modelBuilder.Entity("MessengerAPI.Domain.Channel.Entities.Message", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid>("ChatId")
+                    b.Property<Guid>("ChannelId")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("ReplyTo")
@@ -61,7 +92,7 @@ namespace MessengerAPI.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChatId");
+                    b.HasIndex("ChannelId");
 
                     b.HasIndex("SenderId");
 
@@ -132,37 +163,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ReactionGroups");
-                });
-
-            modelBuilder.Entity("MessengerAPI.Domain.Common.ValueObjects.Chat", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("ChatPhotoId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("LastMessageId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Guid?>("OwnerId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChatPhotoId");
-
-                    b.HasIndex("LastMessageId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Chats");
                 });
 
             modelBuilder.Entity("MessengerAPI.Domain.User.Entities.ProfilePhoto", b =>
@@ -286,18 +286,116 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MessengerAPI.Domain.Chat.Entities.Message", null)
+                    b.HasOne("MessengerAPI.Domain.Channel.Entities.Message", null)
                         .WithMany()
                         .HasForeignKey("MessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.Chat.Entities.Message", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.Channel.Channel", b =>
                 {
-                    b.HasOne("MessengerAPI.Domain.Common.ValueObjects.Chat", null)
+                    b.HasOne("MessengerAPI.Domain.Common.Entities.FileData", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
+                    b.HasOne("MessengerAPI.Domain.Channel.Entities.Message", null)
+                        .WithMany()
+                        .HasForeignKey("LastMessageId");
+
+                    b.HasOne("MessengerAPI.Domain.User.User", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.OwnsMany("MessengerAPI.Domain.Channel.ValueObjects.AdminId", "AdminIds", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("UserId");
+
+                            b1.Property<Guid>("ChannelId")
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("UserId", "ChannelId");
+
+                            b1.HasIndex("ChannelId");
+
+                            b1.ToTable("ChannelAdminIds", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("ChannelId");
+
+                            b1.HasOne("MessengerAPI.Domain.User.User", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
+
+                    b.OwnsMany("MessengerAPI.Domain.Channel.ValueObjects.MemberId", "MemberIds", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("UserId");
+
+                            b1.Property<Guid>("ChannelId")
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("UserId", "ChannelId");
+
+                            b1.HasIndex("ChannelId");
+
+                            b1.ToTable("ChannelMemberIds", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("ChannelId");
+
+                            b1.HasOne("MessengerAPI.Domain.User.User", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
+
+                    b.OwnsMany("MessengerAPI.Domain.Channel.ValueObjects.PinnedMessageId", "PinnedMessageIds", b1 =>
+                        {
+                            b1.Property<int>("MessageId")
+                                .HasColumnType("INTEGER")
+                                .HasColumnName("MessageId");
+
+                            b1.Property<Guid>("ChannelId")
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("MessageId", "ChannelId");
+
+                            b1.HasIndex("ChannelId");
+
+                            b1.ToTable("PinnedMessageIds", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("ChannelId");
+
+                            b1.HasOne("MessengerAPI.Domain.Channel.Entities.Message", null)
+                                .WithMany()
+                                .HasForeignKey("MessageId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
+
+                    b.Navigation("AdminIds");
+
+                    b.Navigation("Image");
+
+                    b.Navigation("MemberIds");
+
+                    b.Navigation("PinnedMessageIds");
+                });
+
+            modelBuilder.Entity("MessengerAPI.Domain.Channel.Entities.Message", b =>
+                {
+                    b.HasOne("MessengerAPI.Domain.Channel.Channel", null)
                         .WithMany("Messages")
-                        .HasForeignKey("ChatId")
+                        .HasForeignKey("ChannelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -307,7 +405,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("MessengerAPI.Domain.Chat.ValueObjects.UserReaction", "Reactions", b1 =>
+                    b.OwnsMany("MessengerAPI.Domain.Channel.ValueObjects.UserReaction", "Reactions", b1 =>
                         {
                             b1.Property<int>("MessageId")
                                 .HasColumnType("INTEGER");
@@ -359,104 +457,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.HasOne("MessengerAPI.Domain.Common.Entities.ReactionGroup", null)
                         .WithMany("Reactions")
                         .HasForeignKey("ReactionGroupId");
-                });
-
-            modelBuilder.Entity("MessengerAPI.Domain.Common.ValueObjects.Chat", b =>
-                {
-                    b.HasOne("MessengerAPI.Domain.Common.Entities.FileData", "ChatPhoto")
-                        .WithMany()
-                        .HasForeignKey("ChatPhotoId");
-
-                    b.HasOne("MessengerAPI.Domain.Chat.Entities.Message", null)
-                        .WithMany()
-                        .HasForeignKey("LastMessageId");
-
-                    b.HasOne("MessengerAPI.Domain.User.User", null)
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
-                    b.OwnsMany("MessengerAPI.Domain.Chat.ValueObjects.AdminId", "AdminIds", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("TEXT")
-                                .HasColumnName("UserId");
-
-                            b1.Property<Guid>("ChatId")
-                                .HasColumnType("TEXT");
-
-                            b1.HasKey("UserId", "ChatId");
-
-                            b1.HasIndex("ChatId");
-
-                            b1.ToTable("ChatAdminIds", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("ChatId");
-
-                            b1.HasOne("MessengerAPI.Domain.User.User", null)
-                                .WithMany()
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-                        });
-
-                    b.OwnsMany("MessengerAPI.Domain.Chat.ValueObjects.MemberId", "MemberIds", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("TEXT")
-                                .HasColumnName("UserId");
-
-                            b1.Property<Guid>("ChatId")
-                                .HasColumnType("TEXT");
-
-                            b1.HasKey("UserId", "ChatId");
-
-                            b1.HasIndex("ChatId");
-
-                            b1.ToTable("ChatMemberIds", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("ChatId");
-
-                            b1.HasOne("MessengerAPI.Domain.User.User", null)
-                                .WithMany()
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-                        });
-
-                    b.OwnsMany("MessengerAPI.Domain.Chat.ValueObjects.PinnedMessageId", "PinnedMessageIds", b1 =>
-                        {
-                            b1.Property<int>("MessageId")
-                                .HasColumnType("INTEGER")
-                                .HasColumnName("MessageId");
-
-                            b1.Property<Guid>("ChatId")
-                                .HasColumnType("TEXT");
-
-                            b1.HasKey("MessageId", "ChatId");
-
-                            b1.HasIndex("ChatId");
-
-                            b1.ToTable("PinnedMessageIds", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("ChatId");
-
-                            b1.HasOne("MessengerAPI.Domain.Chat.Entities.Message", null)
-                                .WithMany()
-                                .HasForeignKey("MessageId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-                        });
-
-                    b.Navigation("AdminIds");
-
-                    b.Navigation("ChatPhoto");
-
-                    b.Navigation("MemberIds");
-
-                    b.Navigation("PinnedMessageIds");
                 });
 
             modelBuilder.Entity("MessengerAPI.Domain.User.Entities.ProfilePhoto", b =>
@@ -561,14 +561,14 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.Navigation("Phones");
                 });
 
+            modelBuilder.Entity("MessengerAPI.Domain.Channel.Channel", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("MessengerAPI.Domain.Common.Entities.ReactionGroup", b =>
                 {
                     b.Navigation("Reactions");
-                });
-
-            modelBuilder.Entity("MessengerAPI.Domain.Common.ValueObjects.Chat", b =>
-                {
-                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("MessengerAPI.Domain.User.User", b =>

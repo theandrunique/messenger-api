@@ -44,7 +44,7 @@ public static class DependencyInjection
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFileRepository, fileRepository>();
-        services.AddScoped<IChatRepository, ChatRepository>();
+        services.AddScoped<IChannelRepository, ChannelRepository>();
 
         return services;
     }

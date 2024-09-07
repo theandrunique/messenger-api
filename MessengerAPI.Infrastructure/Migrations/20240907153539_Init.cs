@@ -179,17 +179,17 @@ namespace MessengerAPI.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChatAdminIds",
+                name: "ChannelAdminIds",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ChatId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    ChannelId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChatAdminIds", x => new { x.UserId, x.ChatId });
+                    table.PrimaryKey("PK_ChannelAdminIds", x => new { x.UserId, x.ChannelId });
                     table.ForeignKey(
-                        name: "FK_ChatAdminIds_Users_UserId",
+                        name: "FK_ChannelAdminIds_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -197,17 +197,17 @@ namespace MessengerAPI.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChatMemberIds",
+                name: "ChannelMemberIds",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ChatId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    ChannelId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChatMemberIds", x => new { x.UserId, x.ChatId });
+                    table.PrimaryKey("PK_ChannelMemberIds", x => new { x.UserId, x.ChannelId });
                     table.ForeignKey(
-                        name: "FK_ChatMemberIds_Users_UserId",
+                        name: "FK_ChannelMemberIds_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -215,26 +215,26 @@ namespace MessengerAPI.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Chats",
+                name: "Channels",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     OwnerId = table.Column<Guid>(type: "TEXT", nullable: true),
                     Title = table.Column<string>(type: "TEXT", nullable: true),
-                    ChatPhotoId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    ImageId = table.Column<Guid>(type: "TEXT", nullable: true),
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
                     LastMessageId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Chats", x => x.Id);
+                    table.PrimaryKey("PK_Channels", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Chats_Files_ChatPhotoId",
-                        column: x => x.ChatPhotoId,
+                        name: "FK_Channels_Files_ImageId",
+                        column: x => x.ImageId,
                         principalTable: "Files",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Chats_Users_OwnerId",
+                        name: "FK_Channels_Users_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -245,7 +245,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false),
-                    ChatId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ChannelId = table.Column<Guid>(type: "TEXT", nullable: false),
                     SenderId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Text = table.Column<string>(type: "TEXT", nullable: false),
                     SentAt = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -256,9 +256,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Message", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Message_Chats_ChatId",
-                        column: x => x.ChatId,
-                        principalTable: "Chats",
+                        name: "FK_Message_Channels_ChannelId",
+                        column: x => x.ChannelId,
+                        principalTable: "Channels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -298,15 +298,15 @@ namespace MessengerAPI.Infrastructure.Migrations
                 columns: table => new
                 {
                     MessageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ChatId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    ChannelId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PinnedMessageIds", x => new { x.MessageId, x.ChatId });
+                    table.PrimaryKey("PK_PinnedMessageIds", x => new { x.MessageId, x.ChannelId });
                     table.ForeignKey(
-                        name: "FK_PinnedMessageIds_Chats_ChatId",
-                        column: x => x.ChatId,
-                        principalTable: "Chats",
+                        name: "FK_PinnedMessageIds_Channels_ChannelId",
+                        column: x => x.ChannelId,
+                        principalTable: "Channels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -350,28 +350,28 @@ namespace MessengerAPI.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatAdminIds_ChatId",
-                table: "ChatAdminIds",
-                column: "ChatId");
+                name: "IX_ChannelAdminIds_ChannelId",
+                table: "ChannelAdminIds",
+                column: "ChannelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatMemberIds_ChatId",
-                table: "ChatMemberIds",
-                column: "ChatId");
+                name: "IX_ChannelMemberIds_ChannelId",
+                table: "ChannelMemberIds",
+                column: "ChannelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_ChatPhotoId",
-                table: "Chats",
-                column: "ChatPhotoId");
+                name: "IX_Channels_ImageId",
+                table: "Channels",
+                column: "ImageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_LastMessageId",
-                table: "Chats",
+                name: "IX_Channels_LastMessageId",
+                table: "Channels",
                 column: "LastMessageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_OwnerId",
-                table: "Chats",
+                name: "IX_Channels_OwnerId",
+                table: "Channels",
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
@@ -386,9 +386,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Message_ChatId",
+                name: "IX_Message_ChannelId",
                 table: "Message",
-                column: "ChatId");
+                column: "ChannelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Message_SenderId",
@@ -412,9 +412,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PinnedMessageIds_ChatId",
+                name: "IX_PinnedMessageIds_ChannelId",
                 table: "PinnedMessageIds",
-                column: "ChatId");
+                column: "ChannelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProfilePhoto_FileId",
@@ -454,24 +454,24 @@ namespace MessengerAPI.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ChatAdminIds_Chats_ChatId",
-                table: "ChatAdminIds",
-                column: "ChatId",
-                principalTable: "Chats",
+                name: "FK_ChannelAdminIds_Channels_ChannelId",
+                table: "ChannelAdminIds",
+                column: "ChannelId",
+                principalTable: "Channels",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ChatMemberIds_Chats_ChatId",
-                table: "ChatMemberIds",
-                column: "ChatId",
-                principalTable: "Chats",
+                name: "FK_ChannelMemberIds_Channels_ChannelId",
+                table: "ChannelMemberIds",
+                column: "ChannelId",
+                principalTable: "Channels",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Chats_Message_LastMessageId",
-                table: "Chats",
+                name: "FK_Channels_Message_LastMessageId",
+                table: "Channels",
                 column: "LastMessageId",
                 principalTable: "Message",
                 principalColumn: "Id");
@@ -481,14 +481,14 @@ namespace MessengerAPI.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Message_Chats_ChatId",
+                name: "FK_Message_Channels_ChannelId",
                 table: "Message");
 
             migrationBuilder.DropTable(
-                name: "ChatAdminIds");
+                name: "ChannelAdminIds");
 
             migrationBuilder.DropTable(
-                name: "ChatMemberIds");
+                name: "ChannelMemberIds");
 
             migrationBuilder.DropTable(
                 name: "Email");
@@ -518,7 +518,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "ReactionGroups");
 
             migrationBuilder.DropTable(
-                name: "Chats");
+                name: "Channels");
 
             migrationBuilder.DropTable(
                 name: "Files");

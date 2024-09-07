@@ -1,8 +1,8 @@
-using MessengerAPI.Domain.Chat.ValueObjects;
+using MessengerAPI.Domain.Channel.ValueObjects;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.User.ValueObjects;
 
-namespace MessengerAPI.Domain.Chat.Entities;
+namespace MessengerAPI.Domain.Channel.Entities;
 
 public class Message
 {
@@ -14,7 +14,7 @@ public class Message
     public User.User Sender { get; private set; }
 
     public MessageId Id { get; private set; }
-    public ChatId ChatId { get; private set; }
+    public ChannelId ChannelId { get; private set; }
     public UserId SenderId { get; private set; }
     public string Text { get; private set; }
     public DateTime SentAt { get; private set; }
@@ -22,23 +22,23 @@ public class Message
     public MessageId? ReplyTo { get; private set; }
 
     public static Message CreateNew(
-        ChatId chatId,
+        ChannelId channelId,
         UserId senderId,
         string text,
         MessageId? replyTo = null,
         List<FileData>? attachments = null)
     {
-        return new Message(chatId, senderId, text, replyTo);
+        return new Message(channelId, senderId, text, replyTo);
     }
 
     private Message(
-        ChatId chatId,
+        ChannelId channelId,
         UserId senderId,
         string text,
         MessageId? replyTo = null,
         List<FileData>? attachments = null)
     {
-        ChatId = chatId;
+        ChannelId = channelId;
         SenderId = senderId;
         Text = text;
         SentAt = DateTime.UtcNow;

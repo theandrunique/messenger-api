@@ -1,5 +1,5 @@
-using MessengerAPI.Domain.Chat.Entities;
-using MessengerAPI.Domain.Chat.ValueObjects;
+using MessengerAPI.Domain.Channel.Entities;
+using MessengerAPI.Domain.Channel.ValueObjects;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.User;
 using MessengerAPI.Domain.User.ValueObjects;

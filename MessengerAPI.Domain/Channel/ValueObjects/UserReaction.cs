@@ -1,7 +1,6 @@
 using MessengerAPI.Domain.Common.Entities;
-using MessengerAPI.Domain.User;
 
-namespace MessengerAPI.Domain.Chat.ValueObjects;
+namespace MessengerAPI.Domain.Channel.ValueObjects;
 
 public class UserReaction
 {
