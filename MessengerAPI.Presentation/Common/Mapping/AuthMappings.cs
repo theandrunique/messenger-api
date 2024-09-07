@@ -20,6 +20,9 @@ public class AuthMappings : Profile
 
         CreateMap<User, UserPrivateSchema>()
             .ForMember(dest => dest.Id, s => s.MapFrom(src => src.Id.Value));
+        
+        CreateMap<FileData, FileSchema>()
+            .ForMember(dest => dest.OwnerId, s => s.MapFrom(src => src.OwnerId.Value));
 
         CreateMap<RegisterResult, UserPrivateSchema>()
             .IncludeMembers(u => u.user);
