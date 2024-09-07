@@ -1,5 +1,6 @@
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.Common.Entities;
+using MessengerAPI.Domain.User.ValueObjects;
 using MessengerAPI.Infrastructure.Common.Persistance;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,11 @@ public class fileRepository : IFileRepository
     {
         var file = await _context.Files.FirstOrDefaultAsync(f => f.Id == id);
         return file;
+    }
+
+    public async Task<List<FileData>> GetUserFilesAsync(UserId userId)
+    {
+        return await _context.Files.Where(f => f.OwnerId == userId).ToListAsync();
     }
 
     public async Task<List<FileData>> GetFilesByIdsAsync(IEnumerable<Guid> ids)
