@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MessengerAPI.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240907153539_Init")]
+    [Migration("20240907160200_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -105,6 +105,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT");
+
                     b.Property<byte[]>("Sha256")
                         .IsRequired()
                         .HasColumnType("BLOB");
@@ -123,6 +126,8 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Files");
                 });
@@ -450,6 +455,15 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.Navigation("Reactions");
 
                     b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("MessengerAPI.Domain.Common.Entities.FileData", b =>
+                {
+                    b.HasOne("MessengerAPI.Domain.User.User", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MessengerAPI.Domain.Common.Entities.Reaction", b =>

@@ -30,7 +30,7 @@ public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Error
         
         var url = await _fileStorage.Put(request.FileStream, sha265String);
 
-        var file = FileData.CreateNew(fileType, url, request.FileStream.Length, sha256Bytes);
+        var file = FileData.CreateNew(request.Sub, fileType, url, request.FileStream.Length, sha256Bytes);
 
         await _fileRepository.AddFileAsync(file);
         await _fileRepository.Commit();

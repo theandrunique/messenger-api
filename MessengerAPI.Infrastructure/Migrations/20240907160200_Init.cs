@@ -12,22 +12,6 @@ namespace MessengerAPI.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Files",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    Url = table.Column<string>(type: "TEXT", nullable: false),
-                    Size = table.Column<long>(type: "INTEGER", nullable: false),
-                    Sha256 = table.Column<byte[]>(type: "BLOB", nullable: false),
-                    UploadedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Files", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ReactionGroups",
                 columns: table => new
                 {
@@ -106,6 +90,29 @@ namespace MessengerAPI.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Files",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    Url = table.Column<string>(type: "TEXT", nullable: false),
+                    Size = table.Column<long>(type: "INTEGER", nullable: false),
+                    Sha256 = table.Column<byte[]>(type: "BLOB", nullable: false),
+                    UploadedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Files", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Files_Users_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Phone",
                 columns: table => new
                 {
@@ -121,6 +128,30 @@ namespace MessengerAPI.Infrastructure.Migrations
                     table.PrimaryKey("PK_Phone", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Phone_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sessions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TokenId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    DeviceName = table.Column<string>(type: "TEXT", nullable: false),
+                    ClientName = table.Column<string>(type: "TEXT", nullable: false),
+                    Location = table.Column<string>(type: "TEXT", nullable: false),
+                    LastUsedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sessions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sessions_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -148,30 +179,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProfilePhoto_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Sessions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    TokenId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    DeviceName = table.Column<string>(type: "TEXT", nullable: false),
-                    ClientName = table.Column<string>(type: "TEXT", nullable: false),
-                    Location = table.Column<string>(type: "TEXT", nullable: false),
-                    LastUsedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sessions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Sessions_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -384,6 +391,11 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "IX_Email_UserId",
                 table: "Email",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Files_OwnerId",
+                table: "Files",
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Message_ChannelId",
