@@ -15,11 +15,14 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<User?> AddAsync(User user)
+    public async Task Commit()
+    {
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task AddAsync(User user)
     {
         await _context.AddAsync(user);
-        await _context.SaveChangesAsync();
-        return user;
     }
 
     public async Task<User?> GetByIdAsync(Guid id)
@@ -28,9 +31,9 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public Task<User?> GetByEmailAsync(string email)
+    public async Task<User?> GetByEmailAsync(string email)
     {
-        var user = _context.Users.FirstOrDefaultAsync(u => u.Emails.Any(e => e.Data == email));
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Emails.Any(e => e.Data == email));
         return user;
     }
 
@@ -40,21 +43,13 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public async Task<Session?> GetSessionByTokenId(Guid tokenId)
+    public async Task<(Session, User)?> GetSessionWithUserByTokenId(Guid tokenId)
     {
-        var session = await _context.Sessions.FirstOrDefaultAsync(s => s.TokenId == tokenId);
-        return session;
-    }
-
-    public async Task UpdateAsync(User user)
-    {
-        _context.Users.Update(user);
-        await _context.SaveChangesAsync();
-    }
-
-    public Task UpdateSessionAsync(Session session)
-    {
-        _context.Sessions.Update(session);
-        return _context.SaveChangesAsync();
+        var session = await _context.Sessions.Include(s => s.User).FirstOrDefaultAsync(s => s.TokenId == tokenId);
+        if (session == null || session.User == null)
+        {
+            return null;
+        }
+        return (session, session.User);
     }
 }

@@ -9,8 +9,8 @@ namespace MessengerAPI.Application.Auth.Commands.Register;
 public class RegisterCommandHandler : 
     IRequestHandler<RegisterCommand, ErrorOr<RegisterResult>>
 {
-    IUserRepository _userRepository;
-    IHashHelper _hashHelper;
+    private readonly IUserRepository _userRepository;
+    private readonly IHashHelper _hashHelper;
 
     public RegisterCommandHandler(IUserRepository userRepository, IHashHelper hashHelper)
     {
@@ -26,6 +26,7 @@ public class RegisterCommandHandler :
             request.GlobalName);
 
         await _userRepository.AddAsync(newUser);
+        await _userRepository.Commit();
 
         return new RegisterResult(newUser);
     }

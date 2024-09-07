@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using MessengerAPI.Application.Common.Interfaces.Auth;
+using MessengerAPI.Domain.User.ValueObjects;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -15,7 +16,7 @@ public class JwtTokenHelper : IJwtTokenGenerator
         _settings = settings.Value;
     }
 
-    public string Generate(string kek)
+    public string Generate(UserId sub, Guid tokenId)
     {
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Secret)),
@@ -23,7 +24,8 @@ public class JwtTokenHelper : IJwtTokenGenerator
 
         var claims = new[]
         {
-            new Claim("sub", kek)
+            new Claim(JwtRegisteredClaimNames.Sub, sub.Value.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, tokenId.ToString()),
         };
 
         var securityToken = new JwtSecurityToken(

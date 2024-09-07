@@ -12,11 +12,11 @@ namespace MessengerAPI.Application.Auth.Commands.Login;
 
 public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPairResponse>>
 {
-    IHashHelper _hashHelper;
-    IUserRepository _userRepository;
-    IUserAgentParser _userAgentParser;
-    IJweHelper _jweHelper;
-    IJwtTokenGenerator _jwtTokenGenerator;
+    private readonly IHashHelper _hashHelper;
+    private readonly IUserRepository _userRepository;
+    private readonly IUserAgentParser _userAgentParser;
+    private readonly IJweHelper _jweHelper;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
     public LoginCommandHandler(IHashHelper hashHelper, IUserRepository userRepository, IUserAgentParser userAgentParser, IJweHelper jweHelper, IJwtTokenGenerator jwtTokenGenerator)
     {
@@ -46,10 +46,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
 
         var session = user.CreateSession(_userAgentParser.GetDeviceName(), _userAgentParser.GetClientName(), request.IpAddress);
 
-        await _userRepository.UpdateAsync(user);
+        await _userRepository.Commit();
 
-        var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId));
-        var accessToken = _jwtTokenGenerator.Generate(user.Id.ToString());
+        var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId, user.Id.Value));
+        var accessToken = _jwtTokenGenerator.Generate(user.Id, session.TokenId);
 
         return new TokenPairResponse(accessToken, refreshToken);
     }
