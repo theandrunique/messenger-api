@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Session> Sessions { get; set; }
     public DbSet<Chat> Chats { get; set; }
     public DbSet<ReactionGroup> ReactionGroups { get; set; }
+    public DbSet<FileData> Files { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {

@@ -12,18 +12,19 @@ namespace MessengerAPI.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "FileData",
+                name: "Files",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
                     Url = table.Column<string>(type: "TEXT", nullable: false),
-                    Size = table.Column<int>(type: "INTEGER", nullable: false),
+                    Size = table.Column<long>(type: "INTEGER", nullable: false),
+                    Sha256 = table.Column<byte[]>(type: "BLOB", nullable: false),
                     UploadedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FileData", x => x.Id);
+                    table.PrimaryKey("PK_Files", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -140,9 +141,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_ProfilePhoto", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProfilePhoto_FileData_FileId",
+                        name: "FK_ProfilePhoto_Files_FileId",
                         column: x => x.FileId,
-                        principalTable: "FileData",
+                        principalTable: "Files",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -228,9 +229,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Chats", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Chats_FileData_ChatPhotoId",
+                        name: "FK_Chats_Files_ChatPhotoId",
                         column: x => x.ChatPhotoId,
-                        principalTable: "FileData",
+                        principalTable: "Files",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Chats_Users_OwnerId",
@@ -279,9 +280,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_MessageAttachments", x => new { x.MessageId, x.FileDataId });
                     table.ForeignKey(
-                        name: "FK_MessageAttachments_FileData_FileDataId",
+                        name: "FK_MessageAttachments_Files_FileDataId",
                         column: x => x.FileDataId,
-                        principalTable: "FileData",
+                        principalTable: "Files",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -520,7 +521,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "Chats");
 
             migrationBuilder.DropTable(
-                name: "FileData");
+                name: "Files");
 
             migrationBuilder.DropTable(
                 name: "Message");

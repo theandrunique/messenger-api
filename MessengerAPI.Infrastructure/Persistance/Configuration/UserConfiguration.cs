@@ -28,7 +28,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(p => p.UserId);
 
         builder.HasMany(u => u.Sessions)
-            .WithOne()
+            .WithOne(s => s.User)
             .HasForeignKey(s => s.UserId);
 
         ConfigureEmails(builder);

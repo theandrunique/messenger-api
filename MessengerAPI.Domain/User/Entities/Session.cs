@@ -6,6 +6,7 @@ public class Session
 {
     public SessionId Id { get; private set; }
     public UserId UserId { get; private set; }
+    public User? User { get; private set; }
     public Guid TokenId { get; private set; }
     public string DeviceName { get; private set; }
     public string ClientName { get; private set; }
