@@ -21,5 +21,31 @@ public class Message
     public DateTime? UpdatedAt { get; private set; }
     public MessageId? ReplyTo { get; private set; }
 
+    public static Message CreateNew(
+        ChatId chatId,
+        UserId senderId,
+        string text,
+        MessageId? replyTo = null,
+        List<FileData>? attachments = null)
+    {
+        return new Message(chatId, senderId, text, replyTo);
+    }
+
+    private Message(
+        ChatId chatId,
+        UserId senderId,
+        string text,
+        MessageId? replyTo = null,
+        List<FileData>? attachments = null)
+    {
+        ChatId = chatId;
+        SenderId = senderId;
+        Text = text;
+        SentAt = DateTime.UtcNow;
+        ReplyTo = replyTo;
+
+        if (attachments is not null) _attachments = attachments;
+    }
+
     public Message() { }
 }

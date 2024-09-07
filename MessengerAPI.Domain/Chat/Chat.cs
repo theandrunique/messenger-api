@@ -24,7 +24,36 @@ public class Chat
     public ChatType Type { get; private set; }
     public MessageId? LastMessageId { get; private set; }
 
-    public Chat()
+    public static Chat CreatePrivate(UserId userId1, UserId userId2)
     {
+        var memberIds = new List<MemberId> { new MemberId(userId1), new MemberId(userId2) };
+
+        return new Chat(ChatType.Private, memberIds);
+    }
+
+    public static Chat CreateGroup(UserId ownerId, List<UserId> memberIds, string? title = null, FileData? chatPhoto = null)
+    {
+        var memberIdsConverted = memberIds.ConvertAll(memberId => new MemberId(memberId));
+
+        return new Chat(ChatType.Group, memberIdsConverted, ownerId, title, chatPhoto);
+    }
+
+    private Chat(ChatType type, List<MemberId> memberIds, UserId? ownerId = null, string? title = null, FileData? chatPhoto = null)
+    {
+        Id = new ChatId(Guid.NewGuid());
+        OwnerId = ownerId;
+        Title = title;
+        ChatPhoto = chatPhoto;
+        Type = type;
+        _memberIds = memberIds;
+    }
+
+    public Chat() { }
+
+    public Message AddMessage(UserId senderId, string text, MessageId? replyTo = null, List<FileData>? attachments = null)
+    {
+        var newMessage = Message.CreateNew(Id, senderId, text, replyTo, attachments);
+        _messages.Add(newMessage);
+        return newMessage;
     }
 }

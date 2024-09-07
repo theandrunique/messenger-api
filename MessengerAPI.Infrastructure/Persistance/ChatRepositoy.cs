@@ -1,28 +1,44 @@
 using MessengerAPI.Application.Common.Interfaces.Persistance;
-using MessengerAPI.Domain.Chat.Entities;
+using MessengerAPI.Domain.Chat.ValueObjects;
 using MessengerAPI.Domain.Common.ValueObjects;
+using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Infrastructure.Common.Persistance;
+using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver.Linq;
 
 namespace MessengerAPI.Infrastructure.Persistance;
 
 public class ChatRepository : IChatRepository
 {
-    public void AddChatAsync(Chat chat)
+    private readonly AppDbContext _context;
+
+    public ChatRepository(AppDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
 
-    public void AddMessageToChatAsync(Message message)
+    public async Task Commit()
     {
-        throw new NotImplementedException();
+        await _context.SaveChangesAsync();
     }
 
-    public List<Chat> GetChatsByUserIdAsync(Guid userId)
+    public async Task AddChatAsync(Chat chat)
     {
-        throw new NotImplementedException();
+        await _context.AddAsync(chat);
     }
 
-    public List<Chat> GetChatWithMembers(IEnumerable<Guid> membersIds)
+    public async Task<Chat?> GetByIdAsync(ChatId chatId)
     {
-        throw new NotImplementedException();
+        return await _context.Chats.FirstOrDefaultAsync(c => c.Id.Value == chatId.Value);
+    }
+
+    public async Task<Chat?> GetPrivateChannelAsync(UserId userId1, UserId userId2)
+    {
+        return await _context.Chats.FirstOrDefaultAsync(c => c.MemberIds.All(c => c.UserId == userId1 || c.UserId == userId2));
+    }
+
+    public async Task<List<Chat>> GetChatsByUserIdAsync(UserId userId)
+    {
+        return await _context.Chats.Where(c => c.MemberIds.Any(m => m.UserId == userId)).ToListAsync();
     }
 }
