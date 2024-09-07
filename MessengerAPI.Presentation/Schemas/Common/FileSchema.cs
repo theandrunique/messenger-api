@@ -9,5 +9,7 @@ public record FileSchema
     public FileType Type { get; init; }
     public string Url { get; init; }
     public int Size { get; init; }
+    public string DisplaySize { get; init; }
+    public string Sha256 { get; init; }
     public DateTime UploadedAt { get; init; }
 }

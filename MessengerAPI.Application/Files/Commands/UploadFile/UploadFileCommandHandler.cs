@@ -22,7 +22,7 @@ public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Error
     public async Task<ErrorOr<FileData>> Handle(UploadFileCommand request, CancellationToken cancellationToken)
     {
         var sha256Bytes = ComputeSha256Hash(request.FileStream);
-        var sha265String = Convert.ToHexString(sha256Bytes);
+        var sha265String = Convert.ToHexString(sha256Bytes).ToLower();
 
         var fileType = DetermineFileType(request.ContentType);
 
