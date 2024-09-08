@@ -2,7 +2,7 @@ using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
-using MessengerAPI.Domain.User;
+using MessengerAPI.Domain.UserAggregate;
 
 namespace MessengerAPI.Application.Auth.Commands.Register;
 

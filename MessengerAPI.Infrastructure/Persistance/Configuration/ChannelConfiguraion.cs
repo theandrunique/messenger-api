@@ -1,8 +1,8 @@
-using MessengerAPI.Domain.Channel;
-using MessengerAPI.Domain.Channel.Entities;
-using MessengerAPI.Domain.Channel.ValueObjects;
-using MessengerAPI.Domain.User;
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.ChannelAggregate;
+using MessengerAPI.Domain.ChannelAggregate.Entities;
+using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
+using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -32,22 +32,8 @@ public class ChannelConfiguration : IEntityTypeConfiguration<Channel>
             .WithOne()
             .HasForeignKey(c => c.ChannelId);
 
-        builder.OwnsMany(c => c.MemberIds, memberIdsBuilder =>
-        {
-            memberIdsBuilder.ToTable("ChannelMemberIds");
-
-            memberIdsBuilder.Property(u => u.UserId)
-                .HasColumnName("UserId")
-                .HasConversion(v => v.Value, v => new UserId(v));
-
-            memberIdsBuilder.HasOne<User>()
-                .WithMany()
-                .HasForeignKey("UserId");
-
-            memberIdsBuilder.WithOwner().HasForeignKey("ChannelId");
-
-            memberIdsBuilder.HasKey("UserId", "ChannelId");
-        });
+        builder.HasMany(c => c.Members)
+            .WithMany(u => u.Channels);
 
         builder.OwnsMany(c => c.AdminIds, adminIdsBuilder =>
         {

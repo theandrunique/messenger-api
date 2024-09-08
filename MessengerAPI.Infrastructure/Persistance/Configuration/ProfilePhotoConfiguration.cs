@@ -1,4 +1,4 @@
-using MessengerAPI.Domain.User.Entities;
+using MessengerAPI.Domain.UserAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

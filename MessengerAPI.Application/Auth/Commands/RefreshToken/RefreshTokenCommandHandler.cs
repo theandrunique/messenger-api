@@ -5,7 +5,6 @@ using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.Common.Errors;
-using MessengerAPI.Domain.User;
 
 namespace MessengerAPI.Application.Auth.Commands.RefreshToken;
 

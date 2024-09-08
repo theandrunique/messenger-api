@@ -1,9 +1,9 @@
 using AutoMapper;
 using MessengerAPI.Application.Auth.Commands.Register;
-using MessengerAPI.Domain.Channel;
+using MessengerAPI.Domain.ChannelAggregate;
 using MessengerAPI.Domain.Common.Entities;
-using MessengerAPI.Domain.User;
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using MessengerAPI.Presentation.Schemas.Common;
 
 namespace MessengerAPI.Presentation.Common.Mapping;
@@ -29,7 +29,8 @@ public class AuthMappings : Profile
         
         CreateMap<Channel, ChannelSchema>()
             .ForMember(dest => dest.Id, s => s.MapFrom(src => src.Id.Value))
-            .ForMember(dest => dest.OwnerId, s => s.MapFrom(src => src.OwnerId.Value));
+            .ForMember(dest => dest.OwnerId, s => s.MapFrom(src => src.OwnerId.Value))
+            .ForMember(dest => dest.LastMessageId, s => s.MapFrom(src => src.LastMessageId.Value));
 
         CreateMap<RegisterResult, UserPrivateSchema>()
             .IncludeMembers(u => u.user);

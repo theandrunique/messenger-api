@@ -1,7 +1,7 @@
 using ErrorOr;
 using MediatR;
-using MessengerAPI.Domain.User;
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Users.Queries;
 

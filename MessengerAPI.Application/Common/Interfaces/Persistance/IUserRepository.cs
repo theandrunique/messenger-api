@@ -1,6 +1,6 @@
-﻿using MessengerAPI.Domain.User;
-using MessengerAPI.Domain.User.Entities;
-using MessengerAPI.Domain.User.ValueObjects;
+﻿using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.UserAggregate.Entities;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Common.Interfaces.Persistance;
 

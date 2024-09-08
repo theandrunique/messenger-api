@@ -1,7 +1,7 @@
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
-using MessengerAPI.Domain.Channel.Entities;
+using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.Common.Errors;
 

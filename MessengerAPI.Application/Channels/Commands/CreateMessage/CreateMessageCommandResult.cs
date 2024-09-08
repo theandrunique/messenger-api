@@ -1,4 +1,4 @@
-using MessengerAPI.Domain.Channel.Entities;
+using MessengerAPI.Domain.ChannelAggregate.Entities;
 
 namespace MessengerAPI.Application.Channels.Commands.CreateMessage;
 

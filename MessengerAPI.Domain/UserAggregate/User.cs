@@ -1,7 +1,10 @@
-using MessengerAPI.Domain.User.Entities;
-using MessengerAPI.Domain.User.ValueObjects;
+using System.Collections.Immutable;
+using ErrorOr;
+using MessengerAPI.Domain.ChannelAggregate;
+using MessengerAPI.Domain.UserAggregate.Entities;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
-namespace MessengerAPI.Domain.User;
+namespace MessengerAPI.Domain.UserAggregate;
 
 public class User
 {
@@ -9,11 +12,13 @@ public class User
     private readonly List<Phone> _phones = new();
     private readonly List<ProfilePhoto> _profilePhotos = new();
     private readonly List<Session> _sessions = new();
+    private readonly List<Channel> _channels = new();
 
     public IReadOnlyList<Email> Emails => _emails.ToList();
     public IReadOnlyList<Phone> Phones => _phones.ToList();
     public IReadOnlyList<ProfilePhoto> ProfilePhotos => _profilePhotos.ToList();
     public IReadOnlyList<Session> Sessions => _sessions.ToList();
+    public IReadOnlyCollection<Channel> Channels => _channels.ToList();
 
     public UserId Id { get; private set; }
     public string Username { get; private set; }

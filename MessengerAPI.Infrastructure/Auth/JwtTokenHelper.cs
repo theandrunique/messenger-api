@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using MessengerAPI.Application.Common.Interfaces.Auth;
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 

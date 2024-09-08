@@ -1,8 +1,9 @@
-using MessengerAPI.Domain.Channel.ValueObjects;
+using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common.Entities;
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
-namespace MessengerAPI.Domain.Channel.Entities;
+namespace MessengerAPI.Domain.ChannelAggregate.Entities;
 
 public class Message
 {
@@ -11,7 +12,7 @@ public class Message
 
     public IReadOnlyCollection<UserReaction> Reactions => _reactions.ToList();
     public IReadOnlyCollection<FileData> Attachments => _attachments.ToList();
-    public User.User Sender { get; private set; }
+    public User Sender { get; private set; }
 
     public MessageId Id { get; private set; }
     public ChannelId ChannelId { get; private set; }

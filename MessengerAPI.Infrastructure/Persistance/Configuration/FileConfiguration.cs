@@ -1,5 +1,5 @@
 using MessengerAPI.Domain.Common.Entities;
-using MessengerAPI.Domain.User;
+using MessengerAPI.Domain.UserAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,7 +1,7 @@
 using ErrorOr;
 using MediatR;
-using MessengerAPI.Domain.Channel.ValueObjects;
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Channels.Commands.CreateMessage;
 

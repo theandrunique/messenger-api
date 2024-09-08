@@ -1,6 +1,6 @@
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
-namespace MessengerAPI.Domain.User.Entities;
+namespace MessengerAPI.Domain.UserAggregate.Entities;
 
 public class Session
 {

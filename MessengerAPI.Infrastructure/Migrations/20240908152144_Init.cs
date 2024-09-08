@@ -205,24 +205,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChannelMemberIds",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ChannelId = table.Column<Guid>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChannelMemberIds", x => new { x.UserId, x.ChannelId });
-                    table.ForeignKey(
-                        name: "FK_ChannelMemberIds_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Channels",
                 columns: table => new
                 {
@@ -246,6 +228,30 @@ namespace MessengerAPI.Infrastructure.Migrations
                         column: x => x.OwnerId,
                         principalTable: "Users",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelUser",
+                columns: table => new
+                {
+                    ChannelsId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    MembersId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChannelUser", x => new { x.ChannelsId, x.MembersId });
+                    table.ForeignKey(
+                        name: "FK_ChannelUser_Channels_ChannelsId",
+                        column: x => x.ChannelsId,
+                        principalTable: "Channels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChannelUser_Users_MembersId",
+                        column: x => x.MembersId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -363,11 +369,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                 column: "ChannelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChannelMemberIds_ChannelId",
-                table: "ChannelMemberIds",
-                column: "ChannelId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Channels_ImageId",
                 table: "Channels",
                 column: "ImageId");
@@ -381,6 +382,11 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "IX_Channels_OwnerId",
                 table: "Channels",
                 column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChannelUser_MembersId",
+                table: "ChannelUser",
+                column: "MembersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Email_Data",
@@ -475,14 +481,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ChannelMemberIds_Channels_ChannelId",
-                table: "ChannelMemberIds",
-                column: "ChannelId",
-                principalTable: "Channels",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
                 name: "FK_Channels_Message_LastMessageId",
                 table: "Channels",
                 column: "LastMessageId",
@@ -501,7 +499,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "ChannelAdminIds");
 
             migrationBuilder.DropTable(
-                name: "ChannelMemberIds");
+                name: "ChannelUser");
 
             migrationBuilder.DropTable(
                 name: "Email");

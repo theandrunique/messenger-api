@@ -1,7 +1,7 @@
 using ErrorOr;
 using MediatR;
-using MessengerAPI.Domain.Channel;
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.ChannelAggregate;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Channels.Queries.GetChannels;
 

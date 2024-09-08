@@ -1,4 +1,5 @@
-using MessengerAPI.Domain.User.ValueObjects;
+
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Domain.Common.Entities;
 

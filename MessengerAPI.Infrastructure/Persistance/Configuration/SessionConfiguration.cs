@@ -1,5 +1,5 @@
-using MessengerAPI.Domain.User.Entities;
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.UserAggregate.Entities;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

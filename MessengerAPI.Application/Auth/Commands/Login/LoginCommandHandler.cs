@@ -6,7 +6,7 @@ using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.Common.Errors;
-using MessengerAPI.Domain.User;
+using MessengerAPI.Domain.UserAggregate;
 
 namespace MessengerAPI.Application.Auth.Commands.Login;
 

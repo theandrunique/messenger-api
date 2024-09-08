@@ -1,19 +1,20 @@
-using MessengerAPI.Domain.Channel.Entities;
-using MessengerAPI.Domain.Channel.ValueObjects;
+using MessengerAPI.Domain.ChannelAggregate.Entities;
+using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common.Entities;
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
-namespace MessengerAPI.Domain.Channel;
+namespace MessengerAPI.Domain.ChannelAggregate;
 
 public class Channel
 {
     private readonly List<Message> _messages = new();
-    private readonly List<MemberId> _memberIds = new();
+    private readonly List<User> _members = new();
     private readonly List<AdminId> _adminIds = new();
     private readonly List<PinnedMessageId> _pinnedMessageIds = new();
 
     public IReadOnlyCollection<Message> Messages => _messages.ToList();
-    public IReadOnlyCollection<MemberId> MemberIds => _memberIds.ToList();
+    public IReadOnlyCollection<User> Members => _members.ToList();
     public IReadOnlyCollection<AdminId> AdminIds => _adminIds.ToList();
     public IReadOnlyCollection<PinnedMessageId> PinnedMessageIds => _pinnedMessageIds.ToList();
 
@@ -24,28 +25,35 @@ public class Channel
     public ChannelType Type { get; private set; }
     public MessageId? LastMessageId { get; private set; }
 
-    public static Channel CreatePrivate(UserId userId1, UserId userId2)
+    public static Channel CreateSavedMessages(User user)
     {
-        var memberIds = new List<MemberId> { new MemberId(userId1), new MemberId(userId2) };
+        List<User> members = new List<User> { user };
 
-        return new Channel(ChannelType.Private, memberIds);
+        return new Channel(ChannelType.Private, members);
+    }
+    public static Channel CreatePrivate(User user1, User user2)
+    {
+        List<User> members = new List<User>
+        {
+            user1, user2
+        };
+
+        return new Channel(ChannelType.Private, members);
     }
 
-    public static Channel CreateGroup(UserId ownerId, List<UserId> memberIds, string? title = null, FileData? image = null)
+    public static Channel CreateGroup(UserId ownerId, List<User> members, string? title = null, FileData? image = null)
     {
-        var memberIdsConverted = memberIds.ConvertAll(memberId => new MemberId(memberId));
-
-        return new Channel(ChannelType.Group, memberIdsConverted, ownerId, title, image);
+        return new Channel(ChannelType.Group, members, ownerId, title, image);
     }
 
-    private Channel(ChannelType type, List<MemberId> memberIds, UserId? ownerId = null, string? title = null, FileData? image = null)
+    private Channel(ChannelType type, List<User> members, UserId? ownerId = null, string? title = null, FileData? image = null)
     {
         Id = new ChannelId(Guid.NewGuid());
         OwnerId = ownerId;
         Title = title;
         Image = image;
         Type = type;
-        _memberIds = memberIds;
+        _members = members;
     }
 
     public Channel() { }

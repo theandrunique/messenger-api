@@ -1,7 +1,7 @@
-using MessengerAPI.Domain.Channel;
+using MessengerAPI.Domain.ChannelAggregate;
 using MessengerAPI.Domain.Common.Entities;
-using MessengerAPI.Domain.User;
-using MessengerAPI.Domain.User.Entities;
+using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.UserAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MessengerAPI.Infrastructure.Common.Persistance;

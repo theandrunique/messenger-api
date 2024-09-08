@@ -1,7 +1,10 @@
 using AutoMapper;
 using MediatR;
+using MessengerAPI.Application.Channels.Commands;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using MessengerAPI.Presentation.Common;
+using MessengerAPI.Presentation.Schemas.Channels;
 using MessengerAPI.Presentation.Schemas.Common;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,5 +36,21 @@ public class ChannelsController : ApiController
             errors => Problem(errors)
         );
     }
+    [HttpPost]
+    public async Task<IActionResult> CreateChannel([FromBody] CreateChannelRequestSchema schema)
+    {
+        var sub = User.GetUserId();
 
+        var query = new CreateChannelCommand(
+            sub,
+            schema.Members.ConvertAll(m => new UserId(m)),
+            schema.Title);
+        
+        var result = await _mediator.Send(query);
+
+        return result.Match(
+            success => Ok(_mapper.Map<ChannelSchema>(success)),
+            errors => Problem(errors)
+        );
+    }
 }

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MessengerAPI.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240908090310_Init")]
+    [Migration("20240908152144_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -19,6 +19,21 @@ namespace MessengerAPI.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
+
+            modelBuilder.Entity("ChannelUser", b =>
+                {
+                    b.Property<Guid>("ChannelsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("MembersId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ChannelsId", "MembersId");
+
+                    b.HasIndex("MembersId");
+
+                    b.ToTable("ChannelUser");
+                });
 
             modelBuilder.Entity("MessageAttachments", b =>
                 {
@@ -35,7 +50,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.ToTable("MessageAttachments");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.Channel.Channel", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.ChannelAggregate.Channel", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
@@ -66,7 +81,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.ToTable("Channels");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.Channel.Entities.Message", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.ChannelAggregate.Entities.Message", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("INTEGER");
@@ -175,7 +190,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.ToTable("ReactionGroups");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.User.Entities.ProfilePhoto", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.UserAggregate.Entities.ProfilePhoto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -200,7 +215,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.ToTable("ProfilePhoto");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.User.Entities.Session", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.UserAggregate.Entities.Session", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
@@ -236,7 +251,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.ToTable("Sessions");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.User.User", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.UserAggregate.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
@@ -288,6 +303,21 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("ChannelUser", b =>
+                {
+                    b.HasOne("MessengerAPI.Domain.ChannelAggregate.Channel", null)
+                        .WithMany()
+                        .HasForeignKey("ChannelsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MessengerAPI.Domain.UserAggregate.User", null)
+                        .WithMany()
+                        .HasForeignKey("MembersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MessageAttachments", b =>
                 {
                     b.HasOne("MessengerAPI.Domain.Common.Entities.FileData", null)
@@ -296,28 +326,28 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MessengerAPI.Domain.Channel.Entities.Message", null)
+                    b.HasOne("MessengerAPI.Domain.ChannelAggregate.Entities.Message", null)
                         .WithMany()
                         .HasForeignKey("MessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.Channel.Channel", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.ChannelAggregate.Channel", b =>
                 {
                     b.HasOne("MessengerAPI.Domain.Common.Entities.FileData", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId");
 
-                    b.HasOne("MessengerAPI.Domain.Channel.Entities.Message", null)
+                    b.HasOne("MessengerAPI.Domain.ChannelAggregate.Entities.Message", null)
                         .WithMany()
                         .HasForeignKey("LastMessageId");
 
-                    b.HasOne("MessengerAPI.Domain.User.User", null)
+                    b.HasOne("MessengerAPI.Domain.UserAggregate.User", null)
                         .WithMany()
                         .HasForeignKey("OwnerId");
 
-                    b.OwnsMany("MessengerAPI.Domain.Channel.ValueObjects.AdminId", "AdminIds", b1 =>
+                    b.OwnsMany("MessengerAPI.Domain.ChannelAggregate.ValueObjects.AdminId", "AdminIds", b1 =>
                         {
                             b1.Property<Guid>("UserId")
                                 .HasColumnType("TEXT")
@@ -335,39 +365,14 @@ namespace MessengerAPI.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ChannelId");
 
-                            b1.HasOne("MessengerAPI.Domain.User.User", null)
+                            b1.HasOne("MessengerAPI.Domain.UserAggregate.User", null)
                                 .WithMany()
                                 .HasForeignKey("UserId")
                                 .OnDelete(DeleteBehavior.Cascade)
                                 .IsRequired();
                         });
 
-                    b.OwnsMany("MessengerAPI.Domain.Channel.ValueObjects.MemberId", "MemberIds", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("TEXT")
-                                .HasColumnName("UserId");
-
-                            b1.Property<Guid>("ChannelId")
-                                .HasColumnType("TEXT");
-
-                            b1.HasKey("UserId", "ChannelId");
-
-                            b1.HasIndex("ChannelId");
-
-                            b1.ToTable("ChannelMemberIds", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("ChannelId");
-
-                            b1.HasOne("MessengerAPI.Domain.User.User", null)
-                                .WithMany()
-                                .HasForeignKey("UserId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-                        });
-
-                    b.OwnsMany("MessengerAPI.Domain.Channel.ValueObjects.PinnedMessageId", "PinnedMessageIds", b1 =>
+                    b.OwnsMany("MessengerAPI.Domain.ChannelAggregate.ValueObjects.PinnedMessageId", "PinnedMessageIds", b1 =>
                         {
                             b1.Property<int>("MessageId")
                                 .HasColumnType("INTEGER")
@@ -385,7 +390,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ChannelId");
 
-                            b1.HasOne("MessengerAPI.Domain.Channel.Entities.Message", null)
+                            b1.HasOne("MessengerAPI.Domain.ChannelAggregate.Entities.Message", null)
                                 .WithMany()
                                 .HasForeignKey("MessageId")
                                 .OnDelete(DeleteBehavior.Cascade)
@@ -396,26 +401,24 @@ namespace MessengerAPI.Infrastructure.Migrations
 
                     b.Navigation("Image");
 
-                    b.Navigation("MemberIds");
-
                     b.Navigation("PinnedMessageIds");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.Channel.Entities.Message", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.ChannelAggregate.Entities.Message", b =>
                 {
-                    b.HasOne("MessengerAPI.Domain.Channel.Channel", null)
+                    b.HasOne("MessengerAPI.Domain.ChannelAggregate.Channel", null)
                         .WithMany("Messages")
                         .HasForeignKey("ChannelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MessengerAPI.Domain.User.User", "Sender")
+                    b.HasOne("MessengerAPI.Domain.UserAggregate.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("MessengerAPI.Domain.Channel.ValueObjects.UserReaction", "Reactions", b1 =>
+                    b.OwnsMany("MessengerAPI.Domain.ChannelAggregate.ValueObjects.UserReaction", "Reactions", b1 =>
                         {
                             b1.Property<int>("MessageId")
                                 .HasColumnType("INTEGER");
@@ -446,7 +449,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                                 .OnDelete(DeleteBehavior.Cascade)
                                 .IsRequired();
 
-                            b1.HasOne("MessengerAPI.Domain.User.User", "User")
+                            b1.HasOne("MessengerAPI.Domain.UserAggregate.User", "User")
                                 .WithMany()
                                 .HasForeignKey("UserId")
                                 .OnDelete(DeleteBehavior.Cascade)
@@ -464,7 +467,7 @@ namespace MessengerAPI.Infrastructure.Migrations
 
             modelBuilder.Entity("MessengerAPI.Domain.Common.Entities.FileData", b =>
                 {
-                    b.HasOne("MessengerAPI.Domain.User.User", null)
+                    b.HasOne("MessengerAPI.Domain.UserAggregate.User", null)
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -478,15 +481,15 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .HasForeignKey("ReactionGroupId");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.User.Entities.ProfilePhoto", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.UserAggregate.Entities.ProfilePhoto", b =>
                 {
                     b.HasOne("MessengerAPI.Domain.Common.Entities.FileData", "File")
                         .WithOne()
-                        .HasForeignKey("MessengerAPI.Domain.User.Entities.ProfilePhoto", "FileId")
+                        .HasForeignKey("MessengerAPI.Domain.UserAggregate.Entities.ProfilePhoto", "FileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MessengerAPI.Domain.User.User", null)
+                    b.HasOne("MessengerAPI.Domain.UserAggregate.User", null)
                         .WithMany("ProfilePhotos")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -495,9 +498,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.Navigation("File");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.User.Entities.Session", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.UserAggregate.Entities.Session", b =>
                 {
-                    b.HasOne("MessengerAPI.Domain.User.User", "User")
+                    b.HasOne("MessengerAPI.Domain.UserAggregate.User", "User")
                         .WithMany("Sessions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -506,9 +509,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.User.User", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.UserAggregate.User", b =>
                 {
-                    b.OwnsMany("MessengerAPI.Domain.User.ValueObjects.Email", "Emails", b1 =>
+                    b.OwnsMany("MessengerAPI.Domain.UserAggregate.ValueObjects.Email", "Emails", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -543,7 +546,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                                 .HasForeignKey("UserId");
                         });
 
-                    b.OwnsMany("MessengerAPI.Domain.User.ValueObjects.Phone", "Phones", b1 =>
+                    b.OwnsMany("MessengerAPI.Domain.UserAggregate.ValueObjects.Phone", "Phones", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -580,7 +583,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.Navigation("Phones");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.Channel.Channel", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.ChannelAggregate.Channel", b =>
                 {
                     b.Navigation("Messages");
                 });
@@ -590,7 +593,7 @@ namespace MessengerAPI.Infrastructure.Migrations
                     b.Navigation("Reactions");
                 });
 
-            modelBuilder.Entity("MessengerAPI.Domain.User.User", b =>
+            modelBuilder.Entity("MessengerAPI.Domain.UserAggregate.User", b =>
                 {
                     b.Navigation("ProfilePhotos");
 

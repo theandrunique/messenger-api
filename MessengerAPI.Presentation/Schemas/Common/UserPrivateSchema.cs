@@ -1,4 +1,4 @@
-using MessengerAPI.Domain.User.ValueObjects;
+using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Presentation.Schemas.Common;
 
