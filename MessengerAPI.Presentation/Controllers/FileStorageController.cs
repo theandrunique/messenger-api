@@ -20,7 +20,7 @@ public class FileStorageController : ApiController
         _mapper = mapper;
     }
 
-    [HttpPost("upload")]
+    [HttpPost]
     public async Task<IActionResult> UploadFile(IFormFile file)
     {
         Stream fileStream = file.OpenReadStream();
