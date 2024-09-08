@@ -24,14 +24,18 @@ public class FileStorage : IFileStorage
         _s3Client = new AmazonS3Client(credentials, config);
     }
 
-    public async Task<string> Put(Stream fileStream, string key)
+    public async Task<string> Put(Stream fileStream, string key, string fileName, string contentType)
     {
         var uploadRequest = new TransferUtilityUploadRequest
         {
             InputStream = fileStream,
             Key = key,
             BucketName = _settings.BucketName,
+            PartSize = 6291456, // 6 MB
+            ContentType = contentType,
+            CalculateContentMD5Header = true,
         };
+        uploadRequest.Headers.ContentDisposition = "attachment; filename=\"" + fileName + "\"";
 
         var fileTransferUtility = new TransferUtility(_s3Client);
         await fileTransferUtility.UploadAsync(uploadRequest);

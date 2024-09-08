@@ -26,7 +26,7 @@ public class FileStorageController : ApiController
         Stream fileStream = file.OpenReadStream();
         var sub = User.GetUserId();
 
-        var command = new UploadFileCommand(sub, fileStream, file.ContentType);
+        var command = new UploadFileCommand(sub, fileStream, file.ContentType, file.FileName);
 
         var result = await _mediator.Send(command);
 

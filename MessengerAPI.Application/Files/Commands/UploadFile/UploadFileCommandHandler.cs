@@ -4,7 +4,6 @@ using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.Common.Entities;
-using MessengerAPI.Domain.Common.ValueObjects;
 
 namespace MessengerAPI.Application.Files.Commands.UploadFile;
 
@@ -24,13 +23,13 @@ public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Error
         var sha256Bytes = ComputeSha256Hash(request.FileStream);
         var sha265String = Convert.ToHexString(sha256Bytes).ToLower();
 
-        var fileType = DetermineFileType(request.ContentType);
+        var key = $"{sha265String}-{request.FileName}-{DateTime.UtcNow}";
 
         request.FileStream.Position = 0;
         
-        var url = await _fileStorage.Put(request.FileStream, sha265String);
+        var url = await _fileStorage.Put(request.FileStream, key, request.FileName, request.ContentType);
 
-        var file = FileData.CreateNew(request.Sub, fileType, url, request.FileStream.Length, sha256Bytes);
+        var file = FileData.CreateNew(request.Sub, request.ContentType, request.FileName, url, request.FileStream.Length, sha256Bytes);
 
         await _fileRepository.AddFileAsync(file);
         await _fileRepository.Commit();
@@ -44,18 +43,5 @@ public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Error
         {
             return sha256.ComputeHash(stream);
         }
-    }
-
-    private FileType DetermineFileType(string contentType)
-    {
-        return contentType switch
-        {
-            "image/jpeg" => FileType.Image,
-            "image/png" => FileType.Image,
-            "video/mp4" => FileType.Video,
-            "application/pdf" => FileType.Document,
-            "audio/mpeg" => FileType.Audio,
-            _ => FileType.Other,
-        };
     }
 }

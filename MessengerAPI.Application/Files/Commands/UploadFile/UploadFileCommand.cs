@@ -8,5 +8,6 @@ namespace MessengerAPI.Application.Files.Commands.UploadFile;
 public record UploadFileCommand(
     UserId Sub,
     Stream FileStream,
-    string ContentType
+    string ContentType,
+    string FileName
 ) : IRequest<ErrorOr<FileData>>;

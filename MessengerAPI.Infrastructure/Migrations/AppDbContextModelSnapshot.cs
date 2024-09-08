@@ -102,6 +102,14 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("TEXT");
 
@@ -110,9 +118,6 @@ namespace MessengerAPI.Infrastructure.Migrations
                         .HasColumnType("BLOB");
 
                     b.Property<long>("Size")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UploadedAt")
