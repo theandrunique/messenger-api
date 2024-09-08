@@ -1,6 +1,7 @@
 ﻿using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.User;
 using MessengerAPI.Domain.User.Entities;
+using MessengerAPI.Domain.User.ValueObjects;
 using MessengerAPI.Infrastructure.Common.Persistance;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,9 +26,14 @@ public class UserRepository : IUserRepository
         await _context.AddAsync(user);
     }
 
-    public async Task<User?> GetByIdAsync(Guid id)
+    public async Task<List<User>> GetByIdsAsync(List<UserId> members)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id.Value == id);
+        return await _context.Users.Where(u => members.Contains(u.Id)).ToListAsync();
+    }
+
+    public async Task<User?> GetByIdAsync(UserId id)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         return user;
     }
 
