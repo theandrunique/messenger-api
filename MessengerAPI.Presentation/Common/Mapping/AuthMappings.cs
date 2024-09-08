@@ -1,5 +1,6 @@
 using AutoMapper;
 using MessengerAPI.Application.Auth.Commands.Register;
+using MessengerAPI.Domain.Channel;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.User;
 using MessengerAPI.Domain.User.ValueObjects;
@@ -25,6 +26,10 @@ public class AuthMappings : Profile
             .ForMember(dest => dest.OwnerId, s => s.MapFrom(src => src.OwnerId.Value))
             .ForMember(dest => dest.Sha256, s => s.MapFrom(src => Convert.ToHexString(src.Sha256).ToLower()))
             .ForMember(dest => dest.DisplaySize, s => s.MapFrom(src => GetHumanReadableFileSize(src.Size)));
+        
+        CreateMap<Channel, ChannelSchema>()
+            .ForMember(dest => dest.Id, s => s.MapFrom(src => src.Id.Value))
+            .ForMember(dest => dest.OwnerId, s => s.MapFrom(src => src.OwnerId.Value));
 
         CreateMap<RegisterResult, UserPrivateSchema>()
             .IncludeMembers(u => u.user);
