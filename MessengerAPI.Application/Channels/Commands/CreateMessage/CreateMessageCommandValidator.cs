@@ -7,11 +7,11 @@ public class CreateMessageCommandValidator : AbstractValidator<CreateMessageComm
     public CreateMessageCommandValidator()
     {
         RuleFor(x => x.Text)
-            .NotEmpty();
+            .NotEmpty()
+            .MaximumLength(10000);
         
         RuleFor(x => x.Attachments)
             .Must(x => x.Distinct().Count() == x.Count())
             .WithMessage("Attachments must be unique");
-
     }
 }
