@@ -38,6 +38,8 @@ public class ChannelRepository : IChannelRepository
     public async Task<List<Message>> GetMessagesAsync(ChannelId channelId, int limit, int offset)
     {
         return await _context.Messages
+            .Include(m => m.Attachments)
+            .Include(m => m.Reactions)
             .Where(m => m.ChannelId == channelId)
             .OrderByDescending(m => m.SentAt)
             .Skip(offset)
@@ -47,7 +49,10 @@ public class ChannelRepository : IChannelRepository
 
     public async Task<Message?> GetMessageByIdAsync(MessageId messageId)
     {
-        return await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId);
+        return await _context.Messages
+            .Include(m => m.Attachments)
+            .Include(m => m.Reactions)
+            .FirstOrDefaultAsync(m => m.Id == messageId);
     }
 
     public async Task<Channel?> GetSavedMessagesAsync(UserId userId)

@@ -49,4 +49,18 @@ public class Message
     }
 
     public Message() { }
+
+    public void Update(MessageId? replyTo, string text, List<FileData>? attachments)
+    {
+        ReplyTo = replyTo;
+        Text = text;
+        SetAttachments(attachments);
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    private void SetAttachments(List<FileData>? attachments)
+    {
+        _attachments.Clear();
+        if (attachments is not null) _attachments.AddRange(attachments);
+    }
 }

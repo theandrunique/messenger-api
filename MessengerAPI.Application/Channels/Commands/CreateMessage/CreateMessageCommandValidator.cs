@@ -11,7 +11,8 @@ public class CreateMessageCommandValidator : AbstractValidator<CreateMessageComm
             .MaximumLength(10000);
         
         RuleFor(x => x.Attachments)
-            .Must(x => x.Distinct().Count() == x.Count())
-            .WithMessage("Attachments must be unique");
+            .Must(attachments => attachments == null || attachments.Distinct().Count() == attachments.Count)
+            .WithMessage("Attachments must be unique.");
+
     }
 }

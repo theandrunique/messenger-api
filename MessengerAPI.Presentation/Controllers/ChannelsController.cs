@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
 using MessengerAPI.Application.Channels.Commands.CreateMessage;
+using MessengerAPI.Application.Channels.Commands.EditMessage;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
@@ -91,6 +92,32 @@ public class ChannelsController : ApiController
 
         return result.Match(
             success => Ok(_mapper.Map<List<MessageSchema>>(success)),
+            errors => Problem(errors)
+        );
+    }
+
+    [HttpPut("{channelId}/messages/{messageId}")]
+    public async Task<IActionResult> EditMessage(
+        [FromBody] CreateMessageRequestSchema schema,
+        [FromRoute] Guid channelId,
+        [FromRoute] long messageId)
+    {
+        var sub = User.GetUserId();
+
+        var replyTo = schema.ReplyTo.HasValue ? new MessageId(schema.ReplyTo.Value) : null;
+
+        var command = new EditMessageCommand(
+            new MessageId(messageId),
+            sub,
+            new ChannelId(channelId),
+            schema.Text,
+            replyTo,
+            schema.Attachments);
+        
+        var result = await _mediator.Send(command);
+
+        return result.Match(
+            success => Ok(_mapper.Map<MessageSchema>(success)),
             errors => Problem(errors)
         );
     }
