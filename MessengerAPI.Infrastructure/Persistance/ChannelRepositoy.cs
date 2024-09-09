@@ -1,5 +1,6 @@
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.ChannelAggregate;
+using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using MessengerAPI.Infrastructure.Common.Persistance;
@@ -31,8 +32,22 @@ public class ChannelRepository : IChannelRepository
     {
         return await _context.Channels
             .Include(c => c.Members)
-            .Include(c => c.Messages)
             .FirstOrDefaultAsync(c => c.Id == channelId);
+    }
+
+    public async Task<List<Message>> GetMessagesAsync(ChannelId channelId, int limit, int offset)
+    {
+        return await _context.Messages
+            .Where(m => m.ChannelId == channelId)
+            .OrderByDescending(m => m.SentAt)
+            .Skip(offset)
+            .Take(limit)
+            .ToListAsync();
+    }
+
+    public async Task<Message?> GetMessageByIdAsync(MessageId messageId)
+    {
+        return await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId);
     }
 
     public async Task<Channel?> GetSavedMessagesAsync(UserId userId)

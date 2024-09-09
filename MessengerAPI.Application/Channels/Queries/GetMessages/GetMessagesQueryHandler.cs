@@ -27,6 +27,8 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
             return ChannelErrors.NotAllowed;
         }
 
+        var messages = await _channelRepository.GetMessagesAsync(request.ChannelId, request.Limit, request.Offset);
+
         return channel.Messages.ToList();
     }
 }

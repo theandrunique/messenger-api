@@ -38,7 +38,7 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
         }
         if (request.ReplyTo != null)
         {
-            var replyToMessage = channel.Messages.FirstOrDefault(m => m.Id == request.ReplyTo);
+            var replyToMessage = _channelRepository.GetMessageByIdAsync(request.ReplyTo);
             if (replyToMessage is null)
             {
                 return ChannelErrors.MessageNotFound;

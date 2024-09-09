@@ -1,4 +1,5 @@
 using MessengerAPI.Domain.ChannelAggregate;
+using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate;
 using MessengerAPI.Domain.UserAggregate.Entities;
@@ -11,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Session> Sessions { get; set; }
     public DbSet<Channel> Channels { get; set; }
+    public DbSet<Message> Messages { get; set; }
     public DbSet<ReactionGroup> ReactionGroups { get; set; }
     public DbSet<FileData> Files { get; set; }
 

@@ -12,6 +12,8 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
 {
     public void Configure(EntityTypeBuilder<Message> builder)
     {
+        builder.ToTable("Message");
+
         builder.HasKey(m => m.Id);
         builder.Property(m => m.Id)
             .HasConversion(v => v.Value, v => new MessageId(v))

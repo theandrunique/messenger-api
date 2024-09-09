@@ -62,6 +62,13 @@ public class Channel
     {
         var newMessage = Message.CreateNew(Id, senderId, text, replyTo, attachments);
         _messages.Add(newMessage);
+        LastMessageId = newMessage.Id;
         return newMessage;
+    }
+
+    public void SetMessages(IEnumerable<Message> messages)
+    {
+        _messages.Clear();
+        _messages.AddRange(messages);
     }
 }

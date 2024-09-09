@@ -6,4 +6,8 @@ using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Channels.Queries.GetMessages;
 
-public record GetMessagesQuery(UserId Sub, ChannelId ChannelId) : IRequest<ErrorOr<List<Message>>>;
+public record GetMessagesQuery(
+    UserId Sub,
+    ChannelId ChannelId,
+    int Offset,
+    int Limit) : IRequest<ErrorOr<List<Message>>>;

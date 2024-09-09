@@ -81,11 +81,11 @@ public class ChannelsController : ApiController
     }
 
     [HttpGet("{channelId}/messages")]
-    public async Task<IActionResult> GetMessages([FromRoute] Guid channelId)
+    public async Task<IActionResult> GetMessages([FromRoute] Guid channelId, [FromQuery] int offset = 0, [FromQuery] int limit = 50)
     {
         var sub = User.GetUserId();
 
-        var query = new GetMessagesQuery(sub, new ChannelId(channelId));
+        var query = new GetMessagesQuery(sub, new ChannelId(channelId), offset, limit);
 
         var result = await _mediator.Send(query);
 
