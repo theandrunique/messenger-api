@@ -1,6 +1,8 @@
 using AutoMapper;
 using MessengerAPI.Application.Auth.Commands.Register;
 using MessengerAPI.Domain.ChannelAggregate;
+using MessengerAPI.Domain.ChannelAggregate.Entities;
+using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
@@ -12,25 +14,24 @@ public class AuthMappings : Profile
 {
     public AuthMappings()
     {
+        CreateMap<ChannelId, Guid>().ConvertUsing(src => src.Value);
+        CreateMap<UserId, Guid>().ConvertUsing(src => src.Value);
+        CreateMap<MessageId, int>().ConvertUsing(src => src.Value);
+
+
         CreateMap<Email, EmailSchema>();
         CreateMap<Phone, PhoneSchema>();
         CreateMap<FileData, FileSchema>();
-
-        CreateMap<User, UserPublicSchema>()
-            .ForMember(dest => dest.Id, s => s.MapFrom(src => src.Id.Value));
-
-        CreateMap<User, UserPrivateSchema>()
-            .ForMember(dest => dest.Id, s => s.MapFrom(src => src.Id.Value));
+        CreateMap<Reaction, ReactionSchema>();
+        CreateMap<Message, MessageSchema>();
+        CreateMap<User, UserPublicSchema>();
+        CreateMap<User, UserPrivateSchema>();
         
         CreateMap<FileData, FileSchema>()
-            .ForMember(dest => dest.OwnerId, s => s.MapFrom(src => src.OwnerId.Value))
             .ForMember(dest => dest.Sha256, s => s.MapFrom(src => Convert.ToHexString(src.Sha256).ToLower()))
             .ForMember(dest => dest.DisplaySize, s => s.MapFrom(src => GetHumanReadableFileSize(src.Size)));
         
-        CreateMap<Channel, ChannelSchema>()
-            .ForMember(dest => dest.Id, s => s.MapFrom(src => src.Id.Value))
-            .ForMember(dest => dest.OwnerId, s => s.MapFrom(src => src.OwnerId.Value))
-            .ForMember(dest => dest.LastMessageId, s => s.MapFrom(src => src.LastMessageId.Value));
+        CreateMap<Channel, ChannelSchema>();
 
         CreateMap<RegisterResult, UserPrivateSchema>()
             .IncludeMembers(u => u.user);

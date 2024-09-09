@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
@@ -10,5 +11,5 @@ public record CreateMessageCommand(
     ChannelId ChannelId,
     string Text,
     MessageId? ReplyTo,
-    List<Guid> FileIds
-) : IRequest<ErrorOr<CreateMessageResult>>;
+    List<Guid> Attachments
+) : IRequest<ErrorOr<Message>>;

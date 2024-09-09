@@ -29,7 +29,7 @@ public class Message
         MessageId? replyTo = null,
         List<FileData>? attachments = null)
     {
-        return new Message(channelId, senderId, text, replyTo);
+        return new Message(channelId, senderId, text, replyTo, attachments);
     }
 
     private Message(

@@ -14,7 +14,8 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
     {
         builder.HasKey(m => m.Id);
         builder.Property(m => m.Id)
-            .HasConversion(v => v.Value, v => new MessageId(v));
+            .HasConversion(v => v.Value, v => new MessageId(v))
+            .ValueGeneratedOnAdd();
 
         builder.HasOne(m => m.Sender)
             .WithMany()

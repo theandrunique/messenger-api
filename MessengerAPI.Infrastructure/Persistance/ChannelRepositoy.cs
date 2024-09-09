@@ -31,7 +31,8 @@ public class ChannelRepository : IChannelRepository
     {
         return await _context.Channels
             .Include(c => c.Members)
-            .FirstOrDefaultAsync(c => c.Id.Value == channelId.Value);
+            .Include(c => c.Messages)
+            .FirstOrDefaultAsync(c => c.Id == channelId);
     }
 
     public async Task<Channel?> GetSavedMessagesAsync(UserId userId)
