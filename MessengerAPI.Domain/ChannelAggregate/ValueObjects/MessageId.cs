@@ -1,3 +1,3 @@
 namespace MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 
-public record MessageId(int Value);
+public record MessageId(long Value);

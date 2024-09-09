@@ -14,7 +14,7 @@ public record ChannelSchema
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public FileData? Image { get; init; }
     public ChannelType Type { get; init; }
-    public int? LastMessageId { get; init; }
+    public long? LastMessageId { get; init; }
     public List<UserPublicSchema> Members { get; init; }
     public List<Guid> AdminIds { get; init; }
 }

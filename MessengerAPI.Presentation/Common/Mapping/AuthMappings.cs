@@ -16,7 +16,7 @@ public class AuthMappings : Profile
     {
         CreateMap<ChannelId, Guid>().ConvertUsing(src => src.Value);
         CreateMap<UserId, Guid>().ConvertUsing(src => src.Value);
-        CreateMap<MessageId, int>().ConvertUsing(src => src.Value);
+        CreateMap<MessageId, long>().ConvertUsing(src => src.Value);
 
 
         CreateMap<Email, EmailSchema>();
