@@ -1,22 +1,26 @@
+using AutoMapper;
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
+using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.ChannelAggregate;
 
 namespace MessengerAPI.Application.Channels.Queries.GetChannels;
 
-public class GetChannelsQueryHandler : IRequestHandler<GetChannelsQuery, ErrorOr<List<Channel>>>
+public class GetChannelsQueryHandler : IRequestHandler<GetChannelsQuery, ErrorOr<List<ChannelSchema>>>
 {
-    IChannelRepository _channelRepository;
+    private readonly IChannelRepository _channelRepository;
+    private readonly IMapper _mapper;
 
-    public GetChannelsQueryHandler(IChannelRepository channelRepository)
+    public GetChannelsQueryHandler(IChannelRepository channelRepository, IMapper mapper)
     {
         _channelRepository = channelRepository;
+        _mapper = mapper;
     }
 
-    public async Task<ErrorOr<List<Channel>>> Handle(GetChannelsQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<List<ChannelSchema>>> Handle(GetChannelsQuery request, CancellationToken cancellationToken)
     {
         List<Channel> channels = await _channelRepository.GetChannelsByUserIdAsync(request.Sub);
-        return channels;
+        return _mapper.Map<List<ChannelSchema>>(channels);
     }
 }

@@ -17,6 +17,8 @@ public static class DependencyInjection
 
         ValidatorOptions.Global.LanguageManager.Culture = new System.Globalization.CultureInfo("en");
 
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
         return services;
     }
 }

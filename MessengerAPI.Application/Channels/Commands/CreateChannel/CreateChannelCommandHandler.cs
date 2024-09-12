@@ -1,23 +1,27 @@
+using AutoMapper;
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
+using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.ChannelAggregate;
 using MessengerAPI.Domain.Common.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands;
 
-public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand, ErrorOr<Channel>>
+public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand, ErrorOr<ChannelSchema>>
 {
     private readonly IChannelRepository _channelRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IMapper _mapper;
 
-    public CreateChannelCommandHandler(IChannelRepository channelRepository, IUserRepository userRepository)
+    public CreateChannelCommandHandler(IChannelRepository channelRepository, IUserRepository userRepository, IMapper mapper)
     {
         _channelRepository = channelRepository;
         _userRepository = userRepository;
+        _mapper = mapper;
     }
 
-    public async Task<ErrorOr<Channel>> Handle(CreateChannelCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<ChannelSchema>> Handle(CreateChannelCommand request, CancellationToken cancellationToken)
     {
         if (request.Members.Count == 1 && request.Members[0] == request.Sub)
         {
@@ -29,12 +33,13 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             var savedMessages = await _channelRepository.GetSavedMessagesAsync(request.Sub);
             if (savedMessages is not null)
             {
-                return savedMessages;
+                return _mapper.Map<ChannelSchema>(savedMessages);
             }
             var newSavedMessages = Channel.CreateSavedMessages(member);
             await _channelRepository.AddAsync(newSavedMessages);
             await _channelRepository.Commit();
-            return newSavedMessages;
+
+            return _mapper.Map<ChannelSchema>(newSavedMessages);
         }
 
         request.Members.Add(request.Sub);
@@ -49,7 +54,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             Channel? existedChannel = await _channelRepository.GetPrivateChannelAsync(request.Members[0], request.Sub);
             if (existedChannel is not null)
             {
-                return existedChannel;
+                return _mapper.Map<ChannelSchema>(existedChannel);
             }
 
             var newChannel = Channel.CreatePrivate(members[0], members[1]);
@@ -57,7 +62,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             await _channelRepository.AddAsync(newChannel);
             await _channelRepository.Commit();
 
-            return newChannel;
+            return _mapper.Map<ChannelSchema>(newChannel);
         }
 
         var newGroupChannel = Channel.CreateGroup(request.Sub, members, request.Title);
@@ -65,6 +70,6 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
         await _channelRepository.AddAsync(newGroupChannel);
         await _channelRepository.Commit();
 
-        return newGroupChannel;
+        return _mapper.Map<ChannelSchema>(newGroupChannel);
     }
 }

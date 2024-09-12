@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
@@ -10,4 +11,4 @@ public record GetMessagesQuery(
     UserId Sub,
     ChannelId ChannelId,
     int Offset,
-    int Limit) : IRequest<ErrorOr<List<Message>>>;
+    int Limit) : IRequest<ErrorOr<List<MessageSchema>>>;

@@ -7,7 +7,6 @@ using MessengerAPI.Application.Auth.Commands.Login;
 using MessengerAPI.Presentation.Common;
 using MessengerAPI.Application.Auth.Commands.RefreshToken;
 using AutoMapper;
-using MessengerAPI.Presentation.Schemas.Common;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -16,28 +15,26 @@ namespace MessengerAPI.Presentation.Controllers;
 public class AuthController : ApiController
 {
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
 
-    public AuthController(IMediator mediator, IMapper mapper)
+    public AuthController(IMediator mediator)
     {
         _mediator = mediator;
-        _mapper = mapper;
     }
 
     [HttpPost("sign-up")]
-    public async Task<IActionResult> SignUp([FromForm] SignUpSchema schema)
+    public async Task<IActionResult> SignUp([FromForm] SignUpRequestSchema schema)
     {
         var command = new RegisterCommand(schema.Username, schema.GlobalName, schema.Password);
 
         var registerResult = await _mediator.Send(command);
 
         return registerResult.Match(
-            success => Ok(_mapper.Map<UserPrivateSchema>(success)),
+            success => Ok(success),
             errors => Problem(errors));
     }
 
     [HttpPost("sign-in")]
-    public async Task<IActionResult> SignIn([FromForm] SignInSchema schema)
+    public async Task<IActionResult> SignIn([FromForm] SignInRequestSchema schema)
     {
         var userAgent = Request.Headers["User-Agent"].ToString();
         var ipAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();

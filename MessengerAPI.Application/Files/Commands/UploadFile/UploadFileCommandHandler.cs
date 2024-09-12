@@ -1,24 +1,28 @@
 using System.Security.Cryptography;
+using AutoMapper;
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
+using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.Common.Entities;
 
 namespace MessengerAPI.Application.Files.Commands.UploadFile;
 
-public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, ErrorOr<FileData>>
+public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, ErrorOr<FileSchema>>
 {
-    IFileStorage _fileStorage;
-    IFileRepository _fileRepository;
+    private readonly IFileStorage _fileStorage;
+    private readonly IFileRepository _fileRepository;
+    private readonly IMapper _mapper;
 
-    public UploadFileCommandHandler(IFileStorage fileStorage, IFileRepository fileRepository)
+    public UploadFileCommandHandler(IFileStorage fileStorage, IFileRepository fileRepository, IMapper mapper)
     {
         _fileStorage = fileStorage;
         _fileRepository = fileRepository;
+        _mapper = mapper;
     }
 
-    public async Task<ErrorOr<FileData>> Handle(UploadFileCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<FileSchema>> Handle(UploadFileCommand request, CancellationToken cancellationToken)
     {
         var sha256Bytes = ComputeSha256Hash(request.FileStream);
         var sha265String = Convert.ToHexString(sha256Bytes).ToLower();
@@ -34,7 +38,7 @@ public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Error
         await _fileRepository.AddFileAsync(file);
         await _fileRepository.Commit();
 
-        return file;
+        return _mapper.Map<FileSchema>(file);
     }
 
     private byte[] ComputeSha256Hash(Stream stream)

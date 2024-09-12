@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common.Entities;
 
-namespace MessengerAPI.Presentation.Schemas.Common;
+namespace MessengerAPI.Application.Schemas.Common;
 
 public record ChannelSchema
 {

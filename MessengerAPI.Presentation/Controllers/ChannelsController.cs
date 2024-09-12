@@ -9,7 +9,6 @@ using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using MessengerAPI.Presentation.Common;
 using MessengerAPI.Presentation.Schemas.Channels;
-using MessengerAPI.Presentation.Schemas.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessengerAPI.Presentation.Controllers;
@@ -18,12 +17,10 @@ namespace MessengerAPI.Presentation.Controllers;
 public class ChannelsController : ApiController
 {
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
 
-    public ChannelsController(IMediator mediator, IMapper mapper)
+    public ChannelsController(IMediator mediator)
     {
         _mediator = mediator;
-        _mapper = mapper;
     }
 
     [HttpGet]
@@ -36,7 +33,7 @@ public class ChannelsController : ApiController
         var result = await _mediator.Send(query);
 
         return result.Match(
-            success => Ok(_mapper.Map<List<ChannelSchema>>(success)),
+            success => Ok(success),
             errors => Problem(errors)
         );
     }
@@ -50,11 +47,11 @@ public class ChannelsController : ApiController
             sub,
             schema.Members.ConvertAll(m => new UserId(m)),
             schema.Title);
-        
+
         var result = await _mediator.Send(query);
 
         return result.Match(
-            success => Ok(_mapper.Map<ChannelSchema>(success)),
+            success => Ok(success),
             errors => Problem(errors)
         );
     }
@@ -76,7 +73,7 @@ public class ChannelsController : ApiController
         var result = await _mediator.Send(command);
 
         return result.Match(
-            success => Ok(_mapper.Map<MessageSchema>(success)),
+            success => Ok(success),
             errors => Problem(errors)
         );
     }
@@ -91,7 +88,7 @@ public class ChannelsController : ApiController
         var result = await _mediator.Send(query);
 
         return result.Match(
-            success => Ok(_mapper.Map<List<MessageSchema>>(success)),
+            success => Ok(success),
             errors => Problem(errors)
         );
     }
@@ -113,11 +110,11 @@ public class ChannelsController : ApiController
             schema.Text,
             replyTo,
             schema.Attachments);
-        
+
         var result = await _mediator.Send(command);
 
         return result.Match(
-            success => Ok(_mapper.Map<MessageSchema>(success)),
+            success => Ok(success),
             errors => Problem(errors)
         );
     }

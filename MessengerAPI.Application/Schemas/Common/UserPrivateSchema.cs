@@ -1,6 +1,6 @@
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
-namespace MessengerAPI.Presentation.Schemas.Common;
+namespace MessengerAPI.Application.Schemas.Common;
 
 public record UserPrivateSchema : UserPublicSchema
 {

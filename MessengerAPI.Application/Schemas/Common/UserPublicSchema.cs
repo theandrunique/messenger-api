@@ -1,4 +1,4 @@
-namespace MessengerAPI.Presentation.Schemas.Common;
+namespace MessengerAPI.Application.Schemas.Common;
 
 public record UserPublicSchema
 {

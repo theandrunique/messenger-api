@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
@@ -12,4 +13,4 @@ public record EditMessageCommand(
     ChannelId ChannelId,
     string Text,
     MessageId? ReplyTo,
-    List<Guid>? Attachments) : IRequest<ErrorOr<Message>>;
+    List<Guid>? Attachments) : IRequest<ErrorOr<MessageSchema>>;

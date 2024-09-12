@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
@@ -10,4 +11,4 @@ public record UploadFileCommand(
     Stream FileStream,
     string ContentType,
     string FileName
-) : IRequest<ErrorOr<FileData>>;
+) : IRequest<ErrorOr<FileSchema>>;

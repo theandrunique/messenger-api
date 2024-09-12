@@ -3,7 +3,6 @@ using MediatR;
 using MessengerAPI.Application.Files.Commands.UploadFile;
 using MessengerAPI.Application.Files.Queries.GetFiles;
 using MessengerAPI.Presentation.Common;
-using MessengerAPI.Presentation.Schemas.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessengerAPI.Presentation.Controllers;
@@ -12,12 +11,10 @@ namespace MessengerAPI.Presentation.Controllers;
 public class FileStorageController : ApiController
 {
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
 
-    public FileStorageController(IMediator mediator, IMapper mapper)
+    public FileStorageController(IMediator mediator)
     {
         _mediator = mediator;
-        _mapper = mapper;
     }
 
     [HttpPost]
@@ -31,7 +28,7 @@ public class FileStorageController : ApiController
         var result = await _mediator.Send(command);
 
         return result.Match(
-            success => Ok(_mapper.Map<FileSchema>(success)),
+            success => Ok(success),
             errors => Problem(errors)
         );
     }
@@ -45,7 +42,7 @@ public class FileStorageController : ApiController
         var result = await _mediator.Send(query);
 
         return result.Match(
-            success => Ok(_mapper.Map<List<FileSchema>>(success)),
+            success => Ok(success),
             errors => Problem(errors)
         );
     }
