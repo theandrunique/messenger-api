@@ -7,7 +7,9 @@ using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Common;
 using MessengerAPI.Infrastructure.Common.FileStorage;
 using MessengerAPI.Infrastructure.Common.Persistance;
+using MessengerAPI.Infrastructure.Common.WebSockets;
 using MessengerAPI.Infrastructure.Persistance;
+using MessengerAPI.Infrastructure.Persistance.Interceptors;
 using MessengerAPI.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 namespace MessengerAPI.Infrastructure;
 
@@ -35,6 +38,10 @@ public static class DependencyInjection
         services.Configure<FileStorageSettings>(config.GetSection(nameof(FileStorageSettings)));
         services.AddScoped<IFileStorage, FileStorage>();
 
+        services.AddRedis(config);
+
+        services.AddWebSockets();
+
         return services;
     }
 
@@ -45,6 +52,29 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFileRepository, fileRepository>();
         services.AddScoped<IChannelRepository, ChannelRepository>();
+        services.AddScoped<PublishDomainEventsInterceptor>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddRedis(this IServiceCollection services, ConfigurationManager config)
+    {
+        var redisSettings = new RedisSettings();
+        config.Bind(nameof(RedisSettings), redisSettings);
+
+        services.AddSingleton(Options.Create(redisSettings));
+
+        var redis = ConnectionMultiplexer.Connect(redisSettings.ConnectionString);
+        services.AddSingleton<IConnectionMultiplexer>(sp => redis);
+        return services;
+    }
+
+    public static IServiceCollection AddWebSockets(this IServiceCollection services)
+    {
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IWebSocketService, NotificationService>();
+        services.AddScoped<ConnectionRepository>();
+        services.AddSingleton<SubscriberService>();
 
         return services;
     }

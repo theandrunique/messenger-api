@@ -1,18 +1,21 @@
 using MessengerAPI.Domain.ChannelAggregate.Entities;
+using MessengerAPI.Domain.ChannelAggregate.Events;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
+using MessengerAPI.Domain.Common;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Domain.ChannelAggregate;
 
-public class Channel
+public class Channel : IHasDomainEvents
 {
+    private readonly List<IDomainEvent> _domainEvents = new();
     private readonly List<Message> _messages = new();
     private readonly List<User> _members = new();
     private readonly List<AdminId> _adminIds = new();
     private readonly List<PinnedMessageId> _pinnedMessageIds = new();
-
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.ToList();
     public IReadOnlyCollection<Message> Messages => _messages.ToList();
     public IReadOnlyCollection<User> Members => _members.ToList();
     public IReadOnlyCollection<AdminId> AdminIds => _adminIds.ToList();
@@ -63,6 +66,9 @@ public class Channel
         var newMessage = Message.CreateNew(Id, senderId, text, replyTo, attachments);
         _messages.Add(newMessage);
         LastMessageId = newMessage.Id;
+
+        _domainEvents.Add(new NewMessageCreated(newMessage, this));
+
         return newMessage;
     }
 
@@ -70,5 +76,10 @@ public class Channel
     {
         _messages.Clear();
         _messages.AddRange(messages);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
     }
 }

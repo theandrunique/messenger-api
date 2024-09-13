@@ -52,6 +52,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseWebSockets();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
