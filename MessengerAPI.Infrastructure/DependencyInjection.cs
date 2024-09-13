@@ -33,7 +33,7 @@ public static class DependencyInjection
         services.AddSingleton<IHashHelper, BCryptHelper>();
         services.AddScoped<IUserAgentParser, UserAgentParser>();
         services.AddScoped<IJweHelper, JweHelper>();
-        services.AddSingleton<ITokenCacheService, InMemoryTokenCacheService>();
+        services.AddScoped<ITokenCacheService, RedisTokenCacheService>();
 
         services.Configure<FileStorageSettings>(config.GetSection(nameof(FileStorageSettings)));
         services.AddScoped<IFileStorage, FileStorage>();
