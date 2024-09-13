@@ -48,7 +48,7 @@ public class Message
         if (attachments is not null) _attachments = attachments;
     }
 
-    public Message() { }
+    private Message() { }
 
     public void Update(MessageId? replyTo, string text, List<FileData>? attachments)
     {

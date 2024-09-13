@@ -6,5 +6,5 @@ public class Phone
     public bool IsVerified { get; private set; }
     public DateTime AddedAt { get; private set; }
 
-    public Phone() { }
+    private Phone() { }
 }

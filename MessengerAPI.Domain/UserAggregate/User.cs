@@ -52,7 +52,7 @@ public class User
 
         return user;
     }
-    public User() { }
+    private User() { }
 
     public void AddEmail(Email email)
     {

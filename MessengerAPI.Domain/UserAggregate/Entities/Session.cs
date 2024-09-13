@@ -34,4 +34,6 @@ public class Session
         };
         return session;
     }
+
+    private Session() { }
 }

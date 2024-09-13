@@ -11,5 +11,5 @@ public class ProfilePhoto
     public FileData File { get; private set; }
     public bool IsVisible { get; private set; }
 
-    public ProfilePhoto() { }
+    private ProfilePhoto() { }
 }

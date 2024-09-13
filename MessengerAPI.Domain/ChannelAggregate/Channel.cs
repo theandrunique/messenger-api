@@ -59,7 +59,7 @@ public class Channel : IHasDomainEvents
         _members = members;
     }
 
-    public Channel() { }
+    private Channel() { }
 
     public Message AddMessage(UserId senderId, string text, MessageId? replyTo = null, List<FileData>? attachments = null)
     {

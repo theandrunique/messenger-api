@@ -30,5 +30,5 @@ public class FileData
         UploadedAt = DateTime.UtcNow;
     }
 
-    public FileData() { }
+    private FileData() { }
 }

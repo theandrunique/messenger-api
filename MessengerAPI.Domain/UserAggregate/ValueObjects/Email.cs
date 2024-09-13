@@ -7,5 +7,5 @@ public class Email
     public bool IsPublic { get; private set; }
     public DateTime AddedAt { get; private set; }
 
-    public Email() { }
+    private Email() { }
 }
