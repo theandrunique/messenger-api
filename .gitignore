@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 *.db
 .vscode
+.env
+.env.docker

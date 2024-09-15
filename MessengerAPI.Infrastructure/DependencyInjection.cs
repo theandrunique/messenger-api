@@ -28,7 +28,7 @@ public static class DependencyInjection
         ConfigurationManager config)
     {
         services.AddAuth(config);
-        services.AddPersistance();
+        services.AddPersistance(config);
 
         services.AddSingleton<IHashHelper, BCryptHelper>();
         services.AddScoped<IUserAgentParser, UserAgentParser>();
@@ -46,9 +46,13 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddPersistance(this IServiceCollection services)
+    public static IServiceCollection AddPersistance(this IServiceCollection services, ConfigurationManager config)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=app.db"));
+        var postgresSettings = new PostgresSettings();
+        config.Bind(nameof(PostgresSettings), postgresSettings);
+        services.AddSingleton(Options.Create(postgresSettings));
+        
+        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(postgresSettings.ConnectionString));
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFileRepository, fileRepository>();

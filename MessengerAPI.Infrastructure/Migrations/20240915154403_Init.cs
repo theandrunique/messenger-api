@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,9 +16,9 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "ReactionGroups",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,18 +29,18 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Username = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    UsernameUpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
-                    PasswordUpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    TerminateSessions = table.Column<int>(type: "INTEGER", nullable: false),
-                    Bio = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
-                    GlobalName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Key = table.Column<string>(type: "TEXT", nullable: true),
-                    TwoFactorAuthentication = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Username = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    UsernameUpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    PasswordUpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TerminateSessions = table.Column<int>(type: "integer", nullable: false),
+                    Bio = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    GlobalName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Key = table.Column<string>(type: "text", nullable: true),
+                    TwoFactorAuthentication = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,11 +51,11 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "Reaction",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    GroupId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Emoji = table.Column<string>(type: "TEXT", nullable: false),
-                    ReactionGroupId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    GroupId = table.Column<int>(type: "integer", nullable: false),
+                    Emoji = table.Column<string>(type: "text", nullable: false),
+                    ReactionGroupId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -70,13 +71,13 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "Email",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Data = table.Column<string>(type: "TEXT", nullable: false),
-                    IsVerified = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsPublic = table.Column<bool>(type: "INTEGER", nullable: false),
-                    AddedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Data = table.Column<string>(type: "text", nullable: false),
+                    IsVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    IsPublic = table.Column<bool>(type: "boolean", nullable: false),
+                    AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -93,14 +94,14 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "Files",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    OwnerId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    FileName = table.Column<string>(type: "TEXT", nullable: false),
-                    ContentType = table.Column<string>(type: "TEXT", nullable: false),
-                    Url = table.Column<string>(type: "TEXT", nullable: false),
-                    Size = table.Column<long>(type: "INTEGER", nullable: false),
-                    Sha256 = table.Column<byte[]>(type: "BLOB", nullable: false),
-                    UploadedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FileName = table.Column<string>(type: "text", nullable: false),
+                    ContentType = table.Column<string>(type: "text", nullable: false),
+                    Url = table.Column<string>(type: "text", nullable: false),
+                    Size = table.Column<long>(type: "bigint", nullable: false),
+                    Sha256 = table.Column<byte[]>(type: "bytea", nullable: false),
+                    UploadedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -117,12 +118,12 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "Phone",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Data = table.Column<string>(type: "TEXT", nullable: false),
-                    IsVerified = table.Column<bool>(type: "INTEGER", nullable: false),
-                    AddedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Data = table.Column<string>(type: "text", nullable: false),
+                    IsVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -139,14 +140,14 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "Sessions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    TokenId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    DeviceName = table.Column<string>(type: "TEXT", nullable: false),
-                    ClientName = table.Column<string>(type: "TEXT", nullable: false),
-                    Location = table.Column<string>(type: "TEXT", nullable: false),
-                    LastUsedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TokenId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DeviceName = table.Column<string>(type: "text", nullable: false),
+                    ClientName = table.Column<string>(type: "text", nullable: false),
+                    Location = table.Column<string>(type: "text", nullable: false),
+                    LastUsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -163,11 +164,11 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "ProfilePhoto",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    FileId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    IsVisible = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsVisible = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -190,8 +191,8 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "ChannelAdminIds",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ChannelId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ChannelId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -208,12 +209,12 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "Channels",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    OwnerId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    Title = table.Column<string>(type: "TEXT", nullable: true),
-                    ImageId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    LastMessageId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    ImageId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    LastMessageId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -234,8 +235,8 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "ChannelUser",
                 columns: table => new
                 {
-                    ChannelsId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    MembersId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    ChannelsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MembersId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -258,13 +259,14 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "Message",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false),
-                    ChannelId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    SenderId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Text = table.Column<string>(type: "TEXT", nullable: false),
-                    SentAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    ReplyTo = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ChannelId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SenderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Text = table.Column<string>(type: "text", nullable: false),
+                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ReplyTo = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -287,8 +289,8 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "MessageAttachments",
                 columns: table => new
                 {
-                    MessageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    FileDataId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    MessageId = table.Column<long>(type: "bigint", nullable: false),
+                    FileDataId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -311,8 +313,8 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "PinnedMessageIds",
                 columns: table => new
                 {
-                    MessageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ChannelId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    MessageId = table.Column<long>(type: "bigint", nullable: false),
+                    ChannelId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -335,10 +337,10 @@ namespace MessengerAPI.Infrastructure.Migrations
                 name: "UserReactions",
                 columns: table => new
                 {
-                    MessageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ReactionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    MessageId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ReactionId = table.Column<int>(type: "integer", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
