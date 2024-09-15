@@ -1,3 +1,3 @@
 namespace MessengerAPI.Presentation.Schemas.Auth;
 
-public record SignInRequestSchema(string Login, string Password);
+public record SignInRequestSchema(string login, string password);

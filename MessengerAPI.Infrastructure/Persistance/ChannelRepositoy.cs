@@ -5,7 +5,6 @@ using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using MessengerAPI.Infrastructure.Common.Persistance;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver.Linq;
 
 namespace MessengerAPI.Infrastructure.Persistance;
 
@@ -55,7 +54,7 @@ public class ChannelRepository : IChannelRepository
             .FirstOrDefaultAsync(m => m.Id == messageId);
     }
 
-    public async Task<Channel?> GetSavedMessagesAsync(UserId userId)
+    public async Task<Channel?> GetSavedMessagesChannelAsync(UserId userId)
     {
         return await _context.Channels
             .Include(c => c.Members)

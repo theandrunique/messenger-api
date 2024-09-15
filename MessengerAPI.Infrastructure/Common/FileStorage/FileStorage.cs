@@ -24,7 +24,7 @@ public class FileStorage : IFileStorage
         _s3Client = new AmazonS3Client(credentials, config);
     }
 
-    public async Task<string> Put(Stream fileStream, string key, string fileName, string contentType)
+    public async Task<string> Put(Stream fileStream, string key, string fileName, string contentType, CancellationToken cancellationToken)
     {
         var uploadRequest = new TransferUtilityUploadRequest
         {
@@ -38,7 +38,7 @@ public class FileStorage : IFileStorage
         uploadRequest.Headers.ContentDisposition = "attachment; filename=\"" + fileName + "\"";
 
         var fileTransferUtility = new TransferUtility(_s3Client);
-        await fileTransferUtility.UploadAsync(uploadRequest);
+        await fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
 
         return $"{_settings.BucketUrl}/{key}";
     }

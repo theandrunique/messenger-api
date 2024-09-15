@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenCacheService, RedisTokenCacheService>();
 
         services.Configure<FileStorageSettings>(config.GetSection(nameof(FileStorageSettings)));
+        services.AddSingleton<IFileStorageSettings>(sp => sp.GetRequiredService<IOptions<FileStorageSettings>>().Value);
         services.AddScoped<IFileStorage, FileStorage>();
 
         services.AddRedis(config);
@@ -87,6 +88,7 @@ public static class DependencyInjection
         config.Bind(nameof(JwtSettings), jwtSettings);
 
         services.AddSingleton(Options.Create(jwtSettings));
+        services.AddSingleton<IJwtSettings>(sp => sp.GetRequiredService<IOptions<JwtSettings>>().Value);
 
         services.AddSingleton<IJwtTokenGenerator, JwtTokenHelper>();
 

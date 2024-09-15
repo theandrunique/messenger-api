@@ -5,6 +5,7 @@ using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.UserAggregate.Entities;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Common.Mappings;
@@ -16,6 +17,10 @@ public class EntitiesMapping : Profile
         CreateMap<ChannelId, Guid>().ConvertUsing(src => src.Value);
         CreateMap<UserId, Guid>().ConvertUsing(src => src.Value);
         CreateMap<MessageId, long>().ConvertUsing(src => src.Value);
+        CreateMap<FileData, string>().ConvertUsing(src => src.Url);
+        CreateMap<FileData?, string?>().ConvertUsing(src => src != null ? src.Url : null);
+        CreateMap<ProfilePhoto, string>().ConvertUsing(src => src.File.Url);
+        CreateMap<Email, string>().ConvertUsing(src => src.Data);
 
         CreateMap<Channel, ChannelSchema>();
         CreateMap<Email, EmailSchema>();

@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MessengerAPI.Presentation.Controllers;
 
-public class WSController : ControllerBase
+public class WebSocketController : ControllerBase
 {
     private readonly IWebSocketService _webSocketService;
 
-    public WSController(IWebSocketService webSocketService)
+    public WebSocketController(IWebSocketService webSocketService)
     {
         _webSocketService = webSocketService;
     }

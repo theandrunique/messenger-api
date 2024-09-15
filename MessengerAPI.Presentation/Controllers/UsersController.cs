@@ -1,5 +1,5 @@
-using AutoMapper;
 using MediatR;
+using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Application.Users.Queries;
 using MessengerAPI.Presentation.Common;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +17,7 @@ public class UsersController : ApiController
     }
 
     [HttpGet("me")]
+    [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMe()
     {
         var sub = User.GetUserId();

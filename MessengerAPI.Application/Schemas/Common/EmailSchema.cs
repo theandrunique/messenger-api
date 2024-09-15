@@ -7,4 +7,3 @@ public record EmailSchema
     public bool IsPublic { get; init; }
     public DateTime AddedAt { get; init; }
 }
-

@@ -27,11 +27,16 @@ public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Error
         var sha256Bytes = ComputeSha256Hash(request.FileStream);
         var sha265String = Convert.ToHexString(sha256Bytes).ToLower();
 
-        var key = $"{sha265String}-{request.FileName}-{DateTime.UtcNow}";
+        var key = $"{sha265String}-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
 
         request.FileStream.Position = 0;
         
-        var url = await _fileStorage.Put(request.FileStream, key, request.FileName, request.ContentType);
+        var url = await _fileStorage.Put(
+            request.FileStream,
+            key,
+            request.FileName,
+            request.ContentType,
+            cancellationToken);
 
         var file = FileData.CreateNew(request.Sub, request.ContentType, request.FileName, url, request.FileStream.Length, sha256Bytes);
 

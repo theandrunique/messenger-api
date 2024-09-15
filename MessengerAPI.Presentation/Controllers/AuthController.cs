@@ -6,7 +6,8 @@ using MessengerAPI.Presentation.Schemas.Auth;
 using MessengerAPI.Application.Auth.Commands.Login;
 using MessengerAPI.Presentation.Common;
 using MessengerAPI.Application.Auth.Commands.RefreshToken;
-using AutoMapper;
+using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Application.Auth.Common;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -22,9 +23,10 @@ public class AuthController : ApiController
     }
 
     [HttpPost("sign-up")]
+    [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignUp([FromForm] SignUpRequestSchema schema)
     {
-        var command = new RegisterCommand(schema.Username, schema.GlobalName, schema.Password);
+        var command = new RegisterCommand(schema.username, schema.globalName, schema.password);
 
         var registerResult = await _mediator.Send(command);
 
@@ -34,12 +36,13 @@ public class AuthController : ApiController
     }
 
     [HttpPost("sign-in")]
+    [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignIn([FromForm] SignInRequestSchema schema)
     {
         var userAgent = Request.Headers["User-Agent"].ToString();
         var ipAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
 
-        var command = new LoginCommand(schema.Login, schema.Password, userAgent, ipAddress);
+        var command = new LoginCommand(schema.login, schema.password, userAgent, ipAddress);
 
         var loginResult = await _mediator.Send(command);
 
@@ -53,9 +56,10 @@ public class AuthController : ApiController
     }
 
     [HttpPost("token")]
+    [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> RefreshToken([FromForm] RefreshTokenRequestSchema schema)
     {
-        var command = new RefreshTokenCommand(schema.RefreshToken);
+        var command = new RefreshTokenCommand(schema.refreshToken);
         var result = await _mediator.Send(command);
 
         return result.Match(
@@ -68,6 +72,7 @@ public class AuthController : ApiController
     }
 
     [HttpGet("token")]
+    [ProducesResponseType(typeof(TokenResponseSchema), StatusCodes.Status200OK)]
     public IActionResult Token()
     {
         string? refreshToken = Request.Cookies[CookieConstants.RefreshToken];

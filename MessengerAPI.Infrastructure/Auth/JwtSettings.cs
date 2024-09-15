@@ -1,6 +1,8 @@
+using MessengerAPI.Application.Common.Interfaces;
+
 namespace MessengerAPI.Infrastructure.Auth;
 
-public class JwtSettings
+public class JwtSettings : IJwtSettings
 {
     public string Secret { get; set; } = null!;
     public int ExpiryMinutes { get; set; }

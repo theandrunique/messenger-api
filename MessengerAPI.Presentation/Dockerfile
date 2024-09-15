@@ -8,17 +8,17 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["MessengerAPI/MessengerAPI.csproj", "MessengerAPI/"]
-RUN dotnet restore "./MessengerAPI/MessengerAPI.csproj"
+COPY ["MessengerAPI.Presentation/MessengerAPI.Presentation.csproj", "MessengerAPI.Presentation/"]
+RUN dotnet restore "./MessengerAPI.Presentation/MessengerAPI.Presentation.csproj"
 COPY . .
-WORKDIR "/src/MessengerAPI"
-RUN dotnet build "./MessengerAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/MessengerAPI.Presentation"
+RUN dotnet build "./MessengerAPI.Presentation.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./MessengerAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./MessengerAPI.Presentation.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MessengerAPI.dll"]
+ENTRYPOINT ["dotnet", "MessengerAPI.Presentation.dll"]

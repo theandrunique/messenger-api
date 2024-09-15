@@ -2,8 +2,8 @@ namespace MessengerAPI.Application.Schemas.Common;
 
 public record UserPublicSchema
 {
-    public ICollection<EmailSchema> Emails { get; init; }
-    public ICollection<ProfilePhotoSchema> ProfilePhotos { get; init; }
+    public ICollection<string> Emails { get; init; }
+    public ICollection<string> ProfilePhotos { get; init; }
     public Guid Id { get; init; }
     public string Username { get; init; }
     public DateTime UsernameUpdatedAt { get; init; }

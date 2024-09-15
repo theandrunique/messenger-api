@@ -1,10 +1,10 @@
-using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
 using MessengerAPI.Application.Channels.Commands.CreateMessage;
 using MessengerAPI.Application.Channels.Commands.EditMessage;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
+using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using MessengerAPI.Presentation.Common;
@@ -24,6 +24,7 @@ public class ChannelsController : ApiController
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetChannels()
     {
         var sub = User.GetUserId();
@@ -39,6 +40,7 @@ public class ChannelsController : ApiController
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateChannel([FromBody] CreateChannelRequestSchema schema)
     {
         var sub = User.GetUserId();
@@ -46,6 +48,7 @@ public class ChannelsController : ApiController
         var query = new CreateChannelCommand(
             sub,
             schema.Members.ConvertAll(m => new UserId(m)),
+            schema.Type,
             schema.Title);
 
         var result = await _mediator.Send(query);
@@ -57,6 +60,7 @@ public class ChannelsController : ApiController
     }
 
     [HttpPost("{channelId}/messages")]
+    [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateMessage([FromBody] CreateMessageRequestSchema schema, [FromRoute] Guid channelId)
     {
         var sub = User.GetUserId();
@@ -79,6 +83,7 @@ public class ChannelsController : ApiController
     }
 
     [HttpGet("{channelId}/messages")]
+    [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMessages([FromRoute] Guid channelId, [FromQuery] int offset = 0, [FromQuery] int limit = 50)
     {
         var sub = User.GetUserId();
@@ -94,6 +99,7 @@ public class ChannelsController : ApiController
     }
 
     [HttpPut("{channelId}/messages/{messageId}")]
+    [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> EditMessage(
         [FromBody] CreateMessageRequestSchema schema,
         [FromRoute] Guid channelId,

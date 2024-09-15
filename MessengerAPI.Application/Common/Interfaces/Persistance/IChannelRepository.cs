@@ -13,6 +13,6 @@ public interface IChannelRepository
     Task<List<Message>> GetMessagesAsync(ChannelId channelId, int limit, int offset);
     Task<Message?> GetMessageByIdAsync(MessageId messageId);
     Task<Channel?> GetPrivateChannelAsync(UserId userId1, UserId userId2);
-    Task<Channel?> GetSavedMessagesAsync(UserId userId);
+    Task<Channel?> GetSavedMessagesChannelAsync(UserId userId);
     Task<List<Channel>> GetChannelsByUserIdAsync(UserId userId);
 }
