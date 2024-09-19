@@ -24,7 +24,7 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
 
     public async Task<ErrorOr<MessageSchema>> Handle(CreateMessageCommand request, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetByIdAsync(request.ChannelId);
+        var channel = await _channelRepository.GetByIdAsync(request.ChannelId, cancellationToken);
         if (channel is null)
         {
             return ChannelErrors.ChannelNotFound;
@@ -38,11 +38,11 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
 
         if (request.Attachments?.Count > 0)
         {
-            attachments = await _fileRepository.GetFilesByIdsAsync(request.Attachments);
+            attachments = await _fileRepository.GetFilesByIdsAsync(request.Attachments, cancellationToken);
         }
         if (request.ReplyTo != null)
         {
-            var replyToMessage = await _channelRepository.GetMessageByIdAsync(request.ReplyTo);
+            var replyToMessage = await _channelRepository.GetMessageByIdAsync(request.ReplyTo, cancellationToken);
             if (replyToMessage is null)
             {
                 return ChannelErrors.MessageNotFound;
@@ -51,7 +51,7 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
 
         Message message = channel.AddMessage(request.Sub, request.Text, request.ReplyTo, attachments);
 
-        await _channelRepository.Commit();
+        await _channelRepository.Commit(cancellationToken);
 
         return _mapper.Map<MessageSchema>(message);
     }

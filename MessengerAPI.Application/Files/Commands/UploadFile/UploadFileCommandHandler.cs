@@ -40,8 +40,8 @@ public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Error
 
         var file = FileData.CreateNew(request.Sub, request.ContentType, request.FileName, url, request.FileStream.Length, sha256Bytes);
 
-        await _fileRepository.AddFileAsync(file);
-        await _fileRepository.Commit();
+        await _fileRepository.AddFileAsync(file, cancellationToken);
+        await _fileRepository.Commit(cancellationToken);
 
         return _mapper.Map<FileSchema>(file);
     }

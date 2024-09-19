@@ -19,7 +19,7 @@ public class GetFilesQueryHandler : IRequestHandler<GetFilesQuery, ErrorOr<List<
 
     public async Task<ErrorOr<List<FileSchema>>> Handle(GetFilesQuery request, CancellationToken cancellationToken)
     {
-        var files = await _fileRepository.GetUserFilesAsync(request.Sub);
+        var files = await _fileRepository.GetUserFilesAsync(request.Sub, cancellationToken);
         return _mapper.Map<List<FileSchema>>(files);
     }
 }

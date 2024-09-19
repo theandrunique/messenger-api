@@ -16,11 +16,11 @@ public class PublishDomainEventsInterceptor : SaveChangesInterceptor
 
     public override ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result, CancellationToken cancellationToken = default)
     {
-        PublishDomainEvents(eventData.Context);
+        PublishDomainEvents(eventData.Context, cancellationToken);
         return base.SavedChangesAsync(eventData, result, cancellationToken);
     }
 
-    private async void PublishDomainEvents(DbContext? context)
+    private async void PublishDomainEvents(DbContext? context, CancellationToken token)
     {
         if (context == null) return;
 
@@ -35,7 +35,7 @@ public class PublishDomainEventsInterceptor : SaveChangesInterceptor
 
         foreach (var domainEvent in domainEvents)
         {
-            await _publisher.Publish(domainEvent);
+            await _publisher.Publish(domainEvent, token);
         }
     }
 }

@@ -28,8 +28,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
             _hashHelper.Hash(request.Password),
             request.GlobalName);
 
-        await _userRepository.AddAsync(newUser);
-        await _userRepository.Commit();
+        await _userRepository.AddAsync(newUser, cancellationToken);
+        await _userRepository.Commit(cancellationToken);
 
         return _mapper.Map<UserPrivateSchema>(newUser);
     }

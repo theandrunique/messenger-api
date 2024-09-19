@@ -20,7 +20,7 @@ public class GetChannelsQueryHandler : IRequestHandler<GetChannelsQuery, ErrorOr
 
     public async Task<ErrorOr<List<ChannelSchema>>> Handle(GetChannelsQuery request, CancellationToken cancellationToken)
     {
-        List<Channel> channels = await _channelRepository.GetChannelsByUserIdAsync(request.Sub);
+        List<Channel> channels = await _channelRepository.GetChannelsByUserIdAsync(request.Sub, cancellationToken);
         return _mapper.Map<List<ChannelSchema>>(channels);
     }
 }

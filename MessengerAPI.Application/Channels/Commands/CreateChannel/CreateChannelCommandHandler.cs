@@ -30,7 +30,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             request.Members.Add(request.Sub);
         }
 
-        var members = await _userRepository.GetByIdsAsync(request.Members.ToList());
+        var members = await _userRepository.GetByIdsAsync(request.Members.ToList(), cancellationToken);
         if (members.Count != request.Members.Count)
         {
             return UserErrors.NotFound;
@@ -40,11 +40,11 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
 
         if (request.Type == ChannelType.Private)
         {
-            channel = await CreatePrivateChannel(request, members);
+            channel = await CreatePrivateChannel(request, members, cancellationToken);
         }
         else if (request.Type == ChannelType.Group)
         {
-            channel = await CreateGroupChannel(request, members);
+            channel = await CreateGroupChannel(request, members, cancellationToken);
         }
 
 
@@ -54,11 +54,11 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
         return _mapper.Map<ChannelSchema>(channel);
     }
 
-    private async Task<Channel> CreatePrivateChannel(CreateChannelCommand request, List<User> members)
+    private async Task<Channel> CreatePrivateChannel(CreateChannelCommand request, List<User> members, CancellationToken token)
     {
         if (request.Members.Count == 1)
         {
-            var savedMessagesChannel = await _channelRepository.GetSavedMessagesChannelAsync(request.Sub);
+            var savedMessagesChannel = await _channelRepository.GetSavedMessagesChannelAsync(request.Sub, token);
             if (savedMessagesChannel is not null)
             {
                 return savedMessagesChannel;
@@ -66,14 +66,14 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
 
             var newSavedMessages = Channel.CreateSavedMessages(members[0]);
 
-            await _channelRepository.AddAsync(newSavedMessages);
-            await _channelRepository.Commit();
+            await _channelRepository.AddAsync(newSavedMessages, token);
+            await _channelRepository.Commit(token);
 
             return newSavedMessages;
         }
         if (request.Members.Count == 2)
         {
-            Channel? existedChannel = await _channelRepository.GetPrivateChannelAsync(members[0].Id, request.Sub);
+            Channel? existedChannel = await _channelRepository.GetPrivateChannelAsync(members[0].Id, request.Sub, token);
             if (existedChannel is not null)
             {
                 return existedChannel;
@@ -81,20 +81,20 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
 
             var newChannel = Channel.CreatePrivate(members[0], members[1]);
 
-            await _channelRepository.AddAsync(newChannel);
-            await _channelRepository.Commit();
+            await _channelRepository.AddAsync(newChannel, token);
+            await _channelRepository.Commit(token);
 
             return newChannel;
         }
         throw new ArgumentOutOfRangeException("Members count must be 1 or 2 to create Private channel");
     }
 
-    private async Task<Channel> CreateGroupChannel(CreateChannelCommand request, List<User> members)
+    private async Task<Channel> CreateGroupChannel(CreateChannelCommand request, List<User> members, CancellationToken token)
     {
         Channel channel = Channel.CreateGroup(request.Sub, members, request.Title);
 
-        await _channelRepository.AddAsync(channel);
-        await _channelRepository.Commit();
+        await _channelRepository.AddAsync(channel, token);
+        await _channelRepository.Commit(token);
 
         return channel;
     }

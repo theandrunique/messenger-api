@@ -24,7 +24,7 @@ public class EditMessageCommandHandler : IRequestHandler<EditMessageCommand, Err
 
     public async Task<ErrorOr<MessageSchema>> Handle(EditMessageCommand request, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetByIdAsync(request.ChannelId);
+        var channel = await _channelRepository.GetByIdAsync(request.ChannelId, cancellationToken);
         if (channel is null)
         {
             return ChannelErrors.ChannelNotFound;
@@ -38,18 +38,18 @@ public class EditMessageCommandHandler : IRequestHandler<EditMessageCommand, Err
 
         if (request.Attachments?.Count > 0)
         {
-            attachments = await _fileRepository.GetFilesByIdsAsync(request.Attachments);
+            attachments = await _fileRepository.GetFilesByIdsAsync(request.Attachments, cancellationToken);
         }
         if (request.ReplyTo != null)
         {
-            var replyToMessage = await _channelRepository.GetMessageByIdAsync(request.ReplyTo);
+            var replyToMessage = await _channelRepository.GetMessageByIdAsync(request.ReplyTo, cancellationToken);
             if (replyToMessage is null)
             {
                 return ChannelErrors.MessageNotFound;
             }
         }
 
-        Message? message = await _channelRepository.GetMessageByIdAsync(request.MessageId);
+        Message? message = await _channelRepository.GetMessageByIdAsync(request.MessageId, cancellationToken);
         if (message is null)
         {
             return ChannelErrors.MessageNotFound;
@@ -57,7 +57,7 @@ public class EditMessageCommandHandler : IRequestHandler<EditMessageCommand, Err
 
         message.Update(request.ReplyTo, request.Text, attachments);
 
-        await _channelRepository.Commit();
+        await _channelRepository.Commit(cancellationToken);
 
         return _mapper.Map<MessageSchema>(message);
     }

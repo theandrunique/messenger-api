@@ -16,42 +16,42 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task Commit()
+    public async Task Commit(CancellationToken token)
     {
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(token);
     }
 
-    public async Task AddAsync(User user)
+    public async Task AddAsync(User user, CancellationToken token)
     {
-        await _context.AddAsync(user);
+        await _context.AddAsync(user, token);
     }
 
-    public async Task<List<User>> GetByIdsAsync(List<UserId> members)
+    public async Task<List<User>> GetByIdsAsync(List<UserId> members, CancellationToken token)
     {
-        return await _context.Users.Where(u => members.Contains(u.Id)).ToListAsync();
+        return await _context.Users.Where(u => members.Contains(u.Id)).ToListAsync(token);
     }
 
-    public async Task<User?> GetByIdAsync(UserId id)
+    public async Task<User?> GetByIdAsync(UserId id, CancellationToken token)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         return user;
     }
 
-    public async Task<User?> GetByEmailAsync(string email)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken token)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Emails.Any(e => e.Data == email));
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Emails.Any(e => e.Data == email), token);
         return user;
     }
 
-    public async Task<User?> GetByUsernameAsync(string username)
+    public async Task<User?> GetByUsernameAsync(string username, CancellationToken token)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username, token);
         return user;
     }
 
-    public async Task<(Session, User)?> GetSessionWithUserByTokenId(Guid tokenId)
+    public async Task<(Session, User)?> GetSessionWithUserByTokenId(Guid tokenId, CancellationToken token)
     {
-        var session = await _context.Sessions.Include(s => s.User).FirstOrDefaultAsync(s => s.TokenId == tokenId);
+        var session = await _context.Sessions.Include(s => s.User).FirstOrDefaultAsync(s => s.TokenId == tokenId, token);
         if (session == null || session.User == null)
         {
             return null;

@@ -20,7 +20,7 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
 
     public async Task<ErrorOr<List<MessageSchema>>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetByIdAsync(request.ChannelId);
+        var channel = await _channelRepository.GetByIdAsync(request.ChannelId, cancellationToken);
         if (channel is null)
         {
             return ChannelErrors.ChannelNotFound;
@@ -30,7 +30,7 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
             return ChannelErrors.NotAllowed;
         }
 
-        var messages = await _channelRepository.GetMessagesAsync(request.ChannelId, request.Limit, request.Offset);
+        var messages = await _channelRepository.GetMessagesAsync(request.ChannelId, request.Limit, request.Offset, cancellationToken);
 
         return _mapper.Map<List<MessageSchema>>(messages);
     }

@@ -5,9 +5,9 @@ namespace MessengerAPI.Application.Common.Interfaces.Persistance;
 
 public interface IFileRepository
 {
-    Task Commit();
-    Task AddFileAsync(FileData file);
-    Task<FileData?> GetByIdAsync(Guid id);
-    Task<List<FileData>> GetUserFilesAsync(UserId userId);
-    Task<List<FileData>> GetFilesByIdsAsync(IEnumerable<Guid> ids);
+    Task Commit(CancellationToken token);
+    Task AddFileAsync(FileData file, CancellationToken token);
+    Task<FileData?> GetByIdAsync(Guid id, CancellationToken token);
+    Task<List<FileData>> GetUserFilesAsync(UserId userId, CancellationToken token);
+    Task<List<FileData>> GetFilesByIdsAsync(IEnumerable<Guid> ids, CancellationToken token);
 }

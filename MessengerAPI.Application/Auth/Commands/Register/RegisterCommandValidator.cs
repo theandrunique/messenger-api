@@ -33,7 +33,7 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 
     private async Task<bool> IsDuplicateUsername(string username, CancellationToken token)
     {
-        var user = await _userRepository.GetByUsernameAsync(username);
+        var user = await _userRepository.GetByUsernameAsync(username, token);
         if (user is not null) return false;
 
         return true;

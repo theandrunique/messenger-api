@@ -44,12 +44,25 @@ builder.Services.AddSwaggerGen(c =>
 
 
 builder.Services
+    .AddCors(options =>
+    {
+        options.AddPolicy("Frontend", builder =>
+        {
+            builder.WithOrigins("http://localhost:5173")
+                .SetIsOriginAllowed((host) => true)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+    })
     .AddProblemDetails()
     .AddInfrastructure(builder.Configuration)
     .AddApplication()
     .AddPresentation();
 
 var app = builder.Build();
+
+app.UseCors("Frontend");
 
 app.UseSwagger();
 app.UseSwaggerUI();

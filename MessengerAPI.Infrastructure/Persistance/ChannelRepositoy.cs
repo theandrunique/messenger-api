@@ -17,24 +17,24 @@ public class ChannelRepository : IChannelRepository
         _context = context;
     }
 
-    public async Task Commit()
+    public async Task Commit(CancellationToken token)
     {
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(token);
     }
 
-    public async Task AddAsync(Channel channel)
+    public async Task AddAsync(Channel channel, CancellationToken token)
     {
-        await _context.AddAsync(channel);
+        await _context.AddAsync(channel, token);
     }
 
-    public async Task<Channel?> GetByIdAsync(ChannelId channelId)
+    public async Task<Channel?> GetByIdAsync(ChannelId channelId, CancellationToken token)
     {
         return await _context.Channels
             .Include(c => c.Members)
-            .FirstOrDefaultAsync(c => c.Id == channelId);
+            .FirstOrDefaultAsync(c => c.Id == channelId, token);
     }
 
-    public async Task<List<Message>> GetMessagesAsync(ChannelId channelId, int limit, int offset)
+    public async Task<List<Message>> GetMessagesAsync(ChannelId channelId, int limit, int offset, CancellationToken token)
     {
         return await _context.Messages
             .Include(m => m.Attachments)
@@ -43,35 +43,35 @@ public class ChannelRepository : IChannelRepository
             .OrderByDescending(m => m.SentAt)
             .Skip(offset)
             .Take(limit)
-            .ToListAsync();
+            .ToListAsync(token);
     }
 
-    public async Task<Message?> GetMessageByIdAsync(MessageId messageId)
+    public async Task<Message?> GetMessageByIdAsync(MessageId messageId, CancellationToken token)
     {
         return await _context.Messages
             .Include(m => m.Attachments)
             .Include(m => m.Reactions)
-            .FirstOrDefaultAsync(m => m.Id == messageId);
+            .FirstOrDefaultAsync(m => m.Id == messageId, token);
     }
 
-    public async Task<Channel?> GetSavedMessagesChannelAsync(UserId userId)
+    public async Task<Channel?> GetSavedMessagesChannelAsync(UserId userId, CancellationToken token)
     {
         return await _context.Channels
             .Include(c => c.Members)
-            .FirstOrDefaultAsync(c => c.Members.Count == 1 && c.Members.All(m => m.Id == userId));
+            .FirstOrDefaultAsync(c => c.Members.Count == 1 && c.Members.All(m => m.Id == userId), token);
     }
 
-    public async Task<Channel?> GetPrivateChannelAsync(UserId userId1, UserId userId2)
+    public async Task<Channel?> GetPrivateChannelAsync(UserId userId1, UserId userId2, CancellationToken token)
     {
         return await _context.Channels
             .Include(c => c.Members)
-            .FirstOrDefaultAsync(c => c.Members.All(c => c.Id == userId1 || c.Id == userId2));
+            .FirstOrDefaultAsync(c => c.Members.All(c => c.Id == userId1 || c.Id == userId2), token);
     }
 
-    public async Task<List<Channel>> GetChannelsByUserIdAsync(UserId userId)
+    public async Task<List<Channel>> GetChannelsByUserIdAsync(UserId userId, CancellationToken token)
     {
         return await _context.Channels
             .Include(c => c.Members)
-            .Where(c => c.Members.Any(m => m.Id == userId)).ToListAsync();
+            .Where(c => c.Members.Any(m => m.Id == userId)).ToListAsync(token);
     }
 }
