@@ -2,7 +2,7 @@ using MessengerAPI.Application.Common.Interfaces.Auth;
 
 namespace MessengerAPI.Infrastructure.Auth;
 
-public class InMemoryTokenCacheService : ITokenCacheService
+public class InMemoryRevokedTokenStore : IRevokedTokenStore
 {
     private readonly Dictionary<string, DateTime> _cache = new();
 

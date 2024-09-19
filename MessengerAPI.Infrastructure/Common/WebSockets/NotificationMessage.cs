@@ -1,6 +1,6 @@
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
-namespace MessengerAPI.Application.Common;
+namespace MessengerAPI.Infrastructure.Common.WebSockets;
 
 public class NotificationMessage
 {

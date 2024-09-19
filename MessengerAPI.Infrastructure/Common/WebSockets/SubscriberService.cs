@@ -1,5 +1,4 @@
 using System.Text.Json;
-using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
@@ -30,7 +29,7 @@ public class SubscriberService
             var serializedMessage = JsonSerializer.Deserialize<NotificationMessage>(message);
             if (serializedMessage == null) return;
 
-            await notificationService.Notify(serializedMessage);
+            await notificationService.Notify(serializedMessage.RecipientIds, serializedMessage.JsonData);
         }
     }
 }

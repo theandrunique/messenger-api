@@ -33,7 +33,7 @@ public static class DependencyInjection
         services.AddSingleton<IHashHelper, BCryptHelper>();
         services.AddScoped<IUserAgentParser, UserAgentParser>();
         services.AddScoped<IJweHelper, JweHelper>();
-        services.AddScoped<ITokenCacheService, RedisTokenCacheService>();
+        services.AddScoped<IRevokedTokenStore, RevokedTokenStore>();
 
         services.Configure<FileStorageSettings>(config.GetSection(nameof(FileStorageSettings)));
         services.AddSingleton<IFileStorageSettings>(sp => sp.GetRequiredService<IOptions<FileStorageSettings>>().Value);
@@ -51,7 +51,7 @@ public static class DependencyInjection
         var postgresSettings = new PostgresSettings();
         config.Bind(nameof(PostgresSettings), postgresSettings);
         services.AddSingleton(Options.Create(postgresSettings));
-        
+
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(postgresSettings.ConnectionString));
 
         services.AddScoped<IUserRepository, UserRepository>();
@@ -134,7 +134,7 @@ public static class DependencyInjection
 
                         var tokenId = claims[JwtRegisteredClaimNames.Jti];
 
-                        var cacheService = context.HttpContext.RequestServices.GetRequiredService<ITokenCacheService>();
+                        var cacheService = context.HttpContext.RequestServices.GetRequiredService<IRevokedTokenStore>();
                         if (!await cacheService.IsTokenValidAsync(tokenId))
                         {
                             context.Fail("Token has been revoked.");

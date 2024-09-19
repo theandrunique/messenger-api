@@ -26,8 +26,6 @@ public class NewMessageEventHandler : INotificationHandler<NewMessageCreated>
 
         var recipientIds = notification.Channel.Members.Select(m => m.Id).ToList();
 
-        var notificationMessage = new NotificationMessage(recipientIds, jsonMessage);
-
-        await _notificationService.Notify(notificationMessage);
+        await _notificationService.Notify(recipientIds, jsonMessage);
     }
 }

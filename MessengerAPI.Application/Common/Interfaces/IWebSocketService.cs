@@ -5,6 +5,6 @@ namespace MessengerAPI.Application.Common.Interfaces;
 
 public interface IWebSocketService
 {
-    Task ConnectionAdded(UserId userId, WebSocket webSocket);
-    Task ConnectionClosed(UserId userId);
+    Task AddConnection(UserId userId, WebSocket webSocket);
+    Task RemoveConnection(UserId userId);
 }

@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using StackExchange.Redis;
@@ -25,13 +24,13 @@ public class NotificationService : INotificationService, IWebSocketService
         _redis = connectionMultiplexer.GetDatabase();
     }
 
-    public async Task ConnectionAdded(UserId userId, WebSocket webSocket)
+    public async Task AddConnection(UserId userId, WebSocket webSocket)
     {
         _connections[userId] = webSocket;
         await _connectionRepository.Add(userId, _serverId);
     }
 
-    public async Task ConnectionClosed(UserId userId)
+    public async Task RemoveConnection(UserId userId)
     {
         if (_connections.ContainsKey(userId))
         {
@@ -40,12 +39,12 @@ public class NotificationService : INotificationService, IWebSocketService
         }
     }
 
-    public async Task Notify(NotificationMessage message)
+    public async Task Notify(List<UserId> recipientIds, string jsonData)
     {
         var groups = new Dictionary<string, List<UserId>>();
         var currentServer = new HashSet<UserId>();
 
-        foreach (var userId in message.RecipientIds)
+        foreach (var userId in recipientIds)
         {
             if (_connections.ContainsKey(userId))
             {
@@ -67,13 +66,13 @@ public class NotificationService : INotificationService, IWebSocketService
 
         foreach (string pipe in groups.Keys)
         {
-            var notificationMessage = new NotificationMessage(groups[pipe], message.JsonData);
+            var notificationMessage = new NotificationMessage(groups[pipe], jsonData);
             string jsonMessage = JsonSerializer.Serialize(notificationMessage);
             await _redis.PublishAsync(pipe, jsonMessage);
         }
         foreach (UserId recipientId in currentServer)
         {
-            await SendMessage(recipientId, message.JsonData);
+            await SendMessage(recipientId, jsonData);
         }
     }
 
