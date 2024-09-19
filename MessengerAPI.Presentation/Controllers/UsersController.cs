@@ -18,13 +18,13 @@ public class UsersController : ApiController
 
     [HttpGet("me")]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetMe()
+    public async Task<IActionResult> GetMe(CancellationToken cancellationToken)
     {
         var sub = User.GetUserId();
 
         var query = new GetMeQuery(sub);
 
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),

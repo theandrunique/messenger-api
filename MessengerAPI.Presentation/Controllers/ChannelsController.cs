@@ -25,13 +25,13 @@ public class ChannelsController : ApiController
 
     [HttpGet]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetChannels()
+    public async Task<IActionResult> GetChannels(CancellationToken cancellationToken)
     {
         var sub = User.GetUserId();
 
         var query = new GetChannelsQuery(sub);
 
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),
@@ -41,7 +41,7 @@ public class ChannelsController : ApiController
 
     [HttpPost]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateChannel([FromBody] CreateChannelRequestSchema schema)
+    public async Task<IActionResult> CreateChannel(CreateChannelRequestSchema schema, CancellationToken cancellationToken)
     {
         var sub = User.GetUserId();
 
@@ -51,7 +51,7 @@ public class ChannelsController : ApiController
             schema.Type,
             schema.Title);
 
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),
@@ -61,7 +61,10 @@ public class ChannelsController : ApiController
 
     [HttpPost("{channelId}/messages")]
     [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateMessage([FromBody] CreateMessageRequestSchema schema, [FromRoute] Guid channelId)
+    public async Task<IActionResult> CreateMessage(
+        CreateMessageRequestSchema schema,
+        Guid channelId,
+        CancellationToken cancellationToken)
     {
         var sub = User.GetUserId();
 
@@ -74,7 +77,7 @@ public class ChannelsController : ApiController
             replyTo,
             schema.Attachments);
 
-        var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
             success => Ok(success),
@@ -84,13 +87,17 @@ public class ChannelsController : ApiController
 
     [HttpGet("{channelId}/messages")]
     [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetMessages([FromRoute] Guid channelId, [FromQuery] int offset = 0, [FromQuery] int limit = 50)
+    public async Task<IActionResult> GetMessages(
+        Guid channelId,
+        CancellationToken cancellationToken,
+        int offset = 0,
+        int limit = 50)
     {
         var sub = User.GetUserId();
 
         var query = new GetMessagesQuery(sub, new ChannelId(channelId), offset, limit);
 
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),
@@ -101,9 +108,10 @@ public class ChannelsController : ApiController
     [HttpPut("{channelId}/messages/{messageId}")]
     [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> EditMessage(
-        [FromBody] CreateMessageRequestSchema schema,
-        [FromRoute] Guid channelId,
-        [FromRoute] long messageId)
+        CreateMessageRequestSchema schema,
+        Guid channelId,
+        long messageId,
+        CancellationToken cancellationToken)
     {
         var sub = User.GetUserId();
 
@@ -117,7 +125,7 @@ public class ChannelsController : ApiController
             replyTo,
             schema.Attachments);
 
-        var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
             success => Ok(success),

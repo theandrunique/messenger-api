@@ -1,6 +1,4 @@
-using ErrorOr;
 using MediatR;
-using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Files.Commands.UploadFile;
 using MessengerAPI.Application.Files.Queries.GetFiles;
 using MessengerAPI.Application.Schemas.Common;
@@ -26,7 +24,7 @@ public class FilesController : ApiController
 
     [HttpPost]
     [ProducesResponseType(typeof(FileSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UploadFile(IFormFile file, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> UploadFile(IFormFile file, CancellationToken cancellationToken)
     {
         if (file.Length > _settings.MaxFileSize)
         {
@@ -48,12 +46,12 @@ public class FilesController : ApiController
 
     [HttpGet]
     [ProducesResponseType(typeof(List<FileSchema>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetFiles()
+    public async Task<IActionResult> GetFiles(CancellationToken cancellationToken)
     {
         var sub = User.GetUserId();
         var query = new GetFilesQuery(sub);
 
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),

@@ -24,11 +24,11 @@ public class AuthController : ApiController
 
     [HttpPost("sign-up")]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SignUp([FromForm] SignUpRequestSchema schema)
+    public async Task<IActionResult> SignUp([FromForm] SignUpRequestSchema schema, CancellationToken cancellationToken)
     {
         var command = new RegisterCommand(schema.username, schema.globalName, schema.password);
 
-        var registerResult = await _mediator.Send(command);
+        var registerResult = await _mediator.Send(command, cancellationToken);
 
         return registerResult.Match(
             success => Ok(success),
@@ -37,14 +37,18 @@ public class AuthController : ApiController
 
     [HttpPost("sign-in")]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SignIn([FromForm] SignInRequestSchema schema)
+    public async Task<IActionResult> SignIn([FromForm] SignInRequestSchema schema, CancellationToken cancellationToken)
     {
-        var userAgent = Request.Headers["User-Agent"].ToString();
-        var ipAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+        string userAgent = Request.Headers.UserAgent.ToString();
+        string? ipAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+
+        if (ipAddress == null)
+        {
+            throw new Exception("IP address expected to be not null");
+        }
 
         var command = new LoginCommand(schema.login, schema.password, userAgent, ipAddress);
-
-        var loginResult = await _mediator.Send(command);
+        var loginResult = await _mediator.Send(command, cancellationToken);
 
         return loginResult.Match(
             success =>
@@ -57,10 +61,10 @@ public class AuthController : ApiController
 
     [HttpPost("token")]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RefreshToken([FromForm] RefreshTokenRequestSchema schema)
+    public async Task<IActionResult> RefreshToken([FromForm] string refreshToken, CancellationToken cancellationToken)
     {
-        var command = new RefreshTokenCommand(schema.refreshToken);
-        var result = await _mediator.Send(command);
+        var command = new RefreshTokenCommand(refreshToken);
+        var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
             success =>
