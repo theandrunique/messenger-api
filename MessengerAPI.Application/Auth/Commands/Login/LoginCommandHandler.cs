@@ -35,6 +35,12 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         _jwtSettings = jwtSettings;
     }
 
+    /// <summary>
+    /// Login user, check password and login if correct create session
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>Access and refresh tokens</returns>
     public async Task<ErrorOr<TokenPairResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         User? user;

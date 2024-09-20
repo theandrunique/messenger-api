@@ -22,6 +22,12 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Create a new message
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>New created message</returns>
     public async Task<ErrorOr<MessageSchema>> Handle(CreateMessageCommand request, CancellationToken cancellationToken)
     {
         var channel = await _channelRepository.GetByIdAsync(request.ChannelId, cancellationToken);

@@ -17,6 +17,12 @@ public class GetFilesQueryHandler : IRequestHandler<GetFilesQuery, ErrorOr<List<
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Get user files
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A list of user files</returns>
     public async Task<ErrorOr<List<FileSchema>>> Handle(GetFilesQuery request, CancellationToken cancellationToken)
     {
         var files = await _fileRepository.GetUserFilesAsync(request.Sub, cancellationToken);

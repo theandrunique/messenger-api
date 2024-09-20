@@ -28,6 +28,12 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
         _jwtSettings = jwtSettings;
     }
 
+    /// <summary>
+    /// Refreshing session and return new access and refresh tokens
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>Refresh and access tokens</returns>
     public async Task<ErrorOr<TokenPairResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         var decryptedPayload = _jweHelper.Decrypt(request.RefreshToken);

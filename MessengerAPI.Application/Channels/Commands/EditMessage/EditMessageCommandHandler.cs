@@ -22,6 +22,12 @@ public class EditMessageCommandHandler : IRequestHandler<EditMessageCommand, Err
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Updates existing message
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<ErrorOr<MessageSchema>> Handle(EditMessageCommand request, CancellationToken cancellationToken)
     {
         var channel = await _channelRepository.GetByIdAsync(request.ChannelId, cancellationToken);

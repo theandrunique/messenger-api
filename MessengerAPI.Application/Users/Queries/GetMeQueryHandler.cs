@@ -18,6 +18,12 @@ public class GetMeQueryHandler : IRequestHandler<GetMeQuery, ErrorOr<UserPrivate
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Get current user private data
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<ErrorOr<UserPrivateSchema>> Handle(GetMeQuery request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(request.Sub, cancellationToken);

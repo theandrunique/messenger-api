@@ -22,6 +22,12 @@ public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Error
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Uploading file to S3 and saving it in DB
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A new file</returns>
     public async Task<ErrorOr<FileSchema>> Handle(UploadFileCommand request, CancellationToken cancellationToken)
     {
         var sha256Bytes = ComputeSha256Hash(request.FileStream);

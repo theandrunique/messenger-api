@@ -21,6 +21,12 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Register new user
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>Private info of the new created user</returns>
     public async Task<ErrorOr<UserPrivateSchema>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var newUser = User.Create(

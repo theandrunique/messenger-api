@@ -19,6 +19,12 @@ public class NewMessageEventHandler : INotificationHandler<NewMessageCreated>
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Send a notification about new message
+    /// </summary>
+    /// <param name="notification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task Handle(NewMessageCreated notification, CancellationToken cancellationToken)
     {
         var mapped = _mapper.Map<NewMessageNotificationSchema>(notification);
