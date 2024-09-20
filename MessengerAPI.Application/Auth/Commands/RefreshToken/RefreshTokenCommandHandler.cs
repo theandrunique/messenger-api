@@ -39,12 +39,12 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
         var decryptedPayload = _jweHelper.Decrypt(request.RefreshToken);
         if (decryptedPayload is null) return AuthErrors.InvalidToken;
 
-        var result = await _userRepository.GetSessionWithUserByTokenId(decryptedPayload.jti, cancellationToken);
+        var result = await _userRepository.GetSessionWithUserByTokenId(decryptedPayload.tokenId, cancellationToken);
 
         if (result is null) return AuthErrors.InvalidToken;
 
         var session = result.Value.Item1;
-        var user = result.Value.Item2; 
+        var user = result.Value.Item2;
 
         session.UpdateTokenId();
         await _userRepository.Commit(cancellationToken);

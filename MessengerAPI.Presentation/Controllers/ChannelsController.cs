@@ -47,9 +47,9 @@ public class ChannelsController : ApiController
 
         var query = new CreateChannelCommand(
             sub,
-            schema.Members.ConvertAll(m => new UserId(m)),
-            schema.Type,
-            schema.Title);
+            schema.members.ConvertAll(m => new UserId(m)),
+            schema.type,
+            schema.title);
 
         var result = await _mediator.Send(query, cancellationToken);
 
@@ -68,14 +68,14 @@ public class ChannelsController : ApiController
     {
         var sub = User.GetUserId();
 
-        var replyTo = schema.ReplyTo.HasValue ? new MessageId(schema.ReplyTo.Value) : null;
+        var replyTo = schema.replyTo.HasValue ? new MessageId(schema.replyTo.Value) : null;
 
         var command = new CreateMessageCommand(
             sub,
             new ChannelId(channelId),
-            schema.Text,
+            schema.text,
             replyTo,
-            schema.Attachments);
+            schema.attachments);
 
         var result = await _mediator.Send(command, cancellationToken);
 
@@ -115,15 +115,15 @@ public class ChannelsController : ApiController
     {
         var sub = User.GetUserId();
 
-        var replyTo = schema.ReplyTo.HasValue ? new MessageId(schema.ReplyTo.Value) : null;
+        var replyTo = schema.replyTo.HasValue ? new MessageId(schema.replyTo.Value) : null;
 
         var command = new EditMessageCommand(
             new MessageId(messageId),
             sub,
             new ChannelId(channelId),
-            schema.Text,
+            schema.text,
             replyTo,
-            schema.Attachments);
+            schema.attachments);
 
         var result = await _mediator.Send(command, cancellationToken);
 

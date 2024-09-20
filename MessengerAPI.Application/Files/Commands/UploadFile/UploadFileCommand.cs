@@ -1,7 +1,6 @@
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Schemas.Common;
-using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Files.Commands.UploadFile;

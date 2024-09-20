@@ -1,3 +1,3 @@
 namespace MessengerAPI.Application.Common;
 
-public record RefreshTokenPayload(Guid jti, Guid Sub);
+public record RefreshTokenPayload(Guid tokenId, Guid Sub);

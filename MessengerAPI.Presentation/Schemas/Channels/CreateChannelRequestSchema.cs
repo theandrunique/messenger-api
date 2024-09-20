@@ -4,7 +4,7 @@ namespace MessengerAPI.Presentation.Schemas.Channels;
 
 public record CreateChannelRequestSchema
 {
-    public string? Title { get; init; }
-    public ChannelType Type { get; init; }
-    public List<Guid> Members { get; init; }
+    public string? title { get; init; }
+    public ChannelType type { get; init; }
+    public List<Guid> members { get; init; }
 }
