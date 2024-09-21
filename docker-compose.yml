@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   redis:
     image: redis
@@ -13,7 +11,7 @@ services:
 
   app:
     build:
-      target: final
+      target: production
       context: .
       dockerfile: Dockerfile
     ports:
