@@ -5,5 +5,6 @@ public enum NotificationType
     NewMessage,
     MessageUpdated,
     MessageDeleted,
-    ChannelUpdated
+    ChannelUpdated,
+    ChannelCreated,
 }

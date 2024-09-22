@@ -9,28 +9,22 @@ using MessengerAPI.Domain.ChannelAggregate.Events;
 
 namespace MessengerAPI.Application.Channels.Events;
 
-public class NewMessageEventHandler : INotificationHandler<NewMessageCreated>
+public class MessageUpdatedEventHandler : INotificationHandler<MessageUpdated>
 {
     private readonly INotificationService _notificationService;
     private readonly IMapper _mapper;
     private readonly IChannelRepository _channelRepository;
 
-    public NewMessageEventHandler(INotificationService notificationService, IMapper mapper, IChannelRepository channelRepository)
+    public MessageUpdatedEventHandler(IChannelRepository channelRepository, IMapper mapper, INotificationService notificationService)
     {
-        _notificationService = notificationService;
-        _mapper = mapper;
         _channelRepository = channelRepository;
+        _mapper = mapper;
+        _notificationService = notificationService;
     }
 
-    /// <summary>
-    /// Send a notification about new message
-    /// </summary>
-    /// <param name="notification"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public async Task Handle(NewMessageCreated notification, CancellationToken cancellationToken)
+    public async Task Handle(MessageUpdated notification, CancellationToken cancellationToken)
     {
-        var mapped = _mapper.Map<NewMessageNotificationSchema>(notification);
+        var mapped = _mapper.Map<MessageUpdatedNotificationSchema>(notification);
         var jsonMessage = JsonSerializer.Serialize(mapped, JsonOptions.Default);
 
         var channel = await _channelRepository.GetByIdAsync(notification.NewMessage.ChannelId, cancellationToken);
