@@ -57,6 +57,8 @@ public class Channel : IHasDomainEvents
         Image = image;
         Type = type;
         _members = members;
+
+        _domainEvents.Add(new NewChannelCreated(this));
     }
 
     private Channel() { }
@@ -66,8 +68,6 @@ public class Channel : IHasDomainEvents
         var newMessage = Message.CreateNew(Id, senderId, text, replyTo, attachments);
         _messages.Add(newMessage);
         LastMessageId = newMessage.Id;
-
-        _domainEvents.Add(new NewMessageCreated(newMessage, this));
 
         return newMessage;
     }

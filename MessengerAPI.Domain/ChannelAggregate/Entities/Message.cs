@@ -1,12 +1,15 @@
+using MessengerAPI.Domain.ChannelAggregate.Events;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
+using MessengerAPI.Domain.Common;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Domain.ChannelAggregate.Entities;
 
-public class Message
+public class Message : IHasDomainEvents
 {
+    private readonly List<IDomainEvent> _domainEvents = new();
     private readonly List<UserReaction> _reactions = new List<UserReaction>();
     private readonly List<FileData> _attachments = new List<FileData>();
 
@@ -22,6 +25,8 @@ public class Message
     public DateTime? UpdatedAt { get; private set; }
     public MessageId? ReplyTo { get; private set; }
 
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.ToList();
+
     public static Message CreateNew(
         ChannelId channelId,
         UserId senderId,
@@ -29,7 +34,9 @@ public class Message
         MessageId? replyTo = null,
         List<FileData>? attachments = null)
     {
-        return new Message(channelId, senderId, text, replyTo, attachments);
+        var message = new Message(channelId, senderId, text, replyTo, attachments);
+        message._domainEvents.Add(new NewMessageCreated(message));
+        return message;
     }
 
     private Message(
@@ -56,11 +63,17 @@ public class Message
         Text = text;
         SetAttachments(attachments);
         UpdatedAt = DateTime.UtcNow;
+        _domainEvents.Add(new MessageUpdated(this));
     }
 
     private void SetAttachments(List<FileData>? attachments)
     {
         _attachments.Clear();
         if (attachments is not null) _attachments.AddRange(attachments);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
     }
 }

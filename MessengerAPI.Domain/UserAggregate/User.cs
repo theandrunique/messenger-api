@@ -1,11 +1,14 @@
 using MessengerAPI.Domain.ChannelAggregate;
+using MessengerAPI.Domain.Common;
 using MessengerAPI.Domain.UserAggregate.Entities;
+using MessengerAPI.Domain.UserAggregate.Events;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Domain.UserAggregate;
 
-public class User
+public class User : IHasDomainEvents
 {
+    private readonly List<IDomainEvent> _domainEvents = new();
     private readonly List<Email> _emails = new();
     private readonly List<Phone> _phones = new();
     private readonly List<ProfilePhoto> _profilePhotos = new();
@@ -17,6 +20,8 @@ public class User
     public IReadOnlyList<ProfilePhoto> ProfilePhotos => _profilePhotos.ToList();
     public IReadOnlyList<Session> Sessions => _sessions.ToList();
     public IReadOnlyCollection<Channel> Channels => _channels.ToList();
+
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.ToList();
 
     public UserId Id { get; private set; }
     public string Username { get; private set; }
@@ -30,6 +35,7 @@ public class User
     public DateTime CreatedAt { get; private set; }
     public string? Key { get; private set; }
     public bool TwoFactorAuthentication { get; private set; }
+
 
     public static User Create(
         string username,
@@ -49,6 +55,7 @@ public class User
             CreatedAt = DateTime.UtcNow,
             TwoFactorAuthentication = false
         };
+        user._domainEvents.Add(new NewUserCreated(user));
 
         return user;
     }
@@ -64,5 +71,10 @@ public class User
         var session = Session.CreateNew(deviceName, clientName, location);
         _sessions.Add(session);
         return session;
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
     }
 }

@@ -3,4 +3,4 @@ using MessengerAPI.Domain.Common;
 
 namespace MessengerAPI.Domain.ChannelAggregate.Events;
 
-public record NewMessageCreated(Message NewMessage) : IDomainEvent;
+public record MessageUpdated(Message NewMessage) : IDomainEvent;
