@@ -4,12 +4,12 @@ using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Infrastructure.Auth;
+using MessengerAPI.Infrastructure.Auth.SigningKeys;
 using MessengerAPI.Infrastructure.Common;
 using MessengerAPI.Infrastructure.Common.FileStorage;
 using MessengerAPI.Infrastructure.Common.Persistance;
 using MessengerAPI.Infrastructure.Common.WebSockets;
 using MessengerAPI.Infrastructure.Persistance;
-using MessengerAPI.Infrastructure.Persistance.Interceptors;
 using MessengerAPI.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -57,7 +57,6 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFileRepository, fileRepository>();
         services.AddScoped<IChannelRepository, ChannelRepository>();
-        services.AddScoped<PublishDomainEventsInterceptor>();
 
         return services;
     }
@@ -95,6 +94,8 @@ public static class DependencyInjection
         services.AddSingleton<IJwtSettings>(sp => sp.GetRequiredService<IOptions<JwtSettings>>().Value);
 
         services.AddSingleton<IJwtTokenGenerator, JwtTokenHelper>();
+
+        services.AddSingleton<KeyManagementService>();
 
         services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
