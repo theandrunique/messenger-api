@@ -20,9 +20,9 @@ public class GetFilesQueryHandler : IRequestHandler<GetFilesQuery, ErrorOr<List<
     /// <summary>
     /// Get user files
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>A list of user files</returns>
+    /// <param name="request"><see cref="GetFilesQuery"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns>A list of user files<see cref="FileSchema"/></returns>
     public async Task<ErrorOr<List<FileSchema>>> Handle(GetFilesQuery request, CancellationToken cancellationToken)
     {
         var files = await _fileRepository.GetUserFilesAsync(request.Sub, cancellationToken);

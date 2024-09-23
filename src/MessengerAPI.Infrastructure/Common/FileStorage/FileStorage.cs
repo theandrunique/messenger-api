@@ -24,7 +24,7 @@ public class FileStorage : IFileStorage
         _s3Client = new AmazonS3Client(credentials, config);
     }
 
-    public async Task<string> Put(Stream fileStream, string key, string fileName, string contentType, CancellationToken cancellationToken)
+    public async Task<string> PutAsync(Stream fileStream, string key, string fileName, string contentType, CancellationToken cancellationToken)
     {
         var uploadRequest = new TransferUtilityUploadRequest
         {

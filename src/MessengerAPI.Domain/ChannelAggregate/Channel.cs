@@ -16,24 +16,65 @@ public class Channel : IHasDomainEvents
     private readonly List<AdminId> _adminIds = new();
     private readonly List<PinnedMessageId> _pinnedMessageIds = new();
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.ToList();
+    /// <summary>
+    /// List of messages <see cref="Message"/>
+    /// </summary>
     public IReadOnlyCollection<Message> Messages => _messages.ToList();
+    /// <summary>
+    /// List of members <see cref="User"/> 
+    /// </summary>
     public IReadOnlyCollection<User> Members => _members.ToList();
+    /// <summary>
+    /// List of admin ids
+    /// </summary>
     public IReadOnlyCollection<AdminId> AdminIds => _adminIds.ToList();
+    /// <summary>
+    /// List of pinned message ids
+    /// </summary>
     public IReadOnlyCollection<PinnedMessageId> PinnedMessageIds => _pinnedMessageIds.ToList();
 
+    /// <summary>
+    /// Channel id
+    /// </summary>
     public ChannelId Id { get; private set; }
+    /// <summary>
+    /// Owner id of the channel, null if it's private
+    /// </summary>
     public UserId? OwnerId { get; private set; }
+    /// <summary>
+    /// Title of the channel, null if it's private
+    /// </summary>
     public string? Title { get; private set; }
+    /// <summary>
+    /// Image of the channel, null if it's private
+    /// </summary>
     public FileData? Image { get; private set; }
+    /// <summary>
+    /// Type of the channel
+    /// </summary>
     public ChannelType Type { get; private set; }
+    /// <summary>
+    /// Last message id
+    /// </summary>
     public MessageId? LastMessageId { get; private set; }
 
+    /// <summary>
+    /// Create a new channel with saved messages
+    /// </summary>
+    /// <param name="user"><see cref="User"/></param>
+    /// <returns><see cref="Channel"/></returns>
     public static Channel CreateSavedMessages(User user)
     {
         List<User> members = new List<User> { user };
 
         return new Channel(ChannelType.Private, members);
     }
+    /// <summary>
+    /// Create a new private channel
+    /// </summary>
+    /// <param name="user1">First user <see cref="User"/></param>
+    /// <param name="user2">Second user <see cref="User"/></param>
+    /// <returns><see cref="Channel"/></returns>
     public static Channel CreatePrivate(User user1, User user2)
     {
         List<User> members = new List<User>
@@ -43,7 +84,14 @@ public class Channel : IHasDomainEvents
 
         return new Channel(ChannelType.Private, members);
     }
-
+    /// <summary>
+    /// Create a new group channel
+    /// </summary>
+    /// <param name="ownerId"><see cref="UserId"/></param>
+    /// <param name="members">List of members</param>
+    /// <param name="title">Title of the channel</param>
+    /// <param name="image">Image of the channel</param>
+    /// <returns><see cref="Channel"/></returns>
     public static Channel CreateGroup(UserId ownerId, List<User> members, string? title = null, FileData? image = null)
     {
         return new Channel(ChannelType.Group, members, ownerId, title, image);
@@ -63,6 +111,14 @@ public class Channel : IHasDomainEvents
 
     private Channel() { }
 
+    /// <summary>
+    /// Add a new message
+    /// </summary>
+    /// <param name="senderId"><see cref="UserId"/></param>
+    /// <param name="text">Message text</param>
+    /// <param name="replyTo">Id of the message to reply</param>
+    /// <param name="attachments">List of files <see cref="FileData"/></param>
+    /// <returns><see cref="Message"/></returns>
     public Message AddMessage(UserId senderId, string text, MessageId? replyTo = null, List<FileData>? attachments = null)
     {
         var newMessage = Message.CreateNew(Id, senderId, text, replyTo, attachments);
@@ -72,6 +128,10 @@ public class Channel : IHasDomainEvents
         return newMessage;
     }
 
+    /// <summary>
+    /// Set list of messages
+    /// </summary>
+    /// <param name="messages">Enumerable of messages <see cref="Message"/></param>
     public void SetMessages(IEnumerable<Message> messages)
     {
         _messages.Clear();

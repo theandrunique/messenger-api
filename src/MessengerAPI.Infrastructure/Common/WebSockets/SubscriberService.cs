@@ -29,7 +29,7 @@ public class SubscriberService
             var serializedMessage = JsonSerializer.Deserialize<NotificationMessage>(message);
             if (serializedMessage == null) return;
 
-            await notificationService.Notify(serializedMessage.RecipientIds, serializedMessage.JsonData);
+            await notificationService.NotifyAsync(serializedMessage.RecipientIds, serializedMessage.JsonData);
         }
     }
 }

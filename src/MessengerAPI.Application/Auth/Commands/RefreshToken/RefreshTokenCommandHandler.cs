@@ -31,9 +31,9 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
     /// <summary>
     /// Refreshing session and return new access and refresh tokens
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>Refresh and access tokens</returns>
+    /// <param name="request"><see cref="RefreshTokenCommand"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="TokenPairResponse"/></returns>
     public async Task<ErrorOr<TokenPairResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         var decryptedPayload = _jweHelper.Decrypt(request.RefreshToken);

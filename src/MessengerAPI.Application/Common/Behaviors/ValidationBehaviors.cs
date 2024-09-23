@@ -16,6 +16,13 @@ public class ValidationBehavior<TRequest, TResponse> :
         _validator = validator;
     }
 
+    /// <summary>
+    /// Check if handler has a validator and validate request
+    /// </summary>
+    /// <param name="request"><see cref="TRequest"/></param>
+    /// <param name="next"><see cref="RequestHandlerDelegate<TResponse>"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="TResponse"/></returns>
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,

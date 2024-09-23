@@ -24,13 +24,13 @@ public class NotificationService : INotificationService, IWebSocketService
         _redis = connectionMultiplexer.GetDatabase();
     }
 
-    public async Task AddConnection(UserId userId, WebSocket webSocket)
+    public async Task AddConnectionAsync(UserId userId, WebSocket webSocket)
     {
         _connections[userId] = webSocket;
         await _connectionRepository.AddAsync(userId, _serverId);
     }
 
-    public async Task RemoveConnection(UserId userId)
+    public async Task RemoveConnectionAsync(UserId userId)
     {
         if (_connections.ContainsKey(userId))
         {
@@ -39,7 +39,7 @@ public class NotificationService : INotificationService, IWebSocketService
         }
     }
 
-    public async Task Notify(List<UserId> recipientIds, string jsonData)
+    public async Task NotifyAsync(List<UserId> recipientIds, string jsonData)
     {
         var groups = new Dictionary<string, List<UserId>>();
         var currentServer = new HashSet<UserId>();
@@ -76,7 +76,7 @@ public class NotificationService : INotificationService, IWebSocketService
         }
     }
 
-    public async Task SendMessage(UserId recipientId, string jsonMessage)
+    private async Task SendMessage(UserId recipientId, string jsonMessage)
     {
         if (_connections.ContainsKey(recipientId))
         {

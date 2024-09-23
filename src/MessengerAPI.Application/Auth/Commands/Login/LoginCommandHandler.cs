@@ -38,9 +38,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
     /// <summary>
     /// Login user, check password and login if correct create session
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>Access and refresh tokens</returns>
+    /// <param name="request"><see cref="LoginCommand"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="TokenPairResponse"/></returns>
     public async Task<ErrorOr<TokenPairResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         User? user;

@@ -23,11 +23,10 @@ public class NewMessageEventHandler : INotificationHandler<NewMessageCreated>
     }
 
     /// <summary>
-    /// Send a notification about new message
+    /// Send a notification about new message to all channel members
     /// </summary>
-    /// <param name="notification"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <param name="notification"><see cref="NewMessageCreated"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     public async Task Handle(NewMessageCreated notification, CancellationToken cancellationToken)
     {
         var mapped = _mapper.Map<NewMessageNotificationSchema>(notification);
@@ -41,6 +40,6 @@ public class NewMessageEventHandler : INotificationHandler<NewMessageCreated>
 
         var recipientIds = channel.Members.Select(m => m.Id).ToList();
 
-        await _notificationService.Notify(recipientIds, jsonMessage);
+        await _notificationService.NotifyAsync(recipientIds, jsonMessage);
     }
 }

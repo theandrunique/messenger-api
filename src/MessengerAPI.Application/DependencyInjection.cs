@@ -7,6 +7,11 @@ namespace MessengerAPI.Application;
 
 public static class DependencyInjection
 {
+    /// <summary>
+    /// Add application layer dependencies
+    /// </summary>
+    /// <param name="services"><see cref="IServiceCollection"/></param>
+    /// <returns><see cref="IServiceCollection"/></returns>
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddMediatR(cfg => {

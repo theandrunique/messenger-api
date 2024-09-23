@@ -26,9 +26,9 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
     /// <summary>
     /// Create new channel, if private checks for existing channels and returns it, otherwise creates new one
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>Channel</returns>
+    /// <param name="request"><see cref="CreateChannelCommand"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="ChannelSchema"/></returns>
     /// <exception cref="NotImplementedException">If channel type is not implemented</exception>
     public async Task<ErrorOr<ChannelSchema>> Handle(CreateChannelCommand request, CancellationToken cancellationToken)
     {

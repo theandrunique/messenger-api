@@ -22,11 +22,11 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
     }
 
     /// <summary>
-    /// Register new user
+    /// Register a new user
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>Private info of the new created user</returns>
+    /// <param name="request"><see cref="RegisterCommand"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="UserPrivateSchema"/></returns>
     public async Task<ErrorOr<UserPrivateSchema>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var newUser = User.Create(

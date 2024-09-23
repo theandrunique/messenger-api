@@ -2,8 +2,14 @@ using MessengerAPI.Application.Common;
 
 namespace MessengerAPI.Application.Schemas;
 
-public interface INotificationSchema 
+public interface INotificationSchema<T>
 {
-    public NotificationType Type { get; }
-    public object Data { get; }
+    /// <summary>
+    /// Notification type
+    /// </summary>
+    NotificationType Type { get; }
+    /// <summary>
+    /// Notification data
+    /// </summary>
+    T Data { get; }
 }

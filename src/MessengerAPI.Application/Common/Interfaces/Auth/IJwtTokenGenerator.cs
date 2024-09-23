@@ -7,8 +7,8 @@ public interface IJwtTokenGenerator
     /// <summary>
     /// Generate JWT token
     /// </summary>
-    /// <param name="sub">Id of user</param>
+    /// <param name="sub"><see cref="UserId"/></param>
     /// <param name="tokenId">Id of token</param>
-    /// <returns></returns>
+    /// <returns>JWT token</returns>
     string Generate(UserId sub, Guid tokenId);
 }

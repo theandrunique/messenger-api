@@ -22,6 +22,12 @@ public class AuthController : ApiController
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Sign up
+    /// </summary>
+    /// <param name="schema"><see cref="SignUpRequestSchema"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="UserPrivateSchema"/></returns>
     [HttpPost("sign-up")]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignUp([FromForm] SignUpRequestSchema schema, CancellationToken cancellationToken)
@@ -35,6 +41,13 @@ public class AuthController : ApiController
             errors => Problem(errors));
     }
 
+    /// <summary>
+    /// Sign in
+    /// </summary>
+    /// <param name="schema"><see cref="SignInRequestSchema"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="TokenPairResponse"/></returns>
+    /// <exception cref="Exception">Thrown if IP address is null</exception>
     [HttpPost("sign-in")]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignIn([FromForm] SignInRequestSchema schema, CancellationToken cancellationToken)
@@ -59,6 +72,12 @@ public class AuthController : ApiController
             errors => Problem(errors));
     }
 
+    /// <summary>
+    /// Refresh token
+    /// </summary>
+    /// <param name="refreshToken">Refresh token</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="TokenPairResponse"/></returns>
     [HttpPost("token")]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> RefreshToken([FromForm] string refreshToken, CancellationToken cancellationToken)
@@ -75,6 +94,10 @@ public class AuthController : ApiController
             errors => Problem(errors));
     }
 
+    /// <summary>
+    /// Get refresh token from cookies
+    /// </summary>
+    /// <returns>Refresh token</returns>
     [HttpGet("token")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public IActionResult Token()

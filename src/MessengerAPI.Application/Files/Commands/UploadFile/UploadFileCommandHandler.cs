@@ -25,9 +25,9 @@ public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Error
     /// <summary>
     /// Uploading file to S3 and saving it in DB
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>A new file</returns>
+    /// <param name="request"><see cref="UploadFileCommand"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="FileSchema"/></returns>
     public async Task<ErrorOr<FileSchema>> Handle(UploadFileCommand request, CancellationToken cancellationToken)
     {
         var sha256Bytes = ComputeSha256Hash(request.FileStream);
@@ -36,8 +36,8 @@ public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Error
         var key = $"{sha265String}-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
 
         request.FileStream.Position = 0;
-        
-        var url = await _fileStorage.Put(
+
+        var url = await _fileStorage.PutAsync(
             request.FileStream,
             key,
             request.FileName,

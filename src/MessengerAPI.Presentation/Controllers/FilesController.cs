@@ -22,6 +22,12 @@ public class FilesController : ApiController
         _settings = settings.Value;
     }
 
+    /// <summary>
+    /// Upload file
+    /// </summary>
+    /// <param name="file"><see cref="IFormFile"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="FileSchema"/></returns>
     [HttpPost]
     [ProducesResponseType(typeof(FileSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> UploadFile(IFormFile file, CancellationToken cancellationToken)
@@ -44,6 +50,11 @@ public class FilesController : ApiController
         );
     }
 
+    /// <summary>
+    /// Get user's files
+    /// </summary>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns>List of <see cref="FileSchema"/></returns>
     [HttpGet]
     [ProducesResponseType(typeof(List<FileSchema>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFiles(CancellationToken cancellationToken)

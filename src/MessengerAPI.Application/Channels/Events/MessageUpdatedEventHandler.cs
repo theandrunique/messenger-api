@@ -21,7 +21,11 @@ public class MessageUpdatedEventHandler : INotificationHandler<MessageUpdated>
         _mapper = mapper;
         _notificationService = notificationService;
     }
-
+    /// <summary>
+    /// Send a notification about new message to all channel members
+    /// </summary>
+    /// <param name="notification"><see cref="MessageUpdated"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     public async Task Handle(MessageUpdated notification, CancellationToken cancellationToken)
     {
         var mapped = _mapper.Map<MessageUpdatedNotificationSchema>(notification);
@@ -35,6 +39,6 @@ public class MessageUpdatedEventHandler : INotificationHandler<MessageUpdated>
 
         var recipientIds = channel.Members.Select(m => m.Id).ToList();
 
-        await _notificationService.Notify(recipientIds, jsonMessage);
+        await _notificationService.NotifyAsync(recipientIds, jsonMessage);
     }
 }

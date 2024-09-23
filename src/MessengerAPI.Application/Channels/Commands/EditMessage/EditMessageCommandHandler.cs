@@ -25,9 +25,9 @@ public class EditMessageCommandHandler : IRequestHandler<EditMessageCommand, Err
     /// <summary>
     /// Updates existing message
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <param name="request"><see cref="EditMessageCommand"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="MessageSchema"/></returns>
     public async Task<ErrorOr<MessageSchema>> Handle(EditMessageCommand request, CancellationToken cancellationToken)
     {
         var channel = await _channelRepository.GetByIdAsync(request.ChannelId, cancellationToken);

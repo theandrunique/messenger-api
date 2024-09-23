@@ -43,7 +43,7 @@ public class WebSocketController : ControllerBase
     {
         var buffer = new byte[1024 * 4];
 
-        await _webSocketService.AddConnection(userId, webSocket);
+        await _webSocketService.AddConnectionAsync(userId, webSocket);
         try
         {
             var receiveResult = await webSocket.ReceiveAsync(
@@ -62,7 +62,7 @@ public class WebSocketController : ControllerBase
         }
         finally
         {
-            await _webSocketService.RemoveConnection(userId);
+            await _webSocketService.RemoveConnectionAsync(userId);
         }
     }
 }

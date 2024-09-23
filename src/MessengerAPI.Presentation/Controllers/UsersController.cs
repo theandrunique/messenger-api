@@ -16,6 +16,11 @@ public class UsersController : ApiController
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Get current user private data
+    /// </summary>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="UserPrivateSchema"/></returns>
     [HttpGet("me")]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMe(CancellationToken cancellationToken)

@@ -23,6 +23,11 @@ public class ChannelsController : ApiController
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Get user's channels
+    /// </summary>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="ChannelSchema"/></returns>
     [HttpGet]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetChannels(CancellationToken cancellationToken)
@@ -39,6 +44,12 @@ public class ChannelsController : ApiController
         );
     }
 
+    /// <summary>
+    /// Create channel
+    /// </summary>
+    /// <param name="schema"><see cref="CreateChannelRequestSchema"/></param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="ChannelSchema"/></returns>
     [HttpPost]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateChannel(CreateChannelRequestSchema schema, CancellationToken cancellationToken)
@@ -59,6 +70,13 @@ public class ChannelsController : ApiController
         );
     }
 
+    /// <summary>
+    /// Create message
+    /// </summary>
+    /// <param name="schema"><see cref="CreateMessageRequestSchema"/></param>
+    /// <param name="channelId">Id of channel</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns><see cref="MessageSchema"/></returns>
     [HttpPost("{channelId}/messages")]
     [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateMessage(
@@ -85,6 +103,14 @@ public class ChannelsController : ApiController
         );
     }
 
+    /// <summary>
+    /// Get messages from channel
+    /// </summary>
+    /// <param name="channelId">Channel id</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <param name="offset">Offset</param>
+    /// <param name="limit">Limit</param>
+    /// <returns><see cref="MessageSchema"/></returns>
     [HttpGet("{channelId}/messages")]
     [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMessages(
@@ -105,6 +131,14 @@ public class ChannelsController : ApiController
         );
     }
 
+    /// <summary>
+    /// Edit message
+    /// </summary>
+    /// <param name="schema"><see cref="CreateMessageRequestSchema"/></param>
+    /// <param name="channelId">Channel id</param>
+    /// <param name="messageId">Message id</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+    /// <returns></returns>
     [HttpPut("{channelId}/messages/{messageId}")]
     [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> EditMessage(

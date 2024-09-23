@@ -8,7 +8,6 @@ public interface INotificationService
     /// Send notification
     /// </summary>
     /// <param name="jsonMessage">message in json</param>
-    /// <param name="recipientIds">list of recipient ids</param>
-    /// <returns></returns>
-    Task Notify(List<UserId> recipientIds, string jsonMessage);
+    /// <param name="recipientIds">list of user ids who will receive notification</param>
+    Task NotifyAsync(List<UserId> recipientIds, string jsonMessage);
 }
