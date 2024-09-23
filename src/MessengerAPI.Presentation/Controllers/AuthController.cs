@@ -76,11 +76,15 @@ public class AuthController : ApiController
     }
 
     [HttpGet("token")]
-    [ProducesResponseType(typeof(TokenResponseSchema), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public IActionResult Token()
     {
         string? refreshToken = Request.Cookies[CookieConstants.RefreshToken];
-        return Ok(new TokenResponseSchema(refreshToken));
+        if (refreshToken == null)
+        {
+            return NotFound();
+        }
+        return Ok(refreshToken);
     }
 
     private void AddRefreshTokenToCookies(string refreshToken)
