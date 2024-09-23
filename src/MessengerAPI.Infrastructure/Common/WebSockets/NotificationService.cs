@@ -27,7 +27,7 @@ public class NotificationService : INotificationService, IWebSocketService
     public async Task AddConnection(UserId userId, WebSocket webSocket)
     {
         _connections[userId] = webSocket;
-        await _connectionRepository.Add(userId, _serverId);
+        await _connectionRepository.AddAsync(userId, _serverId);
     }
 
     public async Task RemoveConnection(UserId userId)
@@ -35,7 +35,7 @@ public class NotificationService : INotificationService, IWebSocketService
         if (_connections.ContainsKey(userId))
         {
             _connections.Remove(userId, out _);
-            await _connectionRepository.Remove(userId);
+            await _connectionRepository.RemoveAsync(userId);
         }
     }
 
@@ -52,7 +52,7 @@ public class NotificationService : INotificationService, IWebSocketService
             }
             else
             {
-                var serverId = await _connectionRepository.Get(userId);
+                var serverId = await _connectionRepository.GetAsync(userId);
                 if (serverId != null)
                 {
                     if (!groups.ContainsKey(serverId))
@@ -84,7 +84,7 @@ public class NotificationService : INotificationService, IWebSocketService
         }
         else
         {
-            string? serverId = await _connectionRepository.Get(recipientId);
+            string? serverId = await _connectionRepository.GetAsync(recipientId);
             // TODO: check that queue exists
             if (serverId != null)
             {

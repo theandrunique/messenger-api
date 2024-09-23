@@ -13,22 +13,22 @@ public class ConnectionRepository
         _redis = multiplexer.GetDatabase();
     }
 
-    public async Task Add(UserId userId, string serverQueueId)
+    public async Task AddAsync(UserId userId, string serverQueueId)
     {
         await _redis.HashSetAsync(_connectionsKey, userId.Value.ToString(), serverQueueId);
     }
 
-    public async Task<string?> Get(UserId userId)
+    public async Task<string?> GetAsync(UserId userId)
     {
         return await _redis.HashGetAsync(_connectionsKey, userId.Value.ToString());
     }
 
-    public async Task Remove(UserId userId)
+    public async Task RemoveAsync(UserId userId)
     {
         await _redis.HashDeleteAsync(_connectionsKey, userId.Value.ToString());
     }
 
-    public async Task<bool> Contains(UserId userId)
+    public async Task<bool> ContainsAsync(UserId userId)
     {
         return await _redis.HashExistsAsync(_connectionsKey, userId.Value.ToString());
     }
