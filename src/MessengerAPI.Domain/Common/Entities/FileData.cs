@@ -4,14 +4,14 @@ namespace MessengerAPI.Domain.Common.Entities;
 
 public class FileData
 {
-    public Guid Id { get; set; }
-    public UserId OwnerId { get; set; }
-    public string FileName { get; set; }
-    public string ContentType { get; set; }
-    public string Url { get; set; }
-    public long Size { get; set; }
-    public byte[] Sha256 { get; set; }
-    public DateTime UploadedAt { get; set; }
+    public Guid Id { get; private set; }
+    public UserId OwnerId { get; private set; }
+    public string FileName { get; private set; }
+    public string ContentType { get; private set; }
+    public string Url { get; private set; }
+    public long Size { get; private set; }
+    public byte[] Sha256 { get; private set; }
+    public DateTime UploadedAt { get; private set; }
 
     public static FileData CreateNew(UserId ownerId, string contentType, string fileName, string url, long size, byte[] sha256)
     {
