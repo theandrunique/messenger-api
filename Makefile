@@ -22,5 +22,5 @@ logs:
 
 .PHONY: migrations
 migrations:
-	dotnet ef database update -s MessengerAPI.Presentation -p MessengerAPI.Infrastructure
+	dotnet ef database update -s src/MessengerAPI.Presentation -p src/MessengerAPI.Infrastructure
 
