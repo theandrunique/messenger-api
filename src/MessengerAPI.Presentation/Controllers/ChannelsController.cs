@@ -30,7 +30,7 @@ public class ChannelsController : ApiController
     /// <returns><see cref="ChannelSchema"/></returns>
     [HttpGet]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetChannels(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetChannelsAsync(CancellationToken cancellationToken)
     {
         var sub = User.GetUserId();
 
@@ -52,7 +52,7 @@ public class ChannelsController : ApiController
     /// <returns><see cref="ChannelSchema"/></returns>
     [HttpPost]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateChannel(CreateChannelRequestSchema schema, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateChannelAsync(CreateChannelRequestSchema schema, CancellationToken cancellationToken)
     {
         var sub = User.GetUserId();
 
@@ -79,7 +79,7 @@ public class ChannelsController : ApiController
     /// <returns><see cref="MessageSchema"/></returns>
     [HttpPost("{channelId}/messages")]
     [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateMessage(
+    public async Task<IActionResult> CreateMessageAsync(
         CreateMessageRequestSchema schema,
         Guid channelId,
         CancellationToken cancellationToken)
@@ -113,7 +113,7 @@ public class ChannelsController : ApiController
     /// <returns><see cref="MessageSchema"/></returns>
     [HttpGet("{channelId}/messages")]
     [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetMessages(
+    public async Task<IActionResult> GetMessagesAsync(
         Guid channelId,
         CancellationToken cancellationToken,
         int offset = 0,
@@ -141,7 +141,7 @@ public class ChannelsController : ApiController
     /// <returns></returns>
     [HttpPut("{channelId}/messages/{messageId}")]
     [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> EditMessage(
+    public async Task<IActionResult> EditMessageAsync(
         CreateMessageRequestSchema schema,
         Guid channelId,
         long messageId,

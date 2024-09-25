@@ -23,7 +23,7 @@ public class UsersController : ApiController
     /// <returns><see cref="UserPrivateSchema"/></returns>
     [HttpGet("me")]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetMe(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMeAsync(CancellationToken cancellationToken)
     {
         var sub = User.GetUserId();
 

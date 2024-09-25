@@ -30,7 +30,7 @@ public class FilesController : ApiController
     /// <returns><see cref="FileSchema"/></returns>
     [HttpPost]
     [ProducesResponseType(typeof(FileSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UploadFile(IFormFile file, CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadFileAsync(IFormFile file, CancellationToken cancellationToken)
     {
         if (file.Length > _settings.MaxFileSize)
         {
@@ -57,7 +57,7 @@ public class FilesController : ApiController
     /// <returns>List of <see cref="FileSchema"/></returns>
     [HttpGet]
     [ProducesResponseType(typeof(List<FileSchema>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetFiles(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetFilesAsync(CancellationToken cancellationToken)
     {
         var sub = User.GetUserId();
         var query = new GetFilesQuery(sub);

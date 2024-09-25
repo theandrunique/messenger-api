@@ -30,7 +30,7 @@ public class AuthController : ApiController
     /// <returns><see cref="UserPrivateSchema"/></returns>
     [HttpPost("sign-up")]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SignUp([FromForm] SignUpRequestSchema schema, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignUpAsync([FromForm] SignUpRequestSchema schema, CancellationToken cancellationToken)
     {
         var command = new RegisterCommand(schema.username, schema.globalName, schema.password);
 
@@ -50,7 +50,7 @@ public class AuthController : ApiController
     /// <exception cref="Exception">Thrown if IP address is null</exception>
     [HttpPost("sign-in")]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SignIn([FromForm] SignInRequestSchema schema, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignInAsync([FromForm] SignInRequestSchema schema, CancellationToken cancellationToken)
     {
         string userAgent = Request.Headers.UserAgent.ToString();
         string? ipAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
@@ -80,7 +80,7 @@ public class AuthController : ApiController
     /// <returns><see cref="TokenPairResponse"/></returns>
     [HttpPost("token")]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RefreshToken([FromForm] string refreshToken, CancellationToken cancellationToken)
+    public async Task<IActionResult> RefreshTokenAsync([FromForm] string refreshToken, CancellationToken cancellationToken)
     {
         var command = new RefreshTokenCommand(refreshToken);
         var result = await _mediator.Send(command, cancellationToken);
