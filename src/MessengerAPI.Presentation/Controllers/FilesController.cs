@@ -38,9 +38,10 @@ public class FilesController : ApiController
         }
 
         using Stream fileStream = file.OpenReadStream();
-        var sub = User.GetUserId();
 
-        var command = new UploadFileCommand(sub, fileStream, file.ContentType, file.FileName);
+        var identity = User.GetIdentity();
+
+        var command = new UploadFileCommand(identity.UserId, fileStream, file.ContentType, file.FileName);
 
         var result = await _mediator.Send(command, cancellationToken);
 
@@ -59,8 +60,9 @@ public class FilesController : ApiController
     [ProducesResponseType(typeof(List<FileSchema>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFilesAsync(CancellationToken cancellationToken)
     {
-        var sub = User.GetUserId();
-        var query = new GetFilesQuery(sub);
+        var identity = User.GetIdentity();
+
+        var query = new GetFilesQuery(identity.UserId);
 
         var result = await _mediator.Send(query, cancellationToken);
 

@@ -31,6 +31,8 @@ services:
       - RedisSettings__ConnectionString=${RedisSettings__ConnectionString:-redis:6379}
 
       - PostgresSettings__ConnectionString=${PostgresSettings__ConnectionString:?}
+    volumes:
+      - ./keys:/app/keys
 
   db:
     image: postgres

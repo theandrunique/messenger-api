@@ -1,10 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Infrastructure.Auth;
-using MessengerAPI.Infrastructure.Auth.SigningKeys;
 using MessengerAPI.Infrastructure.Common;
 using MessengerAPI.Infrastructure.Common.FileStorage;
 using MessengerAPI.Infrastructure.Common.Persistance;
@@ -16,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 
 namespace MessengerAPI.Infrastructure;
@@ -38,6 +34,8 @@ public static class DependencyInjection
         services.Configure<FileStorageSettings>(config.GetSection(nameof(FileStorageSettings)));
         services.AddSingleton<IFileStorageSettings>(sp => sp.GetRequiredService<IOptions<FileStorageSettings>>().Value);
         services.AddScoped<IFileStorage, FileStorage>();
+
+        services.AddHttpContextAccessor();
 
         services.AddRedis(config);
 
@@ -93,56 +91,17 @@ public static class DependencyInjection
         services.AddSingleton(Options.Create(jwtSettings));
         services.AddSingleton<IJwtSettings>(sp => sp.GetRequiredService<IOptions<JwtSettings>>().Value);
 
+        // services.Configure<JwtSettings>(config.GetSection(nameof(JwtSettings)));
+
         services.AddSingleton<IJwtTokenGenerator, JwtTokenHelper>();
 
-        services.AddSingleton<KeyManagementService>();
+        services.AddSingleton<IKeyManagementService, KeyManagementService>();
+
+        services.ConfigureOptions<JwtBearerOptionsConfiguration>();
 
         services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidAudience = jwtSettings.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
-                };
-                options.MapInboundClaims = false;
-                options.Events = new JwtBearerEvents
-                {
-                    OnTokenValidated = async context =>
-                    {
-                        Dictionary<string, string>? claims = context.Principal?.Claims.ToDictionary(c => c.Type, c => c.Value);
-                        if (claims == null)
-                        {
-                            context.Fail("Invalid token.");
-                            return;
-                        }
+            .AddJwtBearer();
 
-                        if (!claims.ContainsKey(JwtRegisteredClaimNames.Sub))
-                        {
-                            context.Fail("Invalid token.");
-                            return;
-                        }
-                        if (!claims.ContainsKey(JwtRegisteredClaimNames.Jti))
-                        {
-                            context.Fail("Invalid token.");
-                            return;
-                        }
-
-                        var tokenId = claims[JwtRegisteredClaimNames.Jti];
-
-                        var cacheService = context.HttpContext.RequestServices.GetRequiredService<IRevokedTokenStore>();
-                        if (!await cacheService.IsTokenValidAsync(tokenId))
-                        {
-                            context.Fail("Token has been revoked.");
-                        }
-                    }
-                };
-            });
         return services;
     }
 }

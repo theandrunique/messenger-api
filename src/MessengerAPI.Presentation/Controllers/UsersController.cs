@@ -25,9 +25,9 @@ public class UsersController : ApiController
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMeAsync(CancellationToken cancellationToken)
     {
-        var sub = User.GetUserId();
+        var identity = User.GetIdentity();
 
-        var query = new GetMeQuery(sub);
+        var query = new GetMeQuery(identity.UserId);
 
         var result = await _mediator.Send(query, cancellationToken);
 

@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using Microsoft.Extensions.Options;
@@ -11,16 +10,19 @@ namespace MessengerAPI.Infrastructure.Auth;
 public class JwtTokenHelper : IJwtTokenGenerator
 {
     private readonly JwtSettings _settings;
-    public JwtTokenHelper(IOptions<JwtSettings> settings)
+    private readonly IKeyManagementService _keyService;
+    public JwtTokenHelper(IOptions<JwtSettings> settings, IKeyManagementService keyService)
     {
         _settings = settings.Value;
+        _keyService = keyService;
     }
 
     public string Generate(UserId sub, Guid tokenId)
     {
-        var signingCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Secret)),
-            SecurityAlgorithms.HmacSha256);
+        var key = _keyService.GetKey(out string keyId);
+
+
+        var signingCredentials = new SigningCredentials(new RsaSecurityKey(key), SecurityAlgorithms.RsaSha256);
 
         var claims = new[]
         {
@@ -35,6 +37,7 @@ public class JwtTokenHelper : IJwtTokenGenerator
             expires: DateTime.UtcNow.AddMinutes(_settings.ExpiryMinutes),
             signingCredentials: signingCredentials
         );
+        securityToken.Header.Add("kid", keyId);
 
         return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }

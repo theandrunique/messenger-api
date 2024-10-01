@@ -1,11 +1,13 @@
 using System.Security.Cryptography;
+using MessengerAPI.Application.Common.Interfaces.Auth;
 using Microsoft.IdentityModel.Tokens;
 
-namespace MessengerAPI.Infrastructure.Auth.SigningKeys;
+namespace MessengerAPI.Infrastructure.Auth;
 
-public class KeyManagementService
+public class KeyManagementService : IKeyManagementService
 {
     private readonly Dictionary<string, RSA> _keys = new();
+    public IReadOnlyDictionary<string, RSA> Keys => _keys.AsReadOnly();
 
     public KeyManagementService()
     {

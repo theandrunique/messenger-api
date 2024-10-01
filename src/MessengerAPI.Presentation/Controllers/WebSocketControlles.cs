@@ -25,8 +25,8 @@ public class WebSocketController : ControllerBase
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
             try
             {
-                var userId = User.GetUserId();
-                await HandleConnection(userId, webSocket);
+                var identity = User.GetIdentity();
+                await HandleConnection(identity.UserId, webSocket);
             }
             catch
             {

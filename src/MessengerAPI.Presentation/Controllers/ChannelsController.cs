@@ -32,9 +32,9 @@ public class ChannelsController : ApiController
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetChannelsAsync(CancellationToken cancellationToken)
     {
-        var sub = User.GetUserId();
+        var identity = User.GetIdentity();
 
-        var query = new GetChannelsQuery(sub);
+        var query = new GetChannelsQuery(identity.UserId);
 
         var result = await _mediator.Send(query, cancellationToken);
 
@@ -54,10 +54,10 @@ public class ChannelsController : ApiController
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateChannelAsync(CreateChannelRequestSchema schema, CancellationToken cancellationToken)
     {
-        var sub = User.GetUserId();
+        var identity = User.GetIdentity();
 
         var query = new CreateChannelCommand(
-            sub,
+            identity.UserId,
             schema.members.ConvertAll(m => new UserId(m)),
             schema.type,
             schema.title);
@@ -84,12 +84,12 @@ public class ChannelsController : ApiController
         Guid channelId,
         CancellationToken cancellationToken)
     {
-        var sub = User.GetUserId();
+        var identity = User.GetIdentity();
 
         var replyTo = schema.replyTo.HasValue ? new MessageId(schema.replyTo.Value) : null;
 
         var command = new CreateMessageCommand(
-            sub,
+            identity.UserId,
             new ChannelId(channelId),
             schema.text,
             replyTo,
@@ -119,9 +119,9 @@ public class ChannelsController : ApiController
         int offset = 0,
         int limit = 50)
     {
-        var sub = User.GetUserId();
+        var identity = User.GetIdentity();
 
-        var query = new GetMessagesQuery(sub, new ChannelId(channelId), offset, limit);
+        var query = new GetMessagesQuery(identity.UserId, new ChannelId(channelId), offset, limit);
 
         var result = await _mediator.Send(query, cancellationToken);
 
@@ -147,13 +147,13 @@ public class ChannelsController : ApiController
         long messageId,
         CancellationToken cancellationToken)
     {
-        var sub = User.GetUserId();
+        var identity = User.GetIdentity();
 
         var replyTo = schema.replyTo.HasValue ? new MessageId(schema.replyTo.Value) : null;
 
         var command = new EditMessageCommand(
             new MessageId(messageId),
-            sub,
+            identity.UserId,
             new ChannelId(channelId),
             schema.text,
             replyTo,
