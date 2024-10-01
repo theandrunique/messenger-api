@@ -3,10 +3,10 @@ namespace MessengerAPI.Application.Common.Interfaces;
 public interface IUserAgentParser
 {
     /// <summary>
-    /// Parse user agent
+    /// Get IP address
     /// </summary>
-    /// <param name="userAgent">User agent</param>
-    void Parse(string userAgent);
+    /// <returns>IP address</returns>
+    string GetIpAddress();
     /// <summary>
     /// Get device name
     /// </summary>

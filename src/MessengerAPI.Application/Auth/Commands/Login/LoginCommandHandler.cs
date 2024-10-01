@@ -56,9 +56,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
 
         if (!_hashHelper.Verify(user.PasswordHash, request.Password)) return AuthErrors.InvalidCredentials;
 
-        _userAgentParser.Parse(request.UserAgent);
-
-        var session = user.CreateSession(_userAgentParser.GetDeviceName(), _userAgentParser.GetClientName(), request.IpAddress);
+        var session = user.CreateSession(
+            _userAgentParser.GetDeviceName(),
+            _userAgentParser.GetClientName(),
+            _userAgentParser.GetIpAddress());
 
         await _userRepository.Commit(cancellationToken);
 

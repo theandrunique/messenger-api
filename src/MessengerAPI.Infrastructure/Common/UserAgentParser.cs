@@ -1,19 +1,37 @@
 using DeviceDetectorNET;
 using MessengerAPI.Application.Common.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace MessengerAPI.Infrastructure.Common;
 
 public class UserAgentParser : IUserAgentParser
 {
-    private DeviceDetector _deviceDetector;
-    public UserAgentParser()
+    private readonly HttpContext _httpContext;
+    private readonly DeviceDetector _deviceDetector;
+
+    public UserAgentParser(IHttpContextAccessor httpContextAccessor)
     {
+        if (httpContextAccessor.HttpContext == null)
+        {
+            throw new Exception("UserAgentParser was expected to be used in the context of an http request");
+        }
+
         _deviceDetector = new DeviceDetector();
-    }
-    public void Parse(string userAgent)
-    {
+        _httpContext = httpContextAccessor.HttpContext;
+
+        var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
         _deviceDetector.SetUserAgent(userAgent);
         _deviceDetector.Parse();
+    }
+    public string GetIpAddress()
+    {
+        string? ipAddress = _httpContext.Connection.RemoteIpAddress?.ToString();
+
+        if (ipAddress == null)
+        {
+            throw new Exception("IP address expected to be not null");
+        }
+        return ipAddress;
     }
     public string GetDeviceName()
     {

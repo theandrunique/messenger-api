@@ -53,14 +53,8 @@ public class AuthController : ApiController
     public async Task<IActionResult> SignInAsync([FromForm] SignInRequestSchema schema, CancellationToken cancellationToken)
     {
         string userAgent = Request.Headers.UserAgent.ToString();
-        string? ipAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
 
-        if (ipAddress == null)
-        {
-            throw new Exception("IP address expected to be not null");
-        }
-
-        var command = new LoginCommand(schema.login, schema.password, userAgent, ipAddress);
+        var command = new LoginCommand(schema.login, schema.password);
         var loginResult = await _mediator.Send(command, cancellationToken);
 
         return loginResult.Match(
