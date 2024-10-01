@@ -1,6 +1,6 @@
 namespace MessengerAPI.Application.Common.Interfaces;
 
-public interface IUserAgentParser
+public interface IClientInfoProvider
 {
     /// <summary>
     /// Get IP address

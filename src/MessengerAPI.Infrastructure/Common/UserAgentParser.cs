@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Http;
 
 namespace MessengerAPI.Infrastructure.Common;
 
-public class UserAgentParser : IUserAgentParser
+public class ClientInfoProvider : IClientInfoProvider
 {
     private readonly HttpContext _httpContext;
     private readonly DeviceDetector _deviceDetector;
 
-    public UserAgentParser(IHttpContextAccessor httpContextAccessor)
+    public ClientInfoProvider(IHttpContextAccessor httpContextAccessor)
     {
         if (httpContextAccessor.HttpContext == null)
         {

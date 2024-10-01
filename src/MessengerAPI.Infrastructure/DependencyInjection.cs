@@ -31,7 +31,7 @@ public static class DependencyInjection
         services.AddPersistance(config);
 
         services.AddSingleton<IHashHelper, BCryptHelper>();
-        services.AddScoped<IUserAgentParser, UserAgentParser>();
+        services.AddScoped<IClientInfoProvider, ClientInfoProvider>();
         services.AddScoped<IJweHelper, JweHelper>();
         services.AddScoped<IRevokedTokenStore, RevokedTokenStore>();
 

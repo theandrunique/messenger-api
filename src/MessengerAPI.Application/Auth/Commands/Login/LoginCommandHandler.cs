@@ -14,7 +14,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
 {
     private readonly IHashHelper _hashHelper;
     private readonly IUserRepository _userRepository;
-    private readonly IUserAgentParser _userAgentParser;
+    private readonly IClientInfoProvider _userAgentParser;
     private readonly IJweHelper _jweHelper;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IJwtSettings _jwtSettings;
@@ -22,7 +22,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
     public LoginCommandHandler(
         IHashHelper hashHelper,
         IUserRepository userRepository,
-        IUserAgentParser userAgentParser,
+        IClientInfoProvider userAgentParser,
         IJweHelper jweHelper,
         IJwtTokenGenerator jwtTokenGenerator,
         IJwtSettings jwtSettings)
