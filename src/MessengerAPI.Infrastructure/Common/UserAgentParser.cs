@@ -19,7 +19,7 @@ public class ClientInfoProvider : IClientInfoProvider
         _deviceDetector = new DeviceDetector();
         _httpContext = httpContextAccessor.HttpContext;
 
-        var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
+        var userAgent = _httpContext.Request.Headers.UserAgent.ToString();
         _deviceDetector.SetUserAgent(userAgent);
         _deviceDetector.Parse();
     }

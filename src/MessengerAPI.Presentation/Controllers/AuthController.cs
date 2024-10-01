@@ -47,13 +47,10 @@ public class AuthController : ApiController
     /// <param name="schema"><see cref="SignInRequestSchema"/></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     /// <returns><see cref="TokenPairResponse"/></returns>
-    /// <exception cref="Exception">Thrown if IP address is null</exception>
     [HttpPost("sign-in")]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignInAsync([FromForm] SignInRequestSchema schema, CancellationToken cancellationToken)
     {
-        string userAgent = Request.Headers.UserAgent.ToString();
-
         var command = new LoginCommand(schema.login, schema.password);
         var loginResult = await _mediator.Send(command, cancellationToken);
 
