@@ -7,11 +7,11 @@ public interface IRevokedTokenStore
     /// </summary>
     /// <param name="tokenId">Id of token</param>
     /// <returns>Is token valid</returns>
-    Task<bool> IsTokenValidAsync(string tokenId);
+    Task<bool> IsTokenValidAsync(Guid tokenId);
     /// <summary>
     /// revoke token
     /// </summary>
     /// <param name="tokenId">Id of token</param>
     /// <param name="expires">Time to expire in seconds</param>
-    Task RevokeTokenAsync(string tokenId, int expires);
+    Task RevokeTokenAsync(Guid tokenId, int expires);
 }

@@ -9,13 +9,16 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
 {
     private JwtSettings _jwtSettings { get; }
     private readonly IKeyManagementService _keyService;
+    private readonly IRevokedTokenStore _revokedTokenStore;
 
     public JwtBearerOptionsConfiguration(
         IOptions<JwtSettings> jwtSettings,
-        IKeyManagementService keyManagementService)
+        IKeyManagementService keyManagementService,
+        IRevokedTokenStore revokedTokenStore)
     {
         _jwtSettings = jwtSettings.Value;
         _keyService = keyManagementService;
+        _revokedTokenStore = revokedTokenStore;
     }
 
     public void Configure(string? name, JwtBearerOptions options)
@@ -40,18 +43,22 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
         };
         options.Events = new JwtBearerEvents
         {
-            OnTokenValidated = context =>
+            OnTokenValidated = async context =>
             {
                 try
                 {
                     var userIdentity = new UserIdentity(context.Principal);
+                    if (!await _revokedTokenStore.IsTokenValidAsync(userIdentity.TokenId))
+                    {
+                        context.Fail("Token revoked");
+                        return;
+                    }
+
                     context.Principal.AddIdentity(userIdentity);
-                    return Task.CompletedTask;
                 }
                 catch
                 {
                     context.Fail("Invalid payload");
-                    return Task.CompletedTask;
                 }
             },
 

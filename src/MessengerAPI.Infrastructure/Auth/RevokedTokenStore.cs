@@ -13,14 +13,14 @@ public class RevokedTokenStore : IRevokedTokenStore
         _redis = redis.GetDatabase();
     }
 
-    public async Task<bool> IsTokenValidAsync(string tokenId)
+    public async Task<bool> IsTokenValidAsync(Guid tokenId)
     {
-        return !await _redis.SetContainsAsync(key, tokenId);
+        return !await _redis.SetContainsAsync(key, tokenId.ToString());
     }
 
-    public async Task RevokeTokenAsync(string tokenId, int expires)
+    public async Task RevokeTokenAsync(Guid tokenId, int expires)
     {
-        await _redis.SetAddAsync(key, tokenId);
+        await _redis.SetAddAsync(key, tokenId.ToString());
 
         await _redis.KeyExpireAsync(key, TimeSpan.FromSeconds(expires));
     }

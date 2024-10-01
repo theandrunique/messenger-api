@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
 using Jose;
@@ -34,8 +35,9 @@ public class JweHelper : IJweHelper
         return jwe;
     }
 
-    public RefreshTokenPayload? Decrypt(string token)
+    public bool TryDecrypt(string token, [NotNullWhen(true)] out RefreshTokenPayload? payload)
     {
+        payload = null;
         try
         {
             var headers = JWE.Headers(token);
@@ -45,30 +47,34 @@ public class JweHelper : IJweHelper
             var protectedHeader = JsonSerializer.Deserialize<Dictionary<string, object>>(protectedHeaderJson);
             if (protectedHeader == null)
             {
-                return null;
+                return false;
             }
 
             if (!protectedHeader.TryGetValue("kid", out var kid))
             {
-                return null;
+                return false;
             }
 
             string? kidString = kid.ToString();
             if (kidString == null)
             {
-                return null;
+                return false;
             }
 
             var key = _keyService.GetKeyById(kidString);
 
             var jwe = JWE.Decrypt(token, key);
 
-            var data = JsonSerializer.Deserialize<RefreshTokenPayload>(jwe.Plaintext);
-            return data;
+            payload = JsonSerializer.Deserialize<RefreshTokenPayload>(jwe.Plaintext);
+            if (payload == null)
+            {
+                return false;
+            }
+            return true;
         }
         catch
         {
-            return null;
+            return false;
         }
     }
 }
