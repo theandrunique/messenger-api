@@ -77,7 +77,10 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
 
     private IEnumerable<SecurityKey> GetPublicKeys(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)
     {
-        var key = _keyService.GetKeyById(kid);
+        if (!_keyService.TryGetKeyById(kid, out var key))
+        {
+            yield return null;
+        }
         var securityKey = new RsaSecurityKey(key);
         yield return securityKey;
     }

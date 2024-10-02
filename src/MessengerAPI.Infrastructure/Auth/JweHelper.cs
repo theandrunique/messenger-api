@@ -19,7 +19,7 @@ public class JweHelper : IJweHelper
     public string Encrypt(RefreshTokenPayload payload)
     {
         var jsonPayload = JsonSerializer.Serialize(payload);
-        var rsa = _keyService.GetKey(out string keyId);
+        var (rsa, keyId) = _keyService.GetKey();
 
         var recipients = new[]
         {
@@ -61,7 +61,10 @@ public class JweHelper : IJweHelper
                 return false;
             }
 
-            var key = _keyService.GetKeyById(kidString);
+            if (!_keyService.TryGetKeyById(kidString, out var key))
+            {
+                return false;
+            }
 
             var jwe = JWE.Decrypt(token, key);
 

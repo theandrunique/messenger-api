@@ -19,10 +19,10 @@ public class JwtTokenHelper : IJwtTokenGenerator
 
     public string Generate(UserId sub, Guid tokenId)
     {
-        var key = _keyService.GetKey(out string keyId);
+        var (rsa, keyId) = _keyService.GetKey();
 
 
-        var signingCredentials = new SigningCredentials(new RsaSecurityKey(key), SecurityAlgorithms.RsaSha256);
+        var signingCredentials = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256);
 
         var claims = new[]
         {

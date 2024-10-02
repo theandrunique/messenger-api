@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using Microsoft.IdentityModel.Tokens;
@@ -16,15 +17,26 @@ public class KeyManagementService : IKeyManagementService
 
     private void LoadKeys()
     {
-        foreach (var file in Directory.GetFiles("./keys", "*.pem"))
+        try
         {
-            var rsa = RSA.Create();
-            var pem = File.ReadAllText(file);
-            rsa.ImportFromPem(pem.ToCharArray());
+            foreach (var file in Directory.GetFiles("./keys", "*.pem"))
+            {
+                var rsa = RSA.Create();
+                var pem = File.ReadAllText(file);
+                rsa.ImportFromPem(pem);
 
-            var keyId = GetKeyThumbprint(rsa);
+                var keyId = GetKeyThumbprint(rsa);
 
-            _keys[keyId] = rsa;
+                _keys[keyId] = rsa;
+            }
+            if (_keys.Count == 0)
+            {
+                throw new Exception("No keys were found");
+            }
+        } 
+        catch (Exception ex)
+        {
+            throw new Exception("Failed to load keys: {0}", ex);
         }
     }
 
@@ -36,21 +48,15 @@ public class KeyManagementService : IKeyManagementService
         return Base64UrlEncoder.Encode(hash);
     }
 
-    public RSA? GetKeyById(string keyId)
+    public bool TryGetKeyById(string keyId, [NotNullWhen(true)] out RSA? key)
     {
-        return _keys.ContainsKey(keyId) ? _keys[keyId] : null;
+        return _keys.TryGetValue(keyId, out key);
     }
 
-    public RSA GetKey(out string keyId)
+    public (RSA rsa, string keyId) GetKey()
     {
         var random = new Random();
         var key = _keys.ElementAt(random.Next(0, _keys.Count));
-        keyId = key.Key;
-        return key.Value;
-    }
-
-    public List<RSA> GetKeys()
-    {
-        return _keys.Values.ToList();
+        return (key.Value, key.Key);
     }
 }
