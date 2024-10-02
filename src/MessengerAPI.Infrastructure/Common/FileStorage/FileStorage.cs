@@ -31,7 +31,7 @@ public class FileStorage : IFileStorage
             InputStream = fileStream,
             Key = key,
             BucketName = _settings.BucketName,
-            PartSize = 6291456, // 6 MB
+            PartSize = _settings.UploadPartSize,
             ContentType = contentType,
             CalculateContentMD5Header = true,
         };
