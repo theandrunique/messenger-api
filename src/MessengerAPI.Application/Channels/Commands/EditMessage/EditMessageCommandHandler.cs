@@ -30,14 +30,14 @@ public class EditMessageCommandHandler : IRequestHandler<EditMessageCommand, Err
     /// <returns><see cref="MessageSchema"/></returns>
     public async Task<ErrorOr<MessageSchema>> Handle(EditMessageCommand request, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetByIdAsync(request.ChannelId, cancellationToken);
+        var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId, cancellationToken);
         if (channel is null)
         {
-            return ChannelErrors.ChannelNotFound;
+            return Errors.Channel.ChannelNotFound;
         }
         if (!channel.Members.Any(m => m.Id == request.Sub))
         {
-            return ChannelErrors.NotAllowed;
+            return Errors.Channel.NotAllowed;
         }
 
         List<FileData>? attachments = null;
@@ -48,22 +48,22 @@ public class EditMessageCommandHandler : IRequestHandler<EditMessageCommand, Err
         }
         if (request.ReplyTo != null)
         {
-            var replyToMessage = await _channelRepository.GetMessageByIdAsync(request.ReplyTo, cancellationToken);
+            var replyToMessage = await _channelRepository.GetMessageByIdOrNullAsync(request.ReplyTo, cancellationToken);
             if (replyToMessage is null)
             {
-                return ChannelErrors.MessageNotFound;
+                return Errors.Channel.MessageNotFound;
             }
         }
 
-        Message? message = await _channelRepository.GetMessageByIdAsync(request.MessageId, cancellationToken);
+        Message? message = await _channelRepository.GetMessageByIdOrNullAsync(request.MessageId, cancellationToken);
         if (message is null)
         {
-            return ChannelErrors.MessageNotFound;
+            return Errors.Channel.MessageNotFound;
         }
 
         message.Update(request.ReplyTo, request.Text, attachments);
 
-        await _channelRepository.Commit(cancellationToken);
+        await _channelRepository.CommitAsync(cancellationToken);
 
         return _mapper.Map<MessageSchema>(message);
     }

@@ -46,22 +46,25 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         User? user;
         if (request.Login.Contains("@"))
         {
-            user = await _userRepository.GetByEmailAsync(request.Login, cancellationToken);
+            user = await _userRepository.GetByEmailOrNullAsync(request.Login, cancellationToken);
         }
         else
         {
-            user = await _userRepository.GetByUsernameAsync(request.Login, cancellationToken);
+            user = await _userRepository.GetByUsernameOrNullAsync(request.Login, cancellationToken);
         }
-        if (user is null) return AuthErrors.InvalidCredentials;
+        if (user is null) return Errors.Auth.InvalidCredentials;
 
-        if (!_hashHelper.Verify(user.PasswordHash, request.Password)) return AuthErrors.InvalidCredentials;
+        if (!_hashHelper.Verify(user.PasswordHash, request.Password))
+        {
+            return Errors.Auth.InvalidCredentials;
+        }
 
         var session = user.CreateSession(
             _userAgentParser.GetDeviceName(),
             _userAgentParser.GetClientName(),
             _userAgentParser.GetIpAddress());
 
-        await _userRepository.Commit(cancellationToken);
+        await _userRepository.CommitAsync(cancellationToken);
 
         var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId, user.Id.Value));
         var accessToken = _jwtTokenGenerator.Generate(user.Id, session.TokenId);

@@ -31,7 +31,7 @@ public class MessageUpdatedEventHandler : INotificationHandler<MessageUpdated>
         var mapped = _mapper.Map<MessageUpdatedNotificationSchema>(notification);
         var jsonMessage = JsonSerializer.Serialize(mapped, JsonOptions.Default);
 
-        var channel = await _channelRepository.GetByIdAsync(notification.NewMessage.ChannelId, cancellationToken);
+        var channel = await _channelRepository.GetByIdOrNullAsync(notification.NewMessage.ChannelId, cancellationToken);
         if (channel is null)
         {
             return;

@@ -8,7 +8,7 @@ public class CreateChannelCommandValidator : AbstractValidator<CreateChannelComm
     public CreateChannelCommandValidator()
     {
         RuleFor(x => x.Members)
-            .Must(x => x.Distinct().Count() == x.Count())
+            .Must(x => x.Distinct().Count() == x.Count)
             .WithMessage("Members must be unique");
         
         RuleFor(x => x.Members)

@@ -13,7 +13,7 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
         RuleFor(x => x.Username)
             .NotEmpty()
             .Length(3, 50)
-            .MustAsync(IsDuplicateUsername)
+            .MustAsync(IsUsernameAvailable)
             .WithMessage("Username already exists")
             .Matches(@"^[a-zA-Z0-9]+$")
             .WithMessage("Username must contain only letters and numbers");
@@ -31,11 +31,9 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
             .WithMessage("Global name must contain only letters and numbers");
     }
 
-    private async Task<bool> IsDuplicateUsername(string username, CancellationToken token)
+    private async Task<bool> IsUsernameAvailable(string username, CancellationToken token)
     {
-        var user = await _userRepository.GetByUsernameAsync(username, token);
-        if (user is not null) return false;
-
-        return true;
+        var user = await _userRepository.GetByUsernameOrNullAsync(username, token);
+        return user is null;
     }
 }

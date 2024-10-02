@@ -26,14 +26,14 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
     /// <returns>A list of messages <see cref="MessageSchema"/></returns>
     public async Task<ErrorOr<List<MessageSchema>>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetByIdAsync(request.ChannelId, cancellationToken);
+        var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId, cancellationToken);
         if (channel is null)
         {
-            return ChannelErrors.ChannelNotFound;
+            return Errors.Channel.ChannelNotFound;
         }
         if (!channel.Members.Any(m => m.Id == request.Sub))
         {
-            return ChannelErrors.NotAllowed;
+            return Errors.Channel.NotAllowed;
         }
 
         var messages = await _channelRepository.GetMessagesAsync(request.ChannelId, request.Limit, request.Offset, cancellationToken);

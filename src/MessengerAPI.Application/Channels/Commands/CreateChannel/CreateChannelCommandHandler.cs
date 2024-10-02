@@ -37,10 +37,10 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             request.Members.Add(request.Sub);
         }
 
-        var members = await _userRepository.GetByIdsAsync(request.Members.ToList(), cancellationToken);
+        var members = await _userRepository.GetByIdsAsync(request.Members, cancellationToken);
         if (members.Count != request.Members.Count)
         {
-            return UserErrors.NotFound;
+            return Errors.User.NotFound;
         }
 
         Channel? channel = null;
@@ -65,7 +65,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
     {
         if (request.Members.Count == 1)
         {
-            var savedMessagesChannel = await _channelRepository.GetSavedMessagesChannelAsync(request.Sub, token);
+            var savedMessagesChannel = await _channelRepository.GetSavedMessagesChannelOrNullAsync(request.Sub, token);
             if (savedMessagesChannel is not null)
             {
                 return savedMessagesChannel;
@@ -74,13 +74,13 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             var newSavedMessages = Channel.CreateSavedMessages(members[0]);
 
             await _channelRepository.AddAsync(newSavedMessages, token);
-            await _channelRepository.Commit(token);
+            await _channelRepository.CommitAsync(token);
 
             return newSavedMessages;
         }
         if (request.Members.Count == 2)
         {
-            Channel? existedChannel = await _channelRepository.GetPrivateChannelAsync(members[0].Id, request.Sub, token);
+            Channel? existedChannel = await _channelRepository.GetPrivateChannelOrNullAsync(members[0].Id, request.Sub, token);
             if (existedChannel is not null)
             {
                 return existedChannel;
@@ -89,7 +89,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             var newChannel = Channel.CreatePrivate(members[0], members[1]);
 
             await _channelRepository.AddAsync(newChannel, token);
-            await _channelRepository.Commit(token);
+            await _channelRepository.CommitAsync(token);
 
             return newChannel;
         }
@@ -101,7 +101,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
         Channel channel = Channel.CreateGroup(request.Sub, members, request.Title);
 
         await _channelRepository.AddAsync(channel, token);
-        await _channelRepository.Commit(token);
+        await _channelRepository.CommitAsync(token);
 
         return channel;
     }

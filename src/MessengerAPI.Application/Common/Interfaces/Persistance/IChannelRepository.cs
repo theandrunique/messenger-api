@@ -11,7 +11,7 @@ public interface IChannelRepository
     /// Save changes
     /// </summary>
     /// <param name="token"><see cref="CancellationToken"/></param>
-    Task Commit(CancellationToken token);
+    Task CommitAsync(CancellationToken token);
     /// <summary>
     /// Add new channel
     /// </summary>
@@ -24,7 +24,7 @@ public interface IChannelRepository
     /// <param name="channelId"><see cref="ChannelId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns><see cref="Channel?"/></returns>
-    Task<Channel?> GetByIdAsync(ChannelId channelId, CancellationToken token);
+    Task<Channel?> GetByIdOrNullAsync(ChannelId channelId, CancellationToken token);
     /// <summary>
     /// Get messages async
     /// </summary>
@@ -40,7 +40,7 @@ public interface IChannelRepository
     /// <param name="messageId"><see cref="MessageId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns><see cref="Message?"/></returns>
-    Task<Message?> GetMessageByIdAsync(MessageId messageId, CancellationToken token);
+    Task<Message?> GetMessageByIdOrNullAsync(MessageId messageId, CancellationToken token);
     /// <summary>
     /// Get private channel
     /// </summary>
@@ -48,19 +48,19 @@ public interface IChannelRepository
     /// <param name="userId2">Second <see cref="UserId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns><see cref="Channel?"/></returns>
-    Task<Channel?> GetPrivateChannelAsync(UserId userId1, UserId userId2, CancellationToken token);
+    Task<Channel?> GetPrivateChannelOrNullAsync(UserId userId1, UserId userId2, CancellationToken token);
     /// <summary>
     /// Get saved messages channel
     /// </summary>
     /// <param name="userId"><see cref="UserId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns><see cref="Channel?"/></returns>
-    Task<Channel?> GetSavedMessagesChannelAsync(UserId userId, CancellationToken token);
+    Task<Channel?> GetSavedMessagesChannelOrNullAsync(UserId userId, CancellationToken token);
     /// <summary>
     /// Get channels by user id
     /// </summary>
     /// <param name="userId"><see cref="UserId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns>list of <see cref="Channel"/></returns>
-    Task<List<Channel>> GetChannelsByUserIdAsync(UserId userId, CancellationToken token);
+    Task<List<Channel>> GetChannelsByUserIdOrNullAsync(UserId userId, CancellationToken token);
 }

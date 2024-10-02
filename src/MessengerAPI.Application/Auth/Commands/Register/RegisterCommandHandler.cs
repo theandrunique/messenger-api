@@ -35,7 +35,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
             request.GlobalName);
 
         await _userRepository.AddAsync(newUser, cancellationToken);
-        await _userRepository.Commit(cancellationToken);
+        await _userRepository.CommitAsync(cancellationToken);
 
         return _mapper.Map<UserPrivateSchema>(newUser);
     }

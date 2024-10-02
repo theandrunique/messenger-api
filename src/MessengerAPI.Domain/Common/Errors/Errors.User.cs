@@ -2,10 +2,13 @@ using ErrorOr;
 
 namespace MessengerAPI.Domain.Common.Errors;
 
-public static class UserErrors
+public static partial class Errors
 {
-    /// <summary>
-    /// Error when user is not found
-    /// </summary>
-    public static Error NotFound => Error.NotFound("user.not-found", "User not found");
+    public static class User
+    {
+        /// <summary>
+        /// Error when user is not found
+        /// </summary>
+        public static Error NotFound => Error.NotFound("user.not-found", "User not found");
+    }
 }

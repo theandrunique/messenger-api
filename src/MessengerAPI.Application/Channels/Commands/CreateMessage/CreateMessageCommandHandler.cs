@@ -30,14 +30,14 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
     /// <returns><see cref="MessageSchema"/></returns>
     public async Task<ErrorOr<MessageSchema>> Handle(CreateMessageCommand request, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetByIdAsync(request.ChannelId, cancellationToken);
+        var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId, cancellationToken);
         if (channel is null)
         {
-            return ChannelErrors.ChannelNotFound;
+            return Errors.Channel.ChannelNotFound;
         }
         if (!channel.Members.Any(m => m.Id == request.Sub))
         {
-            return ChannelErrors.NotAllowed;
+            return Errors.Channel.NotAllowed;
         }
 
         List<FileData>? attachments = null;
@@ -48,16 +48,16 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
         }
         if (request.ReplyTo != null)
         {
-            var replyToMessage = await _channelRepository.GetMessageByIdAsync(request.ReplyTo, cancellationToken);
+            var replyToMessage = await _channelRepository.GetMessageByIdOrNullAsync(request.ReplyTo, cancellationToken);
             if (replyToMessage is null)
             {
-                return ChannelErrors.MessageNotFound;
+                return Errors.Channel.MessageNotFound;
             }
         }
 
         Message message = channel.AddMessage(request.Sub, request.Text, request.ReplyTo, attachments);
 
-        await _channelRepository.Commit(cancellationToken);
+        await _channelRepository.CommitAsync(cancellationToken);
 
         return _mapper.Map<MessageSchema>(message);
     }

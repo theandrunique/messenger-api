@@ -34,7 +34,7 @@ public class FilesController : ApiController
     {
         if (file.Length > _settings.MaxFileSize)
         {
-            return Problem(FilesErrors.TooBig(_settings.MaxFileSizeInMB));
+            return Problem(Errors.File.TooBig(_settings.MaxFileSizeInMB));
         }
 
         using Stream fileStream = file.OpenReadStream();

@@ -26,11 +26,11 @@ public class GetMeQueryHandler : IRequestHandler<GetMeQuery, ErrorOr<UserPrivate
     /// <returns><see cref="UserPrivateSchema"/></returns>
     public async Task<ErrorOr<UserPrivateSchema>> Handle(GetMeQuery request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(request.Sub, cancellationToken);
+        var user = await _userRepository.GetByIdOrNullAsync(request.Sub, cancellationToken);
 
         if (user == null)
         {
-            return UserErrors.NotFound;
+            return Errors.User.NotFound;
         }
 
         return _mapper.Map<UserPrivateSchema>(user);

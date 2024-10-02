@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace MessengerAPI.Application.Common.Interfaces.Auth;
 
 public interface IJweHelper
@@ -13,5 +15,5 @@ public interface IJweHelper
     /// </summary>
     /// <param name="token">Refresh token to decrypt</param>
     /// <returns><see cref="RefreshTokenPayload"/></returns>
-    RefreshTokenPayload? Decrypt(string token);
+    bool TryDecrypt(string token, [NotNullWhen(true)] out RefreshTokenPayload? payload);
 }

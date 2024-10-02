@@ -36,18 +36,19 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
     /// <returns><see cref="TokenPairResponse"/></returns>
     public async Task<ErrorOr<TokenPairResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var decryptedPayload = _jweHelper.Decrypt(request.RefreshToken);
-        if (decryptedPayload is null) return AuthErrors.InvalidToken;
+        if (!_jweHelper.TryDecrypt(request.RefreshToken, out var payload))
+        {
+            return Errors.Auth.InvalidToken;
+        }
 
-        var result = await _userRepository.GetSessionWithUserByTokenId(decryptedPayload.tokenId, cancellationToken);
-
-        if (result is null) return AuthErrors.InvalidToken;
-
-        var session = result.Value.Item1;
-        var user = result.Value.Item2;
+        var (session, user) = await _userRepository.GetSessionWithUserByTokenIdOrNullAsync(payload.TokenId, cancellationToken);
+        if (session == null || user == null)
+        {
+            return Errors.Auth.InvalidToken;
+        }
 
         session.UpdateTokenId();
-        await _userRepository.Commit(cancellationToken);
+        await _userRepository.CommitAsync(cancellationToken);
 
         var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId, user.Id.Value));
         var accessToken = _jwtTokenGenerator.Generate(user.Id, session.TokenId);
