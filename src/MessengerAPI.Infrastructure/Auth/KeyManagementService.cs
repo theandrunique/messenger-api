@@ -33,7 +33,7 @@ public class KeyManagementService : IKeyManagementService
             {
                 throw new Exception("No keys were found");
             }
-        } 
+        }
         catch (Exception ex)
         {
             throw new Exception("Failed to load keys: {0}", ex);

@@ -32,7 +32,11 @@ public class AuthController : ApiController
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignUpAsync([FromForm] SignUpRequestSchema schema, CancellationToken cancellationToken)
     {
-        var command = new RegisterCommand(schema.username, schema.globalName, schema.password);
+        var command = new RegisterCommand(
+            schema.username,
+            schema.email,
+            schema.globalName,
+            schema.password);
 
         var registerResult = await _mediator.Send(command, cancellationToken);
 

@@ -1,7 +1,6 @@
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Schemas.Common;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Channels.Queries.GetChannels;
 
@@ -10,5 +9,5 @@ namespace MessengerAPI.Application.Channels.Queries.GetChannels;
 /// </summary>
 /// <param name="Sub"><see cref="UserId"/></param>
 public record GetChannelsQuery(
-    UserId Sub
+    Guid Sub
 ) : IRequest<ErrorOr<List<ChannelSchema>>>;

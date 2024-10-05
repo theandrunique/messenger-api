@@ -5,7 +5,7 @@ public interface IHasDomainEvents
     /// <summary>
     /// List of occurred domain events
     /// </summary>
-    IReadOnlyCollection<IDomainEvent> DomainEvents { get; }
+    IReadOnlyList<IDomainEvent> DomainEvents { get; }
     /// <summary>
     /// Clear list of domain events
     /// </summary>

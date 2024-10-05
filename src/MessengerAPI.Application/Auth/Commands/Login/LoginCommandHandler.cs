@@ -63,10 +63,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
             _userAgentParser.GetDeviceName(),
             _userAgentParser.GetClientName(),
             _userAgentParser.GetIpAddress());
+        await _userRepository.AddSessionAsync(session, cancellationToken);
 
         await _userRepository.CommitAsync(cancellationToken);
 
-        var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId, user.Id.Value));
+        var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId, user.Id));
         var accessToken = _jwtTokenGenerator.Generate(user.Id, session.TokenId);
 
         return new TokenPairResponse(accessToken, refreshToken, "Bearer", _jwtSettings.ExpirySeconds);

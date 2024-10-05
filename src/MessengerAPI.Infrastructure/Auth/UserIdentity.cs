@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Infrastructure.Auth;
 
@@ -16,6 +15,6 @@ public class UserIdentity : ClaimsIdentity
         TokenId = claims.GetTokenId();
     }
 
-    public UserId UserId { get; private set; }
+    public Guid UserId { get; private set; }
     public Guid TokenId { get; private set; }
 }

@@ -1,5 +1,6 @@
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -7,18 +8,18 @@ namespace MessengerAPI.Infrastructure.Auth;
 
 internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerOptions>
 {
-    private JwtSettings _jwtSettings { get; }
+    private readonly JwtSettings _jwtSettings;
     private readonly IKeyManagementService _keyService;
-    private readonly IRevokedTokenStore _revokedTokenStore;
+    private readonly ILogger<JwtBearerOptionsConfiguration> _logger;
 
     public JwtBearerOptionsConfiguration(
+        ILogger<JwtBearerOptionsConfiguration> logger,
         IOptions<JwtSettings> jwtSettings,
-        IKeyManagementService keyManagementService,
-        IRevokedTokenStore revokedTokenStore)
+        IKeyManagementService keyManagementService)
     {
+        _logger = logger;
         _jwtSettings = jwtSettings.Value;
         _keyService = keyManagementService;
-        _revokedTokenStore = revokedTokenStore;
     }
 
     public void Configure(string? name, JwtBearerOptions options)
@@ -28,6 +29,7 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
 
     public void Configure(JwtBearerOptions options)
     {
+        options.MapInboundClaims = false;
         options.IncludeErrorDetails = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -48,11 +50,11 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
                 try
                 {
                     var userIdentity = new UserIdentity(context.Principal);
-                    if (!await _revokedTokenStore.IsTokenValidAsync(userIdentity.TokenId))
-                    {
-                        context.Fail("Token revoked");
-                        return;
-                    }
+                    //if (!await _revokedTokenStore.IsTokenValidAsync(userIdentity.TokenId))
+                    //{
+                        //context.Fail("Token revoked");
+                        //return;
+                    //}
 
                     context.Principal.AddIdentity(userIdentity);
                 }
@@ -72,6 +74,11 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
 
                 return Task.CompletedTask;
             },
+            OnAuthenticationFailed = context =>
+            {
+                _logger.LogWarning("Authentication failed: {Message}", context.Exception.Message);
+                return Task.CompletedTask;
+            }
         };
     }
 

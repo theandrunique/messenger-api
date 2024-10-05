@@ -1,6 +1,5 @@
 using System.Net.WebSockets;
 using MessengerAPI.Application.Common.Interfaces;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using MessengerAPI.Presentation.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +38,7 @@ public class WebSocketController : ControllerBase
         }
     }
 
-    private async Task HandleConnection(UserId userId, WebSocket webSocket)
+    private async Task HandleConnection(Guid userId, WebSocket webSocket)
     {
         var buffer = new byte[1024 * 4];
 

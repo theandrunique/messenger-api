@@ -1,7 +1,6 @@
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Schemas.Common;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Files.Commands.UploadFile;
 
@@ -13,7 +12,7 @@ namespace MessengerAPI.Application.Files.Commands.UploadFile;
 /// <param name="ContentType">Content type</param>
 /// <param name="FileName">name of file</param>
 public record UploadFileCommand(
-    UserId Sub,
+    Guid Sub,
     Stream FileStream,
     string ContentType,
     string FileName

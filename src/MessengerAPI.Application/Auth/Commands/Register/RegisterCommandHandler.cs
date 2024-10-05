@@ -31,6 +31,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
     {
         var newUser = User.Create(
             request.Username,
+            request.Email,
             _hashHelper.Hash(request.Password),
             request.GlobalName);
 

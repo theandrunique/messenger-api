@@ -1,4 +1,3 @@
-using MessengerAPI.Domain.ChannelAggregate;
 using MessengerAPI.Domain.Common;
 using MessengerAPI.Domain.UserAggregate.Entities;
 using MessengerAPI.Domain.UserAggregate.Events;
@@ -9,39 +8,19 @@ namespace MessengerAPI.Domain.UserAggregate;
 public class User : IHasDomainEvents
 {
     private readonly List<IDomainEvent> _domainEvents = new();
-    private readonly List<Email> _emails = new();
-    private readonly List<Phone> _phones = new();
-    private readonly List<ProfilePhoto> _profilePhotos = new();
-    private readonly List<Session> _sessions = new();
-    private readonly List<Channel> _channels = new();
+    private readonly List<UserImage> _images = new();
 
     /// <summary>
-    /// List of user's emails <see cref="Email"/>
+    /// List of user's images<see cref="UserImage"/>
     /// </summary>
-    public IReadOnlyList<Email> Emails => _emails.ToList();
-    /// <summary>
-    /// List of user's phones <see cref="Phone"/>
-    /// </summary>
-    public IReadOnlyList<Phone> Phones => _phones.ToList();
-    /// <summary>
-    /// List of user's profile photos <see cref="ProfilePhoto"/>
-    /// </summary>
-    public IReadOnlyList<ProfilePhoto> ProfilePhotos => _profilePhotos.ToList();
-    /// <summary>
-    /// List of user's sessions <see cref="Session"/>
-    /// </summary>
-    public IReadOnlyList<Session> Sessions => _sessions.ToList();
-    /// <summary>
-    /// List of user's channels <see cref="Channel"/>
-    /// </summary>
-    public IReadOnlyCollection<Channel> Channels => _channels.ToList();
+    public IReadOnlyList<UserImage> Images => _images.ToList();
 
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.ToList();
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.ToList();
 
     /// <summary>
     /// User id
     /// </summary>
-    public UserId Id { get; private set; }
+    public Guid Id { get; private set; }
     /// <summary>
     /// Username
     /// </summary>
@@ -87,45 +66,50 @@ public class User : IHasDomainEvents
     /// </summary>
     public bool TwoFactorAuthentication { get; private set; }
 
+    public string Email { get; private set; }
+
+    public bool IsEmailVerified { get; private set; }
+
+    public DateTime EmailUpdatedAt { get; private set; }
+
     /// <summary>
     /// Create a new user
     /// </summary>
     /// <param name="username">Username</param>
+    /// <param name="email">Email</param>
     /// <param name="passwordHash">Password hash</param>
     /// <param name="globalName">Global name</param>
     /// <returns><see cref="User"/></returns>
     public static User Create(
         string username,
+        string email,
         string passwordHash,
         string globalName)
     {
+        var dateOfCreation = DateTime.UtcNow;
+
         User user = new User
         {
-            Id = new UserId(Guid.NewGuid()),
+            Id = Guid.NewGuid(),
             Username = username,
-            UsernameUpdatedAt = DateTime.UtcNow,
+            UsernameUpdatedAt = dateOfCreation,
             PasswordHash = passwordHash,
-            PasswordUpdatedAt = DateTime.UtcNow,
+            PasswordUpdatedAt = dateOfCreation,
             TerminateSessions = TimeIntervals.Month6,
             GlobalName = globalName,
             IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            TwoFactorAuthentication = false
+            CreatedAt = dateOfCreation,
+            TwoFactorAuthentication = false,
+            Email = email,
+            EmailUpdatedAt = dateOfCreation
         };
+
         user._domainEvents.Add(new NewUserCreated(user));
 
         return user;
     }
-    private User() { }
 
-    /// <summary>
-    /// Add a new email
-    /// </summary>
-    /// <param name="email"><see cref="Email"/></param>
-    public void AddEmail(Email email)
-    {
-        _emails.Add(email);
-    }
+    private User() { }
 
     /// <summary>
     /// Create a new session
@@ -136,9 +120,7 @@ public class User : IHasDomainEvents
     /// <returns><see cref="Session"/></returns>
     public Session CreateSession(string deviceName, string clientName, string location)
     {
-        var session = Session.CreateNew(deviceName, clientName, location);
-        _sessions.Add(session);
-        return session;
+        return Session.CreateNew(this.Id, deviceName, clientName, location);
     }
 
     public void ClearDomainEvents()
@@ -146,3 +128,4 @@ public class User : IHasDomainEvents
         _domainEvents.Clear();
     }
 }
+

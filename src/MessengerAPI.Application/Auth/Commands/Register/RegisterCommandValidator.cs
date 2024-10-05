@@ -29,11 +29,23 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
             .Length(3, 50)
             .Matches(@"^[a-zA-Z0-9]+$")
             .WithMessage("Global name must contain only letters and numbers");
+
+        RuleFor(x => x.Email)
+            .NotEmpty()
+            .EmailAddress()
+            .MustAsync(IsUsernameAvailable)
+            .WithMessage("Email is busy");
     }
 
     private async Task<bool> IsUsernameAvailable(string username, CancellationToken token)
     {
         var user = await _userRepository.GetByUsernameOrNullAsync(username, token);
+        return user is null;
+    }
+
+    private async Task<bool> IsEmailAvailable(string email, CancellationToken token)
+    {
+        var user = await _userRepository.GetByEmailOrNullAsync(email, token);
         return user is null;
     }
 }

@@ -50,7 +50,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
         session.UpdateTokenId();
         await _userRepository.CommitAsync(cancellationToken);
 
-        var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId, user.Id.Value));
+        var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId, user.Id));
         var accessToken = _jwtTokenGenerator.Generate(user.Id, session.TokenId);
 
         return new TokenPairResponse(accessToken, refreshToken, "Bearer", _jwtSettings.ExpirySeconds);

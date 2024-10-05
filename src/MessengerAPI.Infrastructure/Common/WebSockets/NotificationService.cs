@@ -3,14 +3,13 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using MessengerAPI.Application.Common.Interfaces;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using StackExchange.Redis;
 
 namespace MessengerAPI.Infrastructure.Common.WebSockets;
 
 public class NotificationService : INotificationService, IWebSocketService
 {
-    private static readonly ConcurrentDictionary<UserId, WebSocket> _connections = new();
+    private static readonly ConcurrentDictionary<Guid, WebSocket> _connections = new();
     private readonly ConnectionRepository _connectionRepository;
     private readonly string _serverId;
     private readonly IDatabase _redis;
@@ -24,13 +23,13 @@ public class NotificationService : INotificationService, IWebSocketService
         _redis = connectionMultiplexer.GetDatabase();
     }
 
-    public async Task AddConnectionAsync(UserId userId, WebSocket webSocket)
+    public async Task AddConnectionAsync(Guid userId, WebSocket webSocket)
     {
         _connections[userId] = webSocket;
         await _connectionRepository.AddAsync(userId, _serverId);
     }
 
-    public async Task RemoveConnectionAsync(UserId userId)
+    public async Task RemoveConnectionAsync(Guid userId)
     {
         if (_connections.ContainsKey(userId))
         {
@@ -39,10 +38,10 @@ public class NotificationService : INotificationService, IWebSocketService
         }
     }
 
-    public async Task NotifyAsync(List<UserId> recipientIds, string jsonData)
+    public async Task NotifyAsync(List<Guid> recipientIds, string jsonData)
     {
-        var groups = new Dictionary<string, List<UserId>>();
-        var currentServer = new HashSet<UserId>();
+        var groups = new Dictionary<string, List<Guid>>();
+        var currentServer = new HashSet<Guid>();
 
         foreach (var userId in recipientIds)
         {
@@ -57,7 +56,7 @@ public class NotificationService : INotificationService, IWebSocketService
                 {
                     if (!groups.ContainsKey(serverId))
                     {
-                        groups[serverId] = new List<UserId>();
+                        groups[serverId] = new List<Guid>();
                     }
                     groups[serverId].Add(userId);
                 }
@@ -70,13 +69,13 @@ public class NotificationService : INotificationService, IWebSocketService
             string jsonMessage = JsonSerializer.Serialize(notificationMessage);
             await _redis.PublishAsync(pipe, jsonMessage);
         }
-        foreach (UserId recipientId in currentServer)
+        foreach (var recipientId in currentServer)
         {
             await SendMessage(recipientId, jsonData);
         }
     }
 
-    private async Task SendMessage(UserId recipientId, string jsonMessage)
+    private async Task SendMessage(Guid recipientId, string jsonMessage)
     {
         if (_connections.ContainsKey(recipientId))
         {
@@ -93,7 +92,7 @@ public class NotificationService : INotificationService, IWebSocketService
         }
     }
 
-    private async Task SendMessageToWebSocket(UserId userId, string jsonMessage)
+    private async Task SendMessageToWebSocket(Guid userId, string jsonMessage)
     {
         if (_connections.TryGetValue(userId, out var webSocket))
         {

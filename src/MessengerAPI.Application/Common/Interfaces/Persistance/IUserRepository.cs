@@ -1,6 +1,5 @@
 ﻿using MessengerAPI.Domain.UserAggregate;
 using MessengerAPI.Domain.UserAggregate.Entities;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Common.Interfaces.Persistance;
 
@@ -18,19 +17,25 @@ public interface IUserRepository
     /// <param name="token"><see cref="CancellationToken"/></param>
     Task AddAsync(User user, CancellationToken token);
     /// <summary>
+    /// Add new session
+    /// </summary>
+    /// <param name="session"><see cref="Session"/></param>
+    /// <param name="token"><see cref="CancellationToken"/></param>
+    Task AddSessionAsync(Session session, CancellationToken token);
+    /// <summary>
     /// Get user by id
     /// </summary>
     /// <param name="id"><see cref="UserId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns><see cref="User?"/></returns>
-    Task<User?> GetByIdOrNullAsync(UserId id, CancellationToken token);
+    Task<User?> GetByIdOrNullAsync(Guid id, CancellationToken token);
     /// <summary>
     /// Get user by ids
     /// </summary>
     /// <param name="ids">list of <see cref="UserId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns>list of <see cref="User"/></returns>
-    Task<List<User>> GetByIdsAsync(List<UserId> ids, CancellationToken token);
+    Task<List<User>> GetByIdsAsync(List<Guid> ids, CancellationToken token);
     /// <summary>
     /// Get user by email
     /// </summary>

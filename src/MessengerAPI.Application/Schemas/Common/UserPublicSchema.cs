@@ -3,10 +3,6 @@ namespace MessengerAPI.Application.Schemas.Common;
 public record UserPublicSchema
 {
     /// <summary>
-    /// List of user emails
-    /// </summary>
-    public ICollection<string> Emails { get; init; }
-    /// <summary>
     /// List of links of user profile photos
     /// </summary>
     public ICollection<string> ProfilePhotos { get; init; }

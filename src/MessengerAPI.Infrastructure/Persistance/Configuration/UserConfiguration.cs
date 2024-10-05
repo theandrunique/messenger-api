@@ -1,5 +1,5 @@
 using MessengerAPI.Domain.UserAggregate;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
+using MessengerAPI.Domain.UserAggregate.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,11 +10,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasKey(u => u.Id);
-        builder.Property(u => u.Id)
-            .HasConversion(v => v.Value, v => new UserId(v));
+
+        builder.HasIndex(u => u.Email)
+            .IsUnique(true);
 
         builder.Property(u => u.Username)
             .HasMaxLength(50);
+
         builder.HasIndex(u => u.Username).IsUnique(true);
 
         builder.Property(u => u.Bio)
@@ -23,41 +25,20 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.GlobalName)
             .HasMaxLength(50);
 
-        builder.HasMany(u => u.ProfilePhotos)
+        builder.OwnsMany(u => u.Images, imageBuilder =>
+        {
+            imageBuilder.ToTable("UserImages");
+
+            imageBuilder.HasKey("Id");
+
+            imageBuilder.WithOwner().HasForeignKey();
+
+            imageBuilder.HasIndex(i => i.Key).IsUnique(true);
+        });
+
+        builder.HasMany<Session>()
             .WithOne()
-            .HasForeignKey(p => p.UserId);
-
-        builder.HasMany(u => u.Sessions)
-            .WithOne(s => s.User)
             .HasForeignKey(s => s.UserId);
-
-        ConfigureEmails(builder);
-        ConfigurePhones(builder);
-    }
-
-    public void ConfigureEmails(EntityTypeBuilder<User> builder)
-    {
-        builder.OwnsMany(u => u.Emails, emailsBuilder =>
-        {
-            emailsBuilder.WithOwner().HasForeignKey("UserId");
-
-            emailsBuilder.Property("Id");
-            emailsBuilder.HasKey("Id");
-
-            emailsBuilder.HasIndex(e => e.Data).IsUnique(true);
-        });
-    }
-
-    public void ConfigurePhones(EntityTypeBuilder<User> builder)
-    {
-        builder.OwnsMany(u => u.Phones, phonesBuilder =>
-        {
-            phonesBuilder.WithOwner().HasForeignKey("UserId");
-
-            phonesBuilder.Property("Id");
-            phonesBuilder.HasKey("Id");
-
-            phonesBuilder.HasIndex(e => e.Data).IsUnique(true);
-        });
     }
 }
+

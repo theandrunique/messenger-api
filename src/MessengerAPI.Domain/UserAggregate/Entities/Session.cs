@@ -1,5 +1,3 @@
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
-
 namespace MessengerAPI.Domain.UserAggregate.Entities;
 
 public class Session
@@ -7,15 +5,11 @@ public class Session
     /// <summary>
     /// Session id
     /// </summary>
-    public SessionId Id { get; private set; }
+    public Guid Id { get; private set; }
     /// <summary>
     /// User id
     /// </summary>
-    public UserId UserId { get; private set; }
-    /// <summary>
-    /// User
-    /// </summary>
-    public User? User { get; private set; }
+    public Guid UserId { get; private set; }
     /// <summary>
     /// Token id
     /// </summary>
@@ -57,11 +51,12 @@ public class Session
     /// <param name="clientName">Client name</param>
     /// <param name="location">Location</param>
     /// <returns></returns>
-    public static Session CreateNew(string deviceName, string clientName, string location)
+    public static Session CreateNew(Guid userId, string deviceName, string clientName, string location)
     {
         var session = new Session
         {
-            Id = new SessionId(Guid.NewGuid()),
+            Id = Guid.NewGuid(),
+            UserId = userId,
             TokenId = Guid.NewGuid(),
             DeviceName = deviceName,
             ClientName = clientName,

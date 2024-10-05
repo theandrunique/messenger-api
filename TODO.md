@@ -1,6 +1,7 @@
 ### List of todo:
 
-- [ ] Remove "Email.cs" and "Phone.cs" and add these properties to "User.cs"
+- [X] Remove "Email.cs" and "Phone.cs" and add these properties to "User.cs", refactor domain layer
+- [ ] Add new project "MessengerAPI.Contracts" and move all schemes to there
 - [ ] Refactor web sockets
 - [ ] Add logging
 - [ ] Refactor authentication modules

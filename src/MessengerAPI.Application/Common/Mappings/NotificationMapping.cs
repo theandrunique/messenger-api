@@ -13,7 +13,7 @@ public class NotificationMapping : Profile
 
         CreateMap<NewChannelCreated, NewChannelNotificationSchema>()
             .ForMember(dest => dest.Data, s => s.MapFrom(src => src.NewChannel));
-        
+
         CreateMap<MessageUpdated, MessageUpdatedNotificationSchema>()
             .ForMember(dest => dest.Data, s => s.MapFrom(src => src.NewMessage));
     }

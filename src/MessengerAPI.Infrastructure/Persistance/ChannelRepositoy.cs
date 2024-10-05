@@ -1,8 +1,6 @@
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.ChannelAggregate;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
-using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using MessengerAPI.Infrastructure.Common.Persistance;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,14 +25,14 @@ public class ChannelRepository : IChannelRepository
         await _context.AddAsync(channel, token);
     }
 
-    public async Task<Channel?> GetByIdOrNullAsync(ChannelId channelId, CancellationToken token)
+    public async Task<Channel?> GetByIdOrNullAsync(Guid channelId, CancellationToken token)
     {
         return await _context.Channels
             .Include(c => c.Members)
             .FirstOrDefaultAsync(c => c.Id == channelId, token);
     }
 
-    public async Task<List<Message>> GetMessagesAsync(ChannelId channelId, int limit, int offset, CancellationToken token)
+    public async Task<List<Message>> GetMessagesAsync(Guid channelId, int limit, int offset, CancellationToken token)
     {
         return await _context.Messages
             .Include(m => m.Attachments)
@@ -46,7 +44,7 @@ public class ChannelRepository : IChannelRepository
             .ToListAsync(token);
     }
 
-    public async Task<Message?> GetMessageByIdOrNullAsync(MessageId messageId, CancellationToken token)
+    public async Task<Message?> GetMessageByIdOrNullAsync(long messageId, CancellationToken token)
     {
         return await _context.Messages
             .Include(m => m.Attachments)
@@ -54,21 +52,21 @@ public class ChannelRepository : IChannelRepository
             .FirstOrDefaultAsync(m => m.Id == messageId, token);
     }
 
-    public async Task<Channel?> GetSavedMessagesChannelOrNullAsync(UserId userId, CancellationToken token)
+    public async Task<Channel?> GetSavedMessagesChannelOrNullAsync(Guid userId, CancellationToken token)
     {
         return await _context.Channels
             .Include(c => c.Members)
             .FirstOrDefaultAsync(c => c.Members.Count == 1 && c.Members.All(m => m.Id == userId), token);
     }
 
-    public async Task<Channel?> GetPrivateChannelOrNullAsync(UserId userId1, UserId userId2, CancellationToken token)
+    public async Task<Channel?> GetPrivateChannelOrNullAsync(Guid userId1, Guid userId2, CancellationToken token)
     {
         return await _context.Channels
             .Include(c => c.Members)
             .FirstOrDefaultAsync(c => c.Members.All(c => c.Id == userId1 || c.Id == userId2), token);
     }
 
-    public async Task<List<Channel>> GetChannelsByUserIdOrNullAsync(UserId userId, CancellationToken token)
+    public async Task<List<Channel>> GetChannelsByUserIdOrNullAsync(Guid userId, CancellationToken token)
     {
         return await _context.Channels
             .Include(c => c.Members)

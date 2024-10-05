@@ -12,7 +12,7 @@ public class Reaction
     /// <summary>
     /// Id of the reaction group
     /// </summary>
-    public int GroupId { get; private set; }
+    public int ReactionGroupId { get; private set; }
     /// <summary>
     /// Emoji
     /// </summary>

@@ -5,8 +5,6 @@ using MessengerAPI.Application.Channels.Commands.EditMessage;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Application.Schemas.Common;
-using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 using MessengerAPI.Presentation.Common;
 using MessengerAPI.Presentation.Schemas.Channels;
 using Microsoft.AspNetCore.Mvc;
@@ -58,7 +56,7 @@ public class ChannelsController : ApiController
 
         var query = new CreateChannelCommand(
             identity.UserId,
-            schema.members.ConvertAll(m => new UserId(m)),
+            schema.members,
             schema.type,
             schema.title);
 
@@ -86,13 +84,11 @@ public class ChannelsController : ApiController
     {
         var identity = User.GetIdentity();
 
-        var replyTo = schema.replyTo.HasValue ? new MessageId(schema.replyTo.Value) : null;
-
         var command = new CreateMessageCommand(
             identity.UserId,
-            new ChannelId(channelId),
+            channelId,
             schema.text,
-            replyTo,
+            schema.replyTo,
             schema.attachments);
 
         var result = await _mediator.Send(command, cancellationToken);
@@ -121,7 +117,7 @@ public class ChannelsController : ApiController
     {
         var identity = User.GetIdentity();
 
-        var query = new GetMessagesQuery(identity.UserId, new ChannelId(channelId), offset, limit);
+        var query = new GetMessagesQuery(identity.UserId, channelId, offset, limit);
 
         var result = await _mediator.Send(query, cancellationToken);
 
@@ -149,14 +145,12 @@ public class ChannelsController : ApiController
     {
         var identity = User.GetIdentity();
 
-        var replyTo = schema.replyTo.HasValue ? new MessageId(schema.replyTo.Value) : null;
-
         var command = new EditMessageCommand(
-            new MessageId(messageId),
+            messageId,
             identity.UserId,
-            new ChannelId(channelId),
+            channelId,
             schema.text,
-            replyTo,
+            schema.replyTo,
             schema.attachments);
 
         var result = await _mediator.Send(command, cancellationToken);

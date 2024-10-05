@@ -5,5 +5,5 @@ namespace MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 /// </summary>
 public class PinnedMessageId
 {
-    public MessageId MessageId { get; }
+    public long MessageId { get; }
 }

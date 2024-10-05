@@ -1,7 +1,5 @@
 using MessengerAPI.Domain.ChannelAggregate;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
-using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Common.Interfaces.Persistance;
 
@@ -24,7 +22,7 @@ public interface IChannelRepository
     /// <param name="channelId"><see cref="ChannelId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns><see cref="Channel?"/></returns>
-    Task<Channel?> GetByIdOrNullAsync(ChannelId channelId, CancellationToken token);
+    Task<Channel?> GetByIdOrNullAsync(Guid channelId, CancellationToken token);
     /// <summary>
     /// Get messages async
     /// </summary>
@@ -33,14 +31,14 @@ public interface IChannelRepository
     /// <param name="offset">offset</param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns>list of messages <see cref="Message"/></returns>
-    Task<List<Message>> GetMessagesAsync(ChannelId channelId, int limit, int offset, CancellationToken token);
+    Task<List<Message>> GetMessagesAsync(Guid channelId, int limit, int offset, CancellationToken token);
     /// <summary>
     /// Get message by id
     /// </summary>
     /// <param name="messageId"><see cref="MessageId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns><see cref="Message?"/></returns>
-    Task<Message?> GetMessageByIdOrNullAsync(MessageId messageId, CancellationToken token);
+    Task<Message?> GetMessageByIdOrNullAsync(long messageId, CancellationToken token);
     /// <summary>
     /// Get private channel
     /// </summary>
@@ -48,19 +46,19 @@ public interface IChannelRepository
     /// <param name="userId2">Second <see cref="UserId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns><see cref="Channel?"/></returns>
-    Task<Channel?> GetPrivateChannelOrNullAsync(UserId userId1, UserId userId2, CancellationToken token);
+    Task<Channel?> GetPrivateChannelOrNullAsync(Guid userId1, Guid userId2, CancellationToken token);
     /// <summary>
     /// Get saved messages channel
     /// </summary>
     /// <param name="userId"><see cref="UserId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns><see cref="Channel?"/></returns>
-    Task<Channel?> GetSavedMessagesChannelOrNullAsync(UserId userId, CancellationToken token);
+    Task<Channel?> GetSavedMessagesChannelOrNullAsync(Guid userId, CancellationToken token);
     /// <summary>
     /// Get channels by user id
     /// </summary>
     /// <param name="userId"><see cref="UserId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns>list of <see cref="Channel"/></returns>
-    Task<List<Channel>> GetChannelsByUserIdOrNullAsync(UserId userId, CancellationToken token);
+    Task<List<Channel>> GetChannelsByUserIdOrNullAsync(Guid userId, CancellationToken token);
 }

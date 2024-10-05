@@ -365,3 +365,6 @@ FodyWeavers.xsd
 .vscode
 .env
 .env.docker
+keys/
+migrations/
+

@@ -2,7 +2,6 @@ using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Channels.Commands;
 
@@ -14,8 +13,8 @@ namespace MessengerAPI.Application.Channels.Commands;
 /// <param name="Type">Type of channel</param>
 /// <param name="Title">Title of channel</param>
 public record CreateChannelCommand(
-    UserId Sub,
-    List<UserId> Members,
+    Guid Sub,
+    List<Guid> Members,
     ChannelType Type,
     string? Title
 ) : IRequest<ErrorOr<ChannelSchema>>;

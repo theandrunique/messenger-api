@@ -1,5 +1,3 @@
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
-
 namespace MessengerAPI.Domain.Common.Entities;
 
 public class FileData
@@ -11,7 +9,7 @@ public class FileData
     /// <summary>
     /// File owner id
     /// </summary>
-    public UserId OwnerId { get; private set; }
+    public Guid OwnerId { get; private set; }
     /// <summary>
     /// File name
     /// </summary>
@@ -47,12 +45,12 @@ public class FileData
     /// <param name="size">File size</param>
     /// <param name="sha256">File hash</param>
     /// <returns><see cref="FileData"/></returns>
-    public static FileData CreateNew(UserId ownerId, string contentType, string fileName, string url, long size, byte[] sha256)
+    public static FileData CreateNew(Guid ownerId, string contentType, string fileName, string url, long size, byte[] sha256)
     {
         return new FileData(ownerId, contentType, fileName, url, size, sha256);
     }
 
-    private FileData(UserId ownerId, string contentType, string fileName, string url, long size, byte[] sha256)
+    private FileData(Guid ownerId, string contentType, string fileName, string url, long size, byte[] sha256)
     {
         Id = Guid.NewGuid();
         OwnerId = ownerId;

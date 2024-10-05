@@ -46,9 +46,9 @@ public class EditMessageCommandHandler : IRequestHandler<EditMessageCommand, Err
         {
             attachments = await _fileRepository.GetFilesByIdsAsync(request.Attachments, cancellationToken);
         }
-        if (request.ReplyTo != null)
+        if (request.ReplyTo.HasValue)
         {
-            var replyToMessage = await _channelRepository.GetMessageByIdOrNullAsync(request.ReplyTo, cancellationToken);
+            var replyToMessage = await _channelRepository.GetMessageByIdOrNullAsync(request.ReplyTo.Value, cancellationToken);
             if (replyToMessage is null)
             {
                 return Errors.Channel.MessageNotFound;

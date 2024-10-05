@@ -23,13 +23,9 @@ public static class DependencyInjection
         this IServiceCollection services,
         ConfigurationManager config)
     {
-        services.AddAuth(config);
-        services.AddPersistance(config);
 
         services.AddSingleton<IHashHelper, BCryptHelper>();
         services.AddScoped<IClientInfoProvider, ClientInfoProvider>();
-        services.AddScoped<IJweHelper, JweHelper>();
-        services.AddScoped<IRevokedTokenStore, RevokedTokenStore>();
 
         services.Configure<FileStorageSettings>(config.GetSection(nameof(FileStorageSettings)));
         services.AddSingleton<IFileStorageSettings>(sp => sp.GetRequiredService<IOptions<FileStorageSettings>>().Value);
@@ -37,8 +33,9 @@ public static class DependencyInjection
 
         services.AddHttpContextAccessor();
 
+        services.AddAuth(config);
+        services.AddPersistance(config);
         services.AddRedis(config);
-
         services.AddWebSockets();
 
         return services;
@@ -85,13 +82,11 @@ public static class DependencyInjection
         this IServiceCollection services,
         ConfigurationManager config)
     {
-        var jwtSettings = new JwtSettings();
-        config.Bind(nameof(JwtSettings), jwtSettings);
+        services.AddScoped<IJweHelper, JweHelper>();
+        services.AddScoped<IRevokedTokenStore, RevokedTokenStore>();
 
-        services.AddSingleton(Options.Create(jwtSettings));
+        services.Configure<JwtSettings>(config.GetSection(nameof(JwtSettings)));
         services.AddSingleton<IJwtSettings>(sp => sp.GetRequiredService<IOptions<JwtSettings>>().Value);
-
-        // services.Configure<JwtSettings>(config.GetSection(nameof(JwtSettings)));
 
         services.AddSingleton<IJwtTokenGenerator, JwtTokenHelper>();
 

@@ -1,8 +1,6 @@
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Schemas.Common;
-using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Channels.Commands.CreateMessage;
 
@@ -15,9 +13,9 @@ namespace MessengerAPI.Application.Channels.Commands.CreateMessage;
 /// <param name="ReplyTo">Message id to reply</param>
 /// <param name="Attachments">List of file ids to attach</param>
 public record CreateMessageCommand(
-    UserId Sub,
-    ChannelId ChannelId,
+    Guid Sub,
+    Guid ChannelId,
     string Text,
-    MessageId? ReplyTo,
+    long? ReplyTo,
     List<Guid>? Attachments
 ) : IRequest<ErrorOr<MessageSchema>>;

@@ -3,7 +3,6 @@ using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Domain.ChannelAggregate.Entities;
 
@@ -13,28 +12,29 @@ public class Message : IHasDomainEvents
     private readonly List<UserReaction> _reactions = new List<UserReaction>();
     private readonly List<FileData> _attachments = new List<FileData>();
 
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.ToList();
     /// <summary>
     /// Reactions on this message
     /// </summary>
-    public IReadOnlyCollection<UserReaction> Reactions => _reactions.ToList();
+    public IReadOnlyList<UserReaction> Reactions => _reactions.ToList();
     /// <summary>
     /// Attachments
     /// </summary>
-    public IReadOnlyCollection<FileData> Attachments => _attachments.ToList();
+    public IReadOnlyList<FileData> Attachments => _attachments.ToList();
     public User Sender { get; private set; }
 
     /// <summary>
     /// Message id
     /// </summary>
-    public MessageId Id { get; private set; }
+    public long Id { get; private set; }
     /// <summary>
     /// Channel id
     /// </summary>
-    public ChannelId ChannelId { get; private set; }
+    public Guid ChannelId { get; private set; }
     /// <summary>
     /// User id
     /// </summary>
-    public UserId SenderId { get; private set; }
+    public Guid SenderId { get; private set; }
     /// <summary>
     /// Text of the message
     /// </summary>
@@ -50,9 +50,7 @@ public class Message : IHasDomainEvents
     /// <summary>
     /// Message id to reply, if any
     /// </summary>
-    public MessageId? ReplyTo { get; private set; }
-
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.ToList();
+    public long? ReplyTo { get; private set; }
 
     /// <summary>
     /// Create a new message
@@ -64,10 +62,10 @@ public class Message : IHasDomainEvents
     /// <param name="attachments">List of file ids to attach</param>
     /// <returns><see cref="Message"/></returns>
     public static Message CreateNew(
-        ChannelId channelId,
-        UserId senderId,
+        Guid channelId,
+        Guid senderId,
         string text,
-        MessageId? replyTo = null,
+        long? replyTo = null,
         List<FileData>? attachments = null)
     {
         var message = new Message(channelId, senderId, text, replyTo, attachments);
@@ -76,10 +74,10 @@ public class Message : IHasDomainEvents
     }
 
     private Message(
-        ChannelId channelId,
-        UserId senderId,
+        Guid channelId,
+        Guid senderId,
         string text,
-        MessageId? replyTo = null,
+        long? replyTo = null,
         List<FileData>? attachments = null)
     {
         ChannelId = channelId;
@@ -99,7 +97,7 @@ public class Message : IHasDomainEvents
     /// <param name="replyTo">The message id to reply</param>
     /// <param name="text">Text of the message</param>
     /// <param name="attachments">List of file ids to attach</param>
-    public void Update(MessageId? replyTo, string text, List<FileData>? attachments)
+    public void Update(long? replyTo, string text, List<FileData>? attachments)
     {
         ReplyTo = replyTo;
         Text = text;

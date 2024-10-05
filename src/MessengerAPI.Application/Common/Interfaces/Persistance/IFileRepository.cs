@@ -1,5 +1,4 @@
 using MessengerAPI.Domain.Common.Entities;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Application.Common.Interfaces.Persistance;
 
@@ -29,7 +28,7 @@ public interface IFileRepository
     /// <param name="userId"><see cref="UserId"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     /// <returns>list of user's files <see cref="FileData"/></returns>
-    Task<List<FileData>> GetUserFilesAsync(UserId userId, CancellationToken token);
+    Task<List<FileData>> GetUserFilesAsync(Guid userId, CancellationToken token);
     /// <summary>
     /// Get files by ids
     /// </summary>
