@@ -1,5 +1,6 @@
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -11,12 +12,15 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
     private readonly JwtSettings _jwtSettings;
     private readonly IKeyManagementService _keyService;
     private readonly ILogger<JwtBearerOptionsConfiguration> _logger;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     public JwtBearerOptionsConfiguration(
         ILogger<JwtBearerOptionsConfiguration> logger,
         IOptions<JwtSettings> jwtSettings,
+        IServiceScopeFactory scopeFactory,
         IKeyManagementService keyManagementService)
     {
+        _scopeFactory = scopeFactory;
         _logger = logger;
         _jwtSettings = jwtSettings.Value;
         _keyService = keyManagementService;
@@ -47,20 +51,26 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
         {
             OnTokenValidated = async context =>
             {
-                try
+                using (var scope = _scopeFactory.CreateScope())
                 {
-                    var userIdentity = new UserIdentity(context.Principal);
-                    //if (!await _revokedTokenStore.IsTokenValidAsync(userIdentity.TokenId))
-                    //{
-                        //context.Fail("Token revoked");
-                        //return;
-                    //}
+                    try
+                    {
+                        var userIdentity = new UserIdentity(context.Principal);
 
-                    context.Principal.AddIdentity(userIdentity);
-                }
-                catch
-                {
-                    context.Fail("Invalid payload");
+                        var _revokedTokenStore = scope.ServiceProvider.GetRequiredService<IRevokedTokenStore>();
+
+                        if (!await _revokedTokenStore.IsTokenValidAsync(userIdentity.TokenId))
+                        {
+                            context.Fail("Token revoked");
+                            return;
+                        }
+
+                        context.Principal.AddIdentity(userIdentity);
+                    }
+                    catch
+                    {
+                        context.Fail("Invalid payload");
+                    }
                 }
             },
 
