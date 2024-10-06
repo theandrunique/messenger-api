@@ -128,16 +128,6 @@ public class Channel : IHasDomainEvents
         return newMessage;
     }
 
-    /// <summary>
-    /// Set list of messages
-    /// </summary>
-    /// <param name="messages">Enumerable of messages <see cref="Message"/></param>
-    public void SetMessages(IEnumerable<Message> messages)
-    {
-        _messages.Clear();
-        _messages.AddRange(messages);
-    }
-
     public void ClearDomainEvents()
     {
         _domainEvents.Clear();
