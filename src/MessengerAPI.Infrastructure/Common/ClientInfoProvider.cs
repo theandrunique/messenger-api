@@ -1,5 +1,5 @@
 using DeviceDetectorNET;
-using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces.Auth;
 using Microsoft.AspNetCore.Http;
 
 namespace MessengerAPI.Infrastructure.Common;

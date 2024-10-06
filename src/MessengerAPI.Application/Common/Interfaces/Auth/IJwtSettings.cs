@@ -1,4 +1,4 @@
-namespace MessengerAPI.Application.Common.Interfaces;
+namespace MessengerAPI.Application.Common.Interfaces.Auth;
 
 public interface IJwtSettings
 {

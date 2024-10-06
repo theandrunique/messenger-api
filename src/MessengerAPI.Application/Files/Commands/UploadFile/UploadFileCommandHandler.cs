@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using AutoMapper;
 using ErrorOr;
 using MediatR;
-using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces.FileStorage;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.Common.Entities;
@@ -11,11 +11,11 @@ namespace MessengerAPI.Application.Files.Commands.UploadFile;
 
 public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, ErrorOr<FileSchema>>
 {
-    private readonly IFileStorage _fileStorage;
+    private readonly IFileStorageService _fileStorage;
     private readonly IFileRepository _fileRepository;
     private readonly IMapper _mapper;
 
-    public UploadFileCommandHandler(IFileStorage fileStorage, IFileRepository fileRepository, IMapper mapper)
+    public UploadFileCommandHandler(IFileStorageService fileStorage, IFileRepository fileRepository, IMapper mapper)
     {
         _fileStorage = fileStorage;
         _fileRepository = fileRepository;

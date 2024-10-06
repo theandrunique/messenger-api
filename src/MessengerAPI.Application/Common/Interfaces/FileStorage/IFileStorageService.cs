@@ -1,6 +1,6 @@
-namespace MessengerAPI.Application.Common.Interfaces;
+namespace MessengerAPI.Application.Common.Interfaces.FileStorage;
 
-public interface IFileStorage
+public interface IFileStorageService
 {
     /// <summary>
     /// Put file in a file storage

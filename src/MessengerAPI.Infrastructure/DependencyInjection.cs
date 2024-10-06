@@ -1,5 +1,6 @@
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Auth;
+using MessengerAPI.Application.Common.Interfaces.FileStorage;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Common;
@@ -27,9 +28,9 @@ public static class DependencyInjection
         services.AddSingleton<IHashHelper, BCryptHelper>();
         services.AddScoped<IClientInfoProvider, ClientInfoProvider>();
 
-        services.Configure<FileStorageSettings>(config.GetSection(nameof(FileStorageSettings)));
+        services.Configure<FileStorageService>(config.GetSection(nameof(FileStorageService)));
         services.AddSingleton<IFileStorageSettings>(sp => sp.GetRequiredService<IOptions<FileStorageSettings>>().Value);
-        services.AddScoped<IFileStorage, FileStorage>();
+        services.AddScoped<IFileStorageService, FileStorageService>();
 
         services.AddHttpContextAccessor();
 
@@ -89,7 +90,7 @@ public static class DependencyInjection
         services.Configure<JwtSettings>(config.GetSection(nameof(JwtSettings)));
         services.AddSingleton<IJwtSettings>(sp => sp.GetRequiredService<IOptions<JwtSettings>>().Value);
 
-        services.AddSingleton<IJwtTokenGenerator, JwtTokenHelper>();
+        services.AddSingleton<IJwtHelper, JwtHelper>();
 
         services.AddSingleton<IKeyManagementService, KeyManagementService>();
 

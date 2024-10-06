@@ -1,4 +1,4 @@
-using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces.Auth;
 
 namespace MessengerAPI.Infrastructure.Auth;
 

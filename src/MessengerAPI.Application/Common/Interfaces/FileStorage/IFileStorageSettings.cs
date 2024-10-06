@@ -1,4 +1,4 @@
-namespace MessengerAPI.Application.Common.Interfaces;
+namespace MessengerAPI.Application.Common.Interfaces.FileStorage;
 
 public interface IFileStorageSettings
 {

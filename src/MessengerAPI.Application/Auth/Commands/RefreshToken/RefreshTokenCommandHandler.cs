@@ -12,13 +12,13 @@ namespace MessengerAPI.Application.Auth.Commands.RefreshToken;
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, ErrorOr<TokenPairResponse>>
 {
     private readonly IJweHelper _jweHelper;
-    private readonly IJwtTokenGenerator _jwtTokenGenerator;
+    private readonly IJwtHelper _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
     private readonly IJwtSettings _jwtSettings;
 
     public RefreshTokenCommandHandler(
         IJweHelper jweHelper,
-        IJwtTokenGenerator jwtTokenGenerator,
+        IJwtHelper jwtTokenGenerator,
         IUserRepository userRepository,
         IJwtSettings jwtSettings)
     {

@@ -1,4 +1,4 @@
-using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces.FileStorage;
 
 namespace MessengerAPI.Infrastructure.Common.FileStorage;
 

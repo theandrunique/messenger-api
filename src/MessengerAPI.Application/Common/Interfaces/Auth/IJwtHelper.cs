@@ -1,6 +1,6 @@
 namespace MessengerAPI.Application.Common.Interfaces.Auth;
 
-public interface IJwtTokenGenerator
+public interface IJwtHelper
 {
     /// <summary>
     /// Generate JWT token

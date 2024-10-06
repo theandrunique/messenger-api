@@ -1,17 +1,17 @@
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Transfer;
-using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces.FileStorage;
 using Microsoft.Extensions.Options;
 
 namespace MessengerAPI.Infrastructure.Common.FileStorage;
 
-public class FileStorage : IFileStorage
+public class FileStorageService : IFileStorageService
 {
     private readonly FileStorageSettings _settings;
     private readonly IAmazonS3 _s3Client;
 
-    public FileStorage(IOptions<FileStorageSettings> settings)
+    public FileStorageService(IOptions<FileStorageSettings> settings)
     {
         _settings = settings.Value;
 

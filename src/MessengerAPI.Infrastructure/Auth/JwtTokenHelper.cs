@@ -6,11 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MessengerAPI.Infrastructure.Auth;
 
-public class JwtTokenHelper : IJwtTokenGenerator
+public class JwtHelper : IJwtHelper
 {
     private readonly JwtSettings _settings;
     private readonly IKeyManagementService _keyService;
-    public JwtTokenHelper(IOptions<JwtSettings> settings, IKeyManagementService keyService)
+    public JwtHelper(IOptions<JwtSettings> settings, IKeyManagementService keyService)
     {
         _settings = settings.Value;
         _keyService = keyService;
