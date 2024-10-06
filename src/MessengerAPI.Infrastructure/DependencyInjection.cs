@@ -96,6 +96,8 @@ public static class DependencyInjection
 
         services.ConfigureOptions<JwtBearerOptionsConfiguration>();
 
+        services.AddScoped<IAuthService, AuthService>();
+
         services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
 
