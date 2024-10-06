@@ -33,7 +33,7 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
         RuleFor(x => x.Email)
             .NotEmpty()
             .EmailAddress()
-            .MustAsync(IsUsernameAvailable)
+            .MustAsync(IsEmailAvailable)
             .WithMessage("Email is busy");
     }
 
