@@ -1,7 +1,6 @@
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
-using MessengerAPI.Application.Channels.Commands.CreateMessage;
-using MessengerAPI.Application.Channels.Commands.EditMessage;
+using MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Application.Schemas.Common;
@@ -84,7 +83,8 @@ public class ChannelsController : ApiController
     {
         var identity = User.GetIdentity();
 
-        var command = new CreateMessageCommand(
+        var command = new AddOrUpdateMessageCommand(
+            null,
             identity.UserId,
             channelId,
             schema.text,
@@ -145,7 +145,7 @@ public class ChannelsController : ApiController
     {
         var identity = User.GetIdentity();
 
-        var command = new EditMessageCommand(
+        var command = new AddOrUpdateMessageCommand(
             messageId,
             identity.UserId,
             channelId,

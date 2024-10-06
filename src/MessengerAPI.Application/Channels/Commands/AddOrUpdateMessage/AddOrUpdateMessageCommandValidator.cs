@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace MessengerAPI.Application.Channels.Commands.CreateMessage;
+namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 
-public class CreateMessageCommandValidator : AbstractValidator<CreateMessageCommand>
+public class AddOrUpdateMessageCommandValidator : AbstractValidator<AddOrUpdateMessageCommand>
 {
-    public CreateMessageCommandValidator()
+    public AddOrUpdateMessageCommandValidator()
     {
         RuleFor(x => x.Text)
             .NotEmpty()
@@ -13,6 +13,5 @@ public class CreateMessageCommandValidator : AbstractValidator<CreateMessageComm
         RuleFor(x => x.Attachments)
             .Must(attachments => attachments == null || attachments.Distinct().Count() == attachments.Count)
             .WithMessage("Attachments must be unique.");
-
     }
 }
