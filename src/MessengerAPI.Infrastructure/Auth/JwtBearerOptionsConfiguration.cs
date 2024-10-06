@@ -9,20 +9,20 @@ namespace MessengerAPI.Infrastructure.Auth;
 
 internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerOptions>
 {
-    private readonly JwtSettings _jwtSettings;
+    private readonly AuthOptions _options;
     private readonly IKeyManagementService _keyService;
     private readonly ILogger<JwtBearerOptionsConfiguration> _logger;
     private readonly IServiceScopeFactory _scopeFactory;
 
     public JwtBearerOptionsConfiguration(
         ILogger<JwtBearerOptionsConfiguration> logger,
-        IOptions<JwtSettings> jwtSettings,
+        IOptions<AuthOptions> options,
         IServiceScopeFactory scopeFactory,
         IKeyManagementService keyManagementService)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
-        _jwtSettings = jwtSettings.Value;
+        _options = options.Value;
         _keyService = keyManagementService;
     }
 
@@ -43,8 +43,8 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
             RequireExpirationTime = true,
             RequireSignedTokens = true,
             ValidateIssuerSigningKey = true,
-            ValidAudience = _jwtSettings.Audience,
-            ValidIssuer = _jwtSettings.Issuer,
+            ValidAudience = this._options.Audience,
+            ValidIssuer = this._options.Issuer,
             IssuerSigningKeyResolver = GetPublicKeys
         };
         options.Events = new JwtBearerEvents

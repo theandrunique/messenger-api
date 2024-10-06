@@ -9,9 +9,9 @@ namespace MessengerAPI.Infrastructure.Auth;
 
 public class JwtHelper : IJwtHelper
 {
-    private readonly JwtSettings _settings;
+    private readonly AuthOptions _settings;
     private readonly IKeyManagementService _keyService;
-    public JwtHelper(IOptions<JwtSettings> settings, IKeyManagementService keyService)
+    public JwtHelper(IOptions<AuthOptions> settings, IKeyManagementService keyService)
     {
         _settings = settings.Value;
         _keyService = keyService;
@@ -29,7 +29,7 @@ public class JwtHelper : IJwtHelper
 
     public string Generate(AccessTokenPayload payload)
     {
-        var (rsa, keyId) = _keyService.GetKey();
+        var (rsa, keyId) = _keyService.GetRandomKey();
 
         var signingCredentials = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256);
 
@@ -37,7 +37,8 @@ public class JwtHelper : IJwtHelper
             claims: CreateClaims(payload),
             issuer: _settings.Issuer,
             audience: _settings.Audience,
-            expires: DateTime.UtcNow.AddMinutes(_settings.ExpiryMinutes),
+            expires: DateTime.UtcNow.AddMinutes(_settings.AccessTokenExpiryMinutes),
+            notBefore: DateTime.UtcNow,
             signingCredentials: signingCredentials
         );
         securityToken.Header.Add("kid", keyId);

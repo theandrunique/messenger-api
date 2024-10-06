@@ -3,6 +3,7 @@ using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Domain.UserAggregate;
 using MessengerAPI.Domain.UserAggregate.Entities;
+using Microsoft.Extensions.Options;
 
 namespace MessengerAPI.Infrastructure.Auth;
 
@@ -10,11 +11,11 @@ public class AuthService : IAuthService
 {
     private readonly IJwtHelper _jwtHelper;
     private readonly IJweHelper _jweHelper;
-    private readonly IJwtSettings _jwtSettings;
+    private readonly AuthOptions _options;
 
-    public AuthService(IJweHelper jweHelper, IJwtHelper jwtHelper, IJwtSettings jwtSettings)
+    public AuthService(IJweHelper jweHelper, IJwtHelper jwtHelper, IOptions<AuthOptions> options)
     {
-        _jwtSettings = jwtSettings;
+        _options = options.Value;
         _jweHelper = jweHelper;
         _jwtHelper = jwtHelper;
     }
@@ -24,6 +25,6 @@ public class AuthService : IAuthService
         var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId, user.Id));
         var accessToken = _jwtHelper.Generate(new AccessTokenPayload(user.Id, session.TokenId));
 
-        return new TokenPairResponse(accessToken, refreshToken, "Bearer", _jwtSettings.ExpirySeconds);
+        return new TokenPairResponse(accessToken, refreshToken, "Bearer", _options.AccessTokenExpiryMinutes * 60);
     }
 }

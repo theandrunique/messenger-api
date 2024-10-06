@@ -87,8 +87,7 @@ public static class DependencyInjection
         services.AddScoped<IJweHelper, JweHelper>();
         services.AddScoped<IRevokedTokenStore, RevokedTokenStore>();
 
-        services.Configure<JwtSettings>(config.GetSection(nameof(JwtSettings)));
-        services.AddSingleton<IJwtSettings>(sp => sp.GetRequiredService<IOptions<JwtSettings>>().Value);
+        services.Configure<AuthOptions>(config.GetSection(nameof(AuthOptions)));
 
         services.AddSingleton<IJwtHelper, JwtHelper>();
 

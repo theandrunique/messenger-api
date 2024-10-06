@@ -7,5 +7,5 @@ public interface IKeyManagementService
 {
     IReadOnlyDictionary<string, RSA> Keys { get; }
     bool TryGetKeyById(string keyId, [NotNullWhen(true)] out RSA? key);
-    (RSA rsa, string keyId) GetKey();
+    (RSA rsa, string keyId) GetRandomKey();
 }

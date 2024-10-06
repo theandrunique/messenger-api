@@ -16,10 +16,46 @@ public class JweHelper : IJweHelper
         _keyService = keyService;
     }
 
+    private bool TryGetKeyIdFromJwe(string jwe, [NotNullWhen(true)] out string? kid)
+    {
+        kid = null;
+        try
+        {
+            var headers = JWE.Headers(jwe);
+
+            // Decoding json from protected header
+            var protectedHeaderBytes = headers.ProtectedHeaderBytes;
+            string protectedHeaderJson = Encoding.UTF8.GetString(protectedHeaderBytes);
+
+            var protectedHeader = JsonSerializer.Deserialize<Dictionary<string, object>>(protectedHeaderJson);
+            if (protectedHeader == null)
+            {
+                return false;
+            }
+
+            if (!protectedHeader.TryGetValue("kid", out var kidObject))
+            {
+                return false;
+            }
+
+            kid = kidObject.ToString();
+            if (kid == null)
+            {
+                return false;
+            }
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public string Encrypt(RefreshTokenPayload payload)
     {
         var jsonPayload = JsonSerializer.Serialize(payload);
-        var (rsa, keyId) = _keyService.GetKey();
+        // Get random key with its id
+        var (rsa, keyId) = _keyService.GetRandomKey();
 
         var recipients = new[]
         {
@@ -29,8 +65,13 @@ public class JweHelper : IJweHelper
         {
             { "kid", keyId },
         };
-
-        var jwe = JWE.Encrypt(jsonPayload, recipients, JweEncryption.A256GCM, mode: SerializationMode.Compact, extraProtectedHeaders: headers);
+        // Encrypt the payload with given key
+        var jwe = JWE.Encrypt(
+            jsonPayload,
+            recipients,
+            JweEncryption.A256GCM,
+            mode: SerializationMode.Compact,
+            extraProtectedHeaders: headers);
 
         return jwe;
     }
@@ -40,33 +81,17 @@ public class JweHelper : IJweHelper
         payload = null;
         try
         {
-            var headers = JWE.Headers(token);
-
-            var protectedHeaderBytes = headers.ProtectedHeaderBytes;
-            string protectedHeaderJson = Encoding.UTF8.GetString(protectedHeaderBytes);
-            var protectedHeader = JsonSerializer.Deserialize<Dictionary<string, object>>(protectedHeaderJson);
-            if (protectedHeader == null)
+            // Extracting headers
+            if (!TryGetKeyIdFromJwe(token, out var kid))
+            {
+                return false;
+            }
+            if (!_keyService.TryGetKeyById(kid, out var rsa))
             {
                 return false;
             }
 
-            if (!protectedHeader.TryGetValue("kid", out var kid))
-            {
-                return false;
-            }
-
-            string? kidString = kid.ToString();
-            if (kidString == null)
-            {
-                return false;
-            }
-
-            if (!_keyService.TryGetKeyById(kidString, out var key))
-            {
-                return false;
-            }
-
-            var jwe = JWE.Decrypt(token, key);
+            var jwe = JWE.Decrypt(token, rsa);
 
             payload = JsonSerializer.Deserialize<RefreshTokenPayload>(jwe.Plaintext);
             if (payload == null)

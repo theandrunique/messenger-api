@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using MessengerAPI.Application.Common.Interfaces.Auth;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MessengerAPI.Infrastructure.Auth;
@@ -10,19 +11,19 @@ public class KeyManagementService : IKeyManagementService
     private readonly Dictionary<string, RSA> _keys = new();
     public IReadOnlyDictionary<string, RSA> Keys => _keys.AsReadOnly();
 
-    public KeyManagementService()
+    public KeyManagementService(IOptions<AuthOptions> options)
     {
-        LoadKeys();
+        LoadKeys(options.Value.KeysDirectory);
     }
 
-    private void LoadKeys()
+    private void LoadKeys(string keysDirectory)
     {
         try
         {
-            foreach (var file in Directory.GetFiles("./keys", "*.pem"))
+            foreach (var pemPath in Directory.GetFiles(keysDirectory))
             {
                 var rsa = RSA.Create();
-                var pem = File.ReadAllText(file);
+                var pem = File.ReadAllText(pemPath);
                 rsa.ImportFromPem(pem);
 
                 var keyId = GetKeyThumbprint(rsa);
@@ -53,7 +54,7 @@ public class KeyManagementService : IKeyManagementService
         return _keys.TryGetValue(keyId, out key);
     }
 
-    public (RSA rsa, string keyId) GetKey()
+    public (RSA rsa, string keyId) GetRandomKey()
     {
         var random = new Random();
         var key = _keys.ElementAt(random.Next(0, _keys.Count));
