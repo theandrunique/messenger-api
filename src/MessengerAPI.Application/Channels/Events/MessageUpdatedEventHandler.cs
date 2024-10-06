@@ -4,7 +4,7 @@ using MediatR;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
-using MessengerAPI.Application.Schemas.Notifications;
+using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.ChannelAggregate.Events;
 
 namespace MessengerAPI.Application.Channels.Events;
@@ -28,9 +28,6 @@ public class MessageUpdatedEventHandler : INotificationHandler<MessageUpdated>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     public async Task Handle(MessageUpdated notification, CancellationToken cancellationToken)
     {
-        var mapped = _mapper.Map<MessageUpdatedNotificationSchema>(notification);
-        var jsonMessage = JsonSerializer.Serialize(mapped, JsonOptions.Default);
-
         var channel = await _channelRepository.GetByIdOrNullAsync(notification.NewMessage.ChannelId, cancellationToken);
         if (channel is null)
         {
@@ -39,6 +36,6 @@ public class MessageUpdatedEventHandler : INotificationHandler<MessageUpdated>
 
         var recipientIds = channel.Members.Select(m => m.Id).ToList();
 
-        await _notificationService.NotifyAsync(recipientIds, jsonMessage);
+        await _notificationService.MessageUpdated(recipientIds, _mapper.Map<MessageSchema>(notification.NewMessage));
     }
 }

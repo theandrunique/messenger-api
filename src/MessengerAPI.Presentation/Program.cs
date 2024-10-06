@@ -3,12 +3,14 @@ using System.Text.Json.Serialization;
 using MessengerAPI.Application;
 using MessengerAPI.Infrastructure;
 using MessengerAPI.Infrastructure.Common.FileStorage;
+using MessengerAPI.Infrastructure.Common.WebSockets;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options => {
+    .AddJsonOptions(options =>
+    {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -75,5 +77,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<UpdatesHub>("/ws");
 
 app.Run();

@@ -1,11 +1,11 @@
+using MessengerAPI.Application.Schemas.Common;
+
 namespace MessengerAPI.Application.Common.Interfaces;
 
 public interface INotificationService
 {
-    /// <summary>
-    /// Send notification
-    /// </summary>
-    /// <param name="jsonMessage">message in json</param>
-    /// <param name="recipientIds">list of user ids who will receive notification</param>
-    Task NotifyAsync(List<Guid> recipientIds, string jsonMessage);
+    Task NewMessageReceived(List<Guid> recipientIds, MessageSchema message);
+    Task MessageUpdated(List<Guid> recipientIds, MessageSchema message);
+    Task NewChannelCreated(List<Guid> recipientIds, ChannelSchema channel);
 }
+

@@ -3,7 +3,7 @@ using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces;
-using MessengerAPI.Application.Schemas.Notifications;
+using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.ChannelAggregate.Events;
 
 namespace MessengerAPI.Application.Channels.Events;
@@ -26,11 +26,8 @@ public class NewChannelEventHandler : INotificationHandler<NewChannelCreated>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     public async Task Handle(NewChannelCreated notification, CancellationToken cancellationToken)
     {
-        var mapped = _mapper.Map<NewChannelNotificationSchema>(notification);
-        var jsonMessage = JsonSerializer.Serialize(mapped, JsonOptions.Default);
-
         var recipientIds = notification.NewChannel.Members.Select(m => m.Id).ToList();
 
-        await _notificationService.NotifyAsync(recipientIds, jsonMessage);
+        await _notificationService.NewChannelCreated(recipientIds, _mapper.Map<ChannelSchema>(notification.NewChannel));
     }
 }

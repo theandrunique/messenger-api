@@ -65,15 +65,16 @@ public static class DependencyInjection
 
         var redis = ConnectionMultiplexer.Connect(redisSettings.ConnectionString);
         services.AddSingleton<IConnectionMultiplexer>(sp => redis);
+
+        services.AddSignalR()
+            .AddStackExchangeRedis(redisSettings.ConnectionString);
+
         return services;
     }
 
     public static IServiceCollection AddWebSockets(this IServiceCollection services)
     {
-        services.AddScoped<INotificationService, NotificationService>();
-        services.AddScoped<IWebSocketService, NotificationService>();
-        services.AddScoped<ConnectionRepository>();
-        services.AddSingleton<SubscriberService>();
+        services.AddScoped<INotificationService, NewNotificationService>();
 
         return services;
     }
