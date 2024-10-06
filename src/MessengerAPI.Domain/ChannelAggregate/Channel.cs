@@ -128,6 +128,16 @@ public class Channel : IHasDomainEvents
         return newMessage;
     }
 
+    /// <summary>
+    /// Check whether user can access the channel
+    /// </summary>
+    /// <param name="userId">User id</param>
+    /// <returns>whether user can access the chat</returns>
+    public bool CanUserAccessChannel(Guid userId)
+    {
+        return _members.Any(m => m.Id == userId);
+    }
+
     public void ClearDomainEvents()
     {
         _domainEvents.Clear();

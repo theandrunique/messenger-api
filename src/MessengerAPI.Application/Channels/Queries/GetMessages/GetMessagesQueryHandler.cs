@@ -31,7 +31,7 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
         {
             return Errors.Channel.ChannelNotFound;
         }
-        if (!channel.Members.Any(m => m.Id == request.Sub))
+        if (!channel.CanUserAccessChannel(request.Sub))
         {
             return Errors.Channel.NotAllowed;
         }

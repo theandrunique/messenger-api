@@ -9,13 +9,13 @@ using MessengerAPI.Domain.Common.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 
-public class AddOrUpdateMessageCommandHandler : IRequestHandler<AddOrUpdateMessageCommand, ErrorOr<MessageSchema>>
+public class EditMessageCommandHandler : IRequestHandler<AddOrUpdateMessageCommand, ErrorOr<MessageSchema>>
 {
     private readonly IChannelRepository _channelRepository;
     private readonly IFileRepository _fileRepository;
     private readonly IMapper _mapper;
 
-    public AddOrUpdateMessageCommandHandler(IChannelRepository channelRepository, IFileRepository fileRepository, IMapper mapper)
+    public EditMessageCommandHandler(IChannelRepository channelRepository, IFileRepository fileRepository, IMapper mapper)
     {
         _channelRepository = channelRepository;
         _fileRepository = fileRepository;
@@ -35,7 +35,7 @@ public class AddOrUpdateMessageCommandHandler : IRequestHandler<AddOrUpdateMessa
         {
             return Errors.Channel.ChannelNotFound;
         }
-        if (!channel.Members.Any(m => m.Id == request.Sub))
+        if (!channel.CanUserAccessChannel(request.Sub))
         {
             return Errors.Channel.NotAllowed;
         }
