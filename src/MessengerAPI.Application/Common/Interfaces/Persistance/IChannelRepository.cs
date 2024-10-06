@@ -6,16 +6,18 @@ namespace MessengerAPI.Application.Common.Interfaces.Persistance;
 public interface IChannelRepository
 {
     /// <summary>
-    /// Save changes
-    /// </summary>
-    /// <param name="token"><see cref="CancellationToken"/></param>
-    Task CommitAsync(CancellationToken token);
-    /// <summary>
     /// Add new channel
     /// </summary>
     /// <param name="channel"><see cref="Channel"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     Task AddAsync(Channel channel, CancellationToken token);
+    /// <summary>
+    /// Update channel
+    /// </summary>
+    /// <param name="channel"><see cref="Channel"/></param>
+    /// <param name="token"><see cref="CancellationToken"/></param>
+    /// <returns></returns>
+    Task UpdateAsync(Channel channel, CancellationToken token);
     /// <summary>
     /// Get channel by id
     /// </summary>

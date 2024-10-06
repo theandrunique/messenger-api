@@ -6,11 +6,6 @@ namespace MessengerAPI.Application.Common.Interfaces.Persistance;
 public interface IUserRepository
 {
     /// <summary>
-    /// Save changes to database
-    /// </summary>
-    /// <param name="token"><see cref="CancellationToken"/></param>
-    Task CommitAsync(CancellationToken token);
-    /// <summary>
     /// Add new user
     /// </summary>
     /// <param name="user"><see cref="User"/></param>
@@ -22,6 +17,13 @@ public interface IUserRepository
     /// <param name="session"><see cref="Session"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     Task AddSessionAsync(Session session, CancellationToken token);
+    /// <summary>
+    /// Update session
+    /// </summary>
+    /// <param name="session"><see cref="Session"/></param>
+    /// <param name="token"><see cref="CancellationToken"/></param>
+    /// <returns></returns>
+    Task UpdateSessionAsync(Session session, CancellationToken token);
     /// <summary>
     /// Get user by id
     /// </summary>

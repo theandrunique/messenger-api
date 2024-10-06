@@ -74,7 +74,6 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             var newSavedMessages = Channel.CreateSavedMessages(members[0]);
 
             await _channelRepository.AddAsync(newSavedMessages, token);
-            await _channelRepository.CommitAsync(token);
 
             return newSavedMessages;
         }
@@ -89,7 +88,6 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             var newChannel = Channel.CreatePrivate(members[0], members[1]);
 
             await _channelRepository.AddAsync(newChannel, token);
-            await _channelRepository.CommitAsync(token);
 
             return newChannel;
         }
@@ -101,7 +99,6 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
         Channel channel = Channel.CreateGroup(request.Sub, members, request.Title);
 
         await _channelRepository.AddAsync(channel, token);
-        await _channelRepository.CommitAsync(token);
 
         return channel;
     }

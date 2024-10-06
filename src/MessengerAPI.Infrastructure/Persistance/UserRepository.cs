@@ -15,19 +15,22 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task CommitAsync(CancellationToken token)
-    {
-        await _context.SaveChangesAsync(token);
-    }
-
     public async Task AddAsync(User user, CancellationToken token)
     {
         await _context.AddAsync(user, token);
+        await _context.SaveChangesAsync(token);
     }
 
     public async Task AddSessionAsync(Session session, CancellationToken token)
     {
         await _context.AddAsync(session, token);
+        await _context.SaveChangesAsync(token);
+    }
+
+    public async Task UpdateSessionAsync(Session session, CancellationToken token)
+    {
+        _context.Sessions.Update(session);
+        await _context.SaveChangesAsync(token);
     }
 
     public async Task<List<User>> GetByIdsAsync(List<Guid> members, CancellationToken token)

@@ -14,14 +14,10 @@ public class fileRepository : IFileRepository
         _context = context;
     }
 
-    public async Task Commit(CancellationToken token)
-    {
-        await _context.SaveChangesAsync(token);
-    }
-
     public async Task AddFileAsync(FileData file, CancellationToken token)
     {
         await _context.Files.AddAsync(file, token);
+        await _context.SaveChangesAsync(token);
     }
 
     public async Task<FileData?> GetByIdAsync(Guid id, CancellationToken token)

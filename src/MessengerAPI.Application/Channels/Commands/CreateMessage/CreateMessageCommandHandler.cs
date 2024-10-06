@@ -57,7 +57,7 @@ public class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommand,
 
         Message message = channel.AddMessage(request.Sub, request.Text, request.ReplyTo, attachments);
 
-        await _channelRepository.CommitAsync(cancellationToken);
+        await _channelRepository.UpdateAsync(channel, cancellationToken);
 
         return _mapper.Map<MessageSchema>(message);
     }

@@ -63,7 +63,7 @@ public class EditMessageCommandHandler : IRequestHandler<EditMessageCommand, Err
 
         message.Update(request.ReplyTo, request.Text, attachments);
 
-        await _channelRepository.CommitAsync(cancellationToken);
+        await _channelRepository.UpdateAsync(channel, cancellationToken);
 
         return _mapper.Map<MessageSchema>(message);
     }

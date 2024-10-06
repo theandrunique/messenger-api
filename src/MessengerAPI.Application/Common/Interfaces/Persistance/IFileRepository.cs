@@ -5,11 +5,6 @@ namespace MessengerAPI.Application.Common.Interfaces.Persistance;
 public interface IFileRepository
 {
     /// <summary>
-    /// Commit changes to database
-    /// </summary>
-    /// <param name="token"><see cref="CancellationToken"/></param>
-    Task Commit(CancellationToken token);
-    /// <summary>
     /// Add file to database
     /// </summary>
     /// <param name="file"><see cref="FileData"/></param>

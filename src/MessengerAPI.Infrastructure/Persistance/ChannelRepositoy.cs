@@ -15,14 +15,16 @@ public class ChannelRepository : IChannelRepository
         _context = context;
     }
 
-    public async Task CommitAsync(CancellationToken token)
-    {
-        await _context.SaveChangesAsync(token);
-    }
-
     public async Task AddAsync(Channel channel, CancellationToken token)
     {
         await _context.AddAsync(channel, token);
+        await _context.SaveChangesAsync(token);
+    }
+
+    public async Task UpdateAsync(Channel channel, CancellationToken token)
+    {
+        _context.Channels.Update(channel);
+        await _context.SaveChangesAsync(token);
     }
 
     public async Task<Channel?> GetByIdOrNullAsync(Guid channelId, CancellationToken token)
