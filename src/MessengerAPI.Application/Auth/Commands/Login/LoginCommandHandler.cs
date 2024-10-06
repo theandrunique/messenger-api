@@ -15,24 +15,18 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
     private readonly IHashHelper _hashHelper;
     private readonly IUserRepository _userRepository;
     private readonly IClientInfoProvider _userAgentParser;
-    private readonly IJweHelper _jweHelper;
-    private readonly IJwtHelper _jwtTokenGenerator;
-    private readonly IJwtSettings _jwtSettings;
+    private readonly IAuthService _authService;
 
     public LoginCommandHandler(
         IHashHelper hashHelper,
         IUserRepository userRepository,
         IClientInfoProvider userAgentParser,
-        IJweHelper jweHelper,
-        IJwtHelper jwtTokenGenerator,
-        IJwtSettings jwtSettings)
+        IAuthService authService)
     {
         _hashHelper = hashHelper;
         _userRepository = userRepository;
         _userAgentParser = userAgentParser;
-        _jweHelper = jweHelper;
-        _jwtTokenGenerator = jwtTokenGenerator;
-        _jwtSettings = jwtSettings;
+        _authService = authService;
     }
 
     /// <summary>
@@ -65,9 +59,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
             _userAgentParser.GetIpAddress());
         await _userRepository.AddSessionAsync(session, cancellationToken);
 
-        var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId, user.Id));
-        var accessToken = _jwtTokenGenerator.Generate(user.Id, session.TokenId);
-
-        return new TokenPairResponse(accessToken, refreshToken, "Bearer", _jwtSettings.ExpirySeconds);
+        return _authService.GenerateTokenPairResponse(user, session);
     }
 }

@@ -1,8 +1,6 @@
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Auth.Common;
-using MessengerAPI.Application.Common;
-using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.Common.Errors;
@@ -11,21 +9,15 @@ namespace MessengerAPI.Application.Auth.Commands.RefreshToken;
 
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, ErrorOr<TokenPairResponse>>
 {
-    private readonly IJweHelper _jweHelper;
-    private readonly IJwtHelper _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
-    private readonly IJwtSettings _jwtSettings;
+    private readonly IAuthService _authService;
+    private readonly IJweHelper _jweHelper;
 
-    public RefreshTokenCommandHandler(
-        IJweHelper jweHelper,
-        IJwtHelper jwtTokenGenerator,
-        IUserRepository userRepository,
-        IJwtSettings jwtSettings)
+    public RefreshTokenCommandHandler(IUserRepository userRepository, IAuthService authService, IJweHelper jweHelper)
     {
-        _jweHelper = jweHelper;
-        _jwtTokenGenerator = jwtTokenGenerator;
         _userRepository = userRepository;
-        _jwtSettings = jwtSettings;
+        _authService = authService;
+        _jweHelper = jweHelper;
     }
 
     /// <summary>
@@ -51,9 +43,6 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
 
         await _userRepository.UpdateSessionAsync(session, cancellationToken);
 
-        var refreshToken = _jweHelper.Encrypt(new RefreshTokenPayload(session.TokenId, user.Id));
-        var accessToken = _jwtTokenGenerator.Generate(user.Id, session.TokenId);
-
-        return new TokenPairResponse(accessToken, refreshToken, "Bearer", _jwtSettings.ExpirySeconds);
+        return _authService.GenerateTokenPairResponse(user, session);
     }
 }
