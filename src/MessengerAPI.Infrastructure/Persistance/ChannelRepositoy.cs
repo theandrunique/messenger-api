@@ -74,4 +74,12 @@ public class ChannelRepository : IChannelRepository
             .Include(c => c.Members)
             .Where(c => c.Members.Any(m => m.Id == userId)).ToListAsync(token);
     }
+
+    public async Task<List<Guid>> GetMemberIdsFromChannelByIdOrNullAsync(Guid channelId, CancellationToken token)
+    {
+        return await _context.Channels
+            .Where(c => c.Id == channelId)
+            .SelectMany(c => c.Members.Select(m => m.Id))
+            .ToListAsync(token);
+    }
 }

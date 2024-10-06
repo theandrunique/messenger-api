@@ -26,6 +26,13 @@ public interface IChannelRepository
     /// <returns><see cref="Channel?"/></returns>
     Task<Channel?> GetByIdOrNullAsync(Guid channelId, CancellationToken token);
     /// <summary>
+    /// Get channel member ids
+    /// </summary>
+    /// <param name="channelId"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    Task<List<Guid>> GetMemberIdsFromChannelByIdOrNullAsync(Guid channelId, CancellationToken token);
+    /// <summary>
     /// Get messages async
     /// </summary>
     /// <param name="channelId"><see cref="ChannelId"/></param>
