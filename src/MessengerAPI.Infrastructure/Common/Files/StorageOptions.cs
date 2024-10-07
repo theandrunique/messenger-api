@@ -1,8 +1,8 @@
 using MessengerAPI.Application.Common.Interfaces.FileStorage;
 
-namespace MessengerAPI.Infrastructure.Common.FileStorage;
+namespace MessengerAPI.Infrastructure.Common.Files;
 
-public class FileStorageSettings : IFileStorageSettings
+public class StorageOptions : IStorageOptions
 {
     public string AccessKey { get; init; } = null!;
     public string SecretKey { get; init; } = null!;
@@ -10,6 +10,7 @@ public class FileStorageSettings : IFileStorageSettings
     public string EndpointUrl { get; init; } = null!;
     public string BucketUrl { get; init; } = null!;
     public int UploadPartSize { get; init; }
+    public int SomeExperementalValue { get; init; }
     public long MaxFileSize => MaxFileSizeInMB * 1024 * 1024;
     public long MaxFileSizeInMB { get; init; }
 }

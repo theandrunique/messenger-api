@@ -3,7 +3,7 @@ using MessengerAPI.Application.Files.Commands.UploadFile;
 using MessengerAPI.Application.Files.Queries.GetFiles;
 using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Domain.Common.Errors;
-using MessengerAPI.Infrastructure.Common.FileStorage;
+using MessengerAPI.Infrastructure.Common.Files;
 using MessengerAPI.Presentation.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -14,9 +14,9 @@ namespace MessengerAPI.Presentation.Controllers;
 public class FilesController : ApiController
 {
     private readonly IMediator _mediator;
-    private readonly FileStorageSettings _settings;
+    private readonly StorageOptions _settings;
 
-    public FilesController(IMediator mediator, IOptions<FileStorageSettings> settings)
+    public FilesController(IMediator mediator, IOptions<StorageOptions> settings)
     {
         _mediator = mediator;
         _settings = settings.Value;

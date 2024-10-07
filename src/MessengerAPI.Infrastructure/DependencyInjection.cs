@@ -4,7 +4,7 @@ using MessengerAPI.Application.Common.Interfaces.FileStorage;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Common;
-using MessengerAPI.Infrastructure.Common.FileStorage;
+using MessengerAPI.Infrastructure.Common.Files;
 using MessengerAPI.Infrastructure.Common.Persistance;
 using MessengerAPI.Infrastructure.Common.WebSockets;
 using MessengerAPI.Infrastructure.Persistance;
@@ -24,12 +24,9 @@ public static class DependencyInjection
         this IServiceCollection services,
         ConfigurationManager config)
     {
+        services.Configure<StorageOptions>(config.GetSection(nameof(StorageOptions)));
+        services.AddSingleton<IStorageOptions>(sp => sp.GetRequiredService<IOptions<StorageOptions>>().Value);
 
-        services.AddSingleton<IHashHelper, BCryptHelper>();
-        services.AddScoped<IClientInfoProvider, ClientInfoProvider>();
-
-        services.Configure<FileStorageService>(config.GetSection(nameof(FileStorageService)));
-        services.AddSingleton<IFileStorageSettings>(sp => sp.GetRequiredService<IOptions<FileStorageSettings>>().Value);
         services.AddScoped<IFileStorageService, FileStorageService>();
 
         services.AddHttpContextAccessor();
@@ -84,13 +81,14 @@ public static class DependencyInjection
         this IServiceCollection services,
         ConfigurationManager config)
     {
-        services.AddScoped<IJweHelper, JweHelper>();
-        services.AddScoped<IRevokedTokenStore, RevokedTokenStore>();
-
         services.Configure<AuthOptions>(config.GetSection(nameof(AuthOptions)));
 
-        services.AddSingleton<IJwtHelper, JwtHelper>();
+        services.AddSingleton<IHashHelper, BCryptHelper>();
+        services.AddScoped<IClientInfoProvider, ClientInfoProvider>();
 
+        services.AddScoped<IJweHelper, JweHelper>();
+        services.AddSingleton<IJwtHelper, JwtHelper>();
+        services.AddScoped<IRevokedTokenStore, RevokedTokenStore>();
         services.AddSingleton<IKeyManagementService, KeyManagementService>();
 
         services.ConfigureOptions<JwtBearerOptionsConfiguration>();

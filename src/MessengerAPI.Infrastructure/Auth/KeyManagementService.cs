@@ -37,7 +37,7 @@ public class KeyManagementService : IKeyManagementService
         }
         catch (Exception ex)
         {
-            throw new Exception("Failed to load keys: {0}", ex);
+            throw new Exception("Failed to load keys.", ex);
         }
     }
 

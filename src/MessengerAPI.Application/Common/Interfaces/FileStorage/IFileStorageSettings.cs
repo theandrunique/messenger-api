@@ -1,6 +1,6 @@
 namespace MessengerAPI.Application.Common.Interfaces.FileStorage;
 
-public interface IFileStorageSettings
+public interface IStorageOptions
 {
     /// <summary>
     /// Maximum file size in bytes

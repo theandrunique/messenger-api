@@ -17,16 +17,19 @@ services:
     ports:
       - 8000:8000
     environment:
-      - JwtSettings__Secret=${JwtSettings__Secret:?}
-      - JwtSettings__ExpiryMinutes=${JwtSettings__ExpiryMinutes:?}
-      - JwtSettings__Issuer=${JwtSettings__Issuer:?}
-      - JwtSettings__Audience=${JwtSettings__Audience:?}
+      - AuthOptions__KeysDirectory=${AuthOptions__KeysDirectory:?}
+      - AuthOptions__AccessTokenExpiryMinutes=${AuthOptions__AccessTokenExpiryMinutes:?}
+      - AuthOptions__Issuer=${AuthOptions__Issuer:?}
+      - AuthOptions__Audience=${AuthOptions__Audience:?}
+      - AuthOptions__RevokedTokensCacheKeyPrefix=${AuthOptions__RevokedTokensCacheKeyPrefix:-"revoked-tokens"}
 
-      - FileStorageSettings__AccessKey=${FileStorageSettings__AccessKey:?}
-      - FileStorageSettings__SecretKey=${FileStorageSettings__SecretKey:?}
-      - FileStorageSettings__BucketName=${FileStorageSettings__BucketName:?}
-      - FileStorageSettings__EndpointUrl=${FileStorageSettings__EndpointUrl:?}
-      - FileStorageSettings__BucketUrl=${FileStorageSettings__BucketUrl:?}
+      - StorageOptions__AccessKey=${StorageOptions__AccessKey:?}
+      - StorageOptions__SecretKey=${StorageOptions__SecretKey:?}
+      - StorageOptions__BucketName=${StorageOptions__BucketName:?}
+      - StorageOptions__EndpointUrl=${StorageOptions__EndpointUrl:?}
+      - StorageOptions__BucketUrl=${StorageOptions__BucketUrl:?}
+      - StorageOptions__MaxFileSizeInMB=${StorageOptions__MaxFileSizeInMB:?}
+      - StorageOptions__UploadPartSize=${StorageOptions__UploadPartSize:-6291456}
 
       - RedisSettings__ConnectionString=${RedisSettings__ConnectionString:-redis:6379}
 
