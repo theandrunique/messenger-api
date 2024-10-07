@@ -1,12 +1,88 @@
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using MessengerAPI.Presentation.Common;
+using Microsoft.OpenApi.Models;
 
 namespace MessengerAPI.Infrastructure.Common.FileStorage;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
+    public static IServiceCollection AddPresentation(this IServiceCollection services, ConfigurationManager config)
     {
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+        services.AddProblemDetails();
+
+        services.AddCorsPolicy(config);
+        services.AddControllersWithJsonOptions();
+        services.AddSwagger();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCorsPolicy(this IServiceCollection services, ConfigurationManager config)
+    {
+        var corsOptions = new CorsPolicy();
+        config.Bind(nameof(CorsPolicy), corsOptions);
+
+        services.AddCors(options =>
+            {
+                options.AddPolicy(CorsConstants.CorsPolicyName, builder =>
+                {
+                    builder.WithOrigins(corsOptions.AllowedOrigins.ToArray())
+                        .WithHeaders(corsOptions.AllowedHeaders.ToArray())
+                        .WithMethods(corsOptions.AllowedMethods.ToArray())
+                        .WithExposedHeaders(corsOptions.ExposedHeaders.ToArray())
+                        .AllowCredentials();
+                });
+            });
+        return services;
+    }
+
+    private static IServiceCollection AddControllersWithJsonOptions(this IServiceCollection services)
+    {
+        services.AddEndpointsApiExplorer()
+            .AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
+
+        return services;
+    }
+
+    private static IServiceCollection AddSwagger(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Enter token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
+
         return services;
     }
 }

@@ -72,7 +72,7 @@ public static class DependencyInjection
 
     public static IServiceCollection AddWebSockets(this IServiceCollection services)
     {
-        services.AddScoped<INotificationService, NewNotificationService>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         return services;
     }

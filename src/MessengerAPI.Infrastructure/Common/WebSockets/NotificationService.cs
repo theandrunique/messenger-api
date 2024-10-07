@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace MessengerAPI.Infrastructure.Common.WebSockets;
 
-public class NewNotificationService : INotificationService
+public class NotificationService : INotificationService
 {
     private readonly IHubContext<UpdatesHub> _hubContext;
-    public NewNotificationService(IHubContext<UpdatesHub> hubContext)
+    public NotificationService(IHubContext<UpdatesHub> hubContext)
     {
         _hubContext = hubContext;
     }

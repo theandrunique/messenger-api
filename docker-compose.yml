@@ -23,6 +23,8 @@ services:
       - AuthOptions__Audience=${AuthOptions__Audience:?}
       - AuthOptions__RevokedTokensCacheKeyPrefix=${AuthOptions__RevokedTokensCacheKeyPrefix:-"revoked-tokens"}
 
+      - CorsPolicy__AllowedOrigins=${CorsPolicy__AllowedOrigins:?}
+
       - StorageOptions__AccessKey=${StorageOptions__AccessKey:?}
       - StorageOptions__SecretKey=${StorageOptions__SecretKey:?}
       - StorageOptions__BucketName=${StorageOptions__BucketName:?}

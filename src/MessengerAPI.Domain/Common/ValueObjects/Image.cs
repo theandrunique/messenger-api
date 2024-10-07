@@ -4,6 +4,5 @@ public class Image
 {
     public string Key { get; private set; }
 
-    public Image() { }
+    private Image() { }
 }
-

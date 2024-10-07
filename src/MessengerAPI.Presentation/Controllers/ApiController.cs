@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ErrorOr;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Cors;
+using MessengerAPI.Presentation.Common;
 
 namespace MessengerAPI.Presentation.Controllers;
 

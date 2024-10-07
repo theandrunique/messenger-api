@@ -2,6 +2,7 @@ using MediatR;
 using MessengerAPI.Application.WellKnown.Queries;
 using MessengerAPI.Presentation.Schemas.WellKnown;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessengerAPI.Presentation.Controllers;
