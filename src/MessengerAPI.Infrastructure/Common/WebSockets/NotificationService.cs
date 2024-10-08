@@ -1,5 +1,5 @@
 using MessengerAPI.Application.Common.Interfaces;
-using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Contracts.Common;
 using Microsoft.AspNetCore.SignalR;
 
 namespace MessengerAPI.Infrastructure.Common.WebSockets;

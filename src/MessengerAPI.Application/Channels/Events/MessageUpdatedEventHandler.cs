@@ -2,7 +2,7 @@ using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
-using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.ChannelAggregate.Events;
 
 namespace MessengerAPI.Application.Channels.Events;

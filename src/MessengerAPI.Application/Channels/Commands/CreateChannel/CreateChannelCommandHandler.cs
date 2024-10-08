@@ -2,7 +2,7 @@ using AutoMapper;
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
-using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.ChannelAggregate;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common.Errors;

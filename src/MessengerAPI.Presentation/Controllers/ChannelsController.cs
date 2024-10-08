@@ -3,7 +3,7 @@ using MessengerAPI.Application.Channels.Commands;
 using MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
-using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Contracts.Common;
 using MessengerAPI.Presentation.Common;
 using MessengerAPI.Presentation.Schemas.Channels;
 using Microsoft.AspNetCore.Mvc;

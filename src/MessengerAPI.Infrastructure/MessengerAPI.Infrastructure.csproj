@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MessengerAPI.Application\MessengerAPI.Application.csproj" />
+    <ProjectReference Include="..\MessengerAPI.Contracts\MessengerAPI.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

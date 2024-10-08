@@ -1,5 +1,8 @@
-namespace MessengerAPI.Application.Schemas.Common;
+namespace MessengerAPI.Contracts.Common;
 
+/// <summary>
+/// Json web key schema
+/// </summary>
 public class JsonWebKeySchema
 {
     public string Kty { get; set; } = null;

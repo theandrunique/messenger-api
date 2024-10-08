@@ -1,16 +1,16 @@
 using AutoMapper;
-using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.ChannelAggregate;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
-namespace MessengerAPI.Application.Common.Mappings;
+namespace MessengerAPI.Contracts;
 
-public class EntitiesMapping : Profile
+public class Mappings : Profile
 {
-    public EntitiesMapping()
+    public Mappings()
     {
         CreateMap<FileData, string>().ConvertUsing(src => src.Url);
         CreateMap<FileData?, string?>().ConvertUsing(src => src != null ? src.Url : null);

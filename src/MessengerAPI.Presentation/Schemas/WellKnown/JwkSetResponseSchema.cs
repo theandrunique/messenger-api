@@ -1,4 +1,4 @@
-using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Contracts.Common;
 
 namespace MessengerAPI.Presentation.Schemas.WellKnown;
 

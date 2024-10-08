@@ -1,7 +1,7 @@
 using MediatR;
 using MessengerAPI.Application.Files.Commands.UploadFile;
 using MessengerAPI.Application.Files.Queries.GetFiles;
-using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.Common.Errors;
 using MessengerAPI.Infrastructure.Common.Files;
 using MessengerAPI.Presentation.Common;

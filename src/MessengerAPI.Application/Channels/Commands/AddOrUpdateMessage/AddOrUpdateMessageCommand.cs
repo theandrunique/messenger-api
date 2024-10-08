@@ -1,6 +1,6 @@
 using ErrorOr;
 using MediatR;
-using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Contracts.Common;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 
@@ -8,7 +8,7 @@ namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 /// Add or update a message command
 /// </summary>
 /// <param name="MessageId">Message id, null when message is new</param>
-/// <param name="Sub"><see cref="UserId"/></param>
+/// <param name="Sub">User id</param>
 /// <param name="ChannelId">Channel id</param>
 /// <param name="Text">Message text</param>
 /// <param name="ReplyTo">Message id to reply</param>

@@ -1,6 +1,6 @@
 using MediatR;
-using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Application.Users.Queries;
+using MessengerAPI.Contracts.Common;
 using MessengerAPI.Presentation.Common;
 using Microsoft.AspNetCore.Mvc;
 

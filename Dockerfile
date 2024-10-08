@@ -5,6 +5,7 @@ EXPOSE 8000
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
+COPY src/MessengerAPI.Contracts/*.csproj MessengerAPI.Contracts/
 COPY src/MessengerAPI.Presentation/*.csproj MessengerAPI.Presentation/
 COPY src/MessengerAPI.Infrastructure/*.csproj MessengerAPI.Infrastructure/
 COPY src/MessengerAPI.Domain/*.csproj MessengerAPI.Domain/

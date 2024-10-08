@@ -1,4 +1,4 @@
-namespace MessengerAPI.Application.Schemas.Common;
+namespace MessengerAPI.Contracts.Common;
 
 /// <summary>
 /// Reaction schema

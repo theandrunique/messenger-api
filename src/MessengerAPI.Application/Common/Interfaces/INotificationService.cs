@@ -1,4 +1,4 @@
-using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Contracts.Common;
 
 namespace MessengerAPI.Application.Common.Interfaces;
 
@@ -8,4 +8,3 @@ public interface INotificationService
     Task MessageUpdated(List<Guid> recipientIds, MessageSchema message);
     Task NewChannelCreated(List<Guid> recipientIds, ChannelSchema channel);
 }
-

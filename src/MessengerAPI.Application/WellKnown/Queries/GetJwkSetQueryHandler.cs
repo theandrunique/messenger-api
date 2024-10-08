@@ -1,6 +1,6 @@
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces.Auth;
-using MessengerAPI.Application.Schemas.Common;
+using MessengerAPI.Contracts.Common;
 
 namespace MessengerAPI.Application.WellKnown.Queries;
 

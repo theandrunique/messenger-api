@@ -6,8 +6,8 @@ using MessengerAPI.Presentation.Schemas.Auth;
 using MessengerAPI.Application.Auth.Commands.Login;
 using MessengerAPI.Presentation.Common;
 using MessengerAPI.Application.Auth.Commands.RefreshToken;
-using MessengerAPI.Application.Schemas.Common;
 using MessengerAPI.Application.Auth.Common;
+using MessengerAPI.Contracts.Common;
 
 namespace MessengerAPI.Presentation.Controllers;
 
