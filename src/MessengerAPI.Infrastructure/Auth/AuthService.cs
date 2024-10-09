@@ -1,6 +1,6 @@
 using MessengerAPI.Application.Auth.Common;
+using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common;
-using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Domain.UserAggregate;
 using MessengerAPI.Domain.UserAggregate.Entities;
 using Microsoft.Extensions.Options;

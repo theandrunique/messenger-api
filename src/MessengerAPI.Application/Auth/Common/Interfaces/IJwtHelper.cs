@@ -1,4 +1,6 @@
-namespace MessengerAPI.Application.Common.Interfaces.Auth;
+using MessengerAPI.Application.Common;
+
+namespace MessengerAPI.Application.Auth.Common.Interfaces;
 
 public interface IJwtHelper
 {

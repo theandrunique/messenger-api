@@ -1,4 +1,4 @@
-using MessengerAPI.Application.Common.Interfaces.Auth;
+using MessengerAPI.Application.Auth.Common.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

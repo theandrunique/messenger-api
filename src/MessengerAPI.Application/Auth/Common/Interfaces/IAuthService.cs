@@ -2,7 +2,7 @@ using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Domain.UserAggregate;
 using MessengerAPI.Domain.UserAggregate.Entities;
 
-namespace MessengerAPI.Application.Common.Interfaces.Auth;
+namespace MessengerAPI.Application.Auth.Common.Interfaces;
 
 public interface IAuthService
 {

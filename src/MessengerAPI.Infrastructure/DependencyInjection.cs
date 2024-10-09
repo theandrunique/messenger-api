@@ -1,7 +1,7 @@
+using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces;
-using MessengerAPI.Application.Common.Interfaces.Auth;
-using MessengerAPI.Application.Common.Interfaces.FileStorage;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
+using MessengerAPI.Application.Files.Common.Interfaces;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Common;
 using MessengerAPI.Infrastructure.Common.Files;

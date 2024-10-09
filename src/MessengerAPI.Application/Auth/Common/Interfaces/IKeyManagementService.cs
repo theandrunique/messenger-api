@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
-namespace MessengerAPI.Application.Common.Interfaces.Auth;
+namespace MessengerAPI.Application.Auth.Common.Interfaces;
 
 public interface IKeyManagementService
 {

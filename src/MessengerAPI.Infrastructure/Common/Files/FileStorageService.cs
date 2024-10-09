@@ -1,7 +1,7 @@
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Transfer;
-using MessengerAPI.Application.Common.Interfaces.FileStorage;
+using MessengerAPI.Application.Files.Common.Interfaces;
 using Microsoft.Extensions.Options;
 
 namespace MessengerAPI.Infrastructure.Common.Files;

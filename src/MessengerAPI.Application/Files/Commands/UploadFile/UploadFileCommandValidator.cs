@@ -1,5 +1,5 @@
 using FluentValidation;
-using MessengerAPI.Application.Common.Interfaces.FileStorage;
+using MessengerAPI.Application.Files.Common.Interfaces;
 
 namespace MessengerAPI.Application.Files.Commands.UploadFile;
 

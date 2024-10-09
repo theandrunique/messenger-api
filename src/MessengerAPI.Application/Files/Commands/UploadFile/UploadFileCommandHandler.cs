@@ -2,8 +2,8 @@ using System.Security.Cryptography;
 using AutoMapper;
 using ErrorOr;
 using MediatR;
-using MessengerAPI.Application.Common.Interfaces.FileStorage;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
+using MessengerAPI.Application.Files.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.Common.Entities;
 

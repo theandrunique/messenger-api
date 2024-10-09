@@ -2,8 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
 using Jose;
+using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common;
-using MessengerAPI.Application.Common.Interfaces.Auth;
 
 namespace MessengerAPI.Infrastructure.Auth;
 

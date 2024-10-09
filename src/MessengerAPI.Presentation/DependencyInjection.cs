@@ -42,7 +42,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddControllersWithJsonOptions(this IServiceCollection services)
     {
-        services.AddEndpointsApiExplorer()
+        services
             .AddControllers()
             .AddJsonOptions(options =>
             {
@@ -56,9 +56,11 @@ public static class DependencyInjection
 
     private static IServiceCollection AddSwagger(this IServiceCollection services)
     {
-        services.AddSwaggerGen(c =>
+        services
+            .AddEndpointsApiExplorer()
+            .AddSwaggerGen(options =>
             {
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
                     Description = "Enter token",
@@ -67,7 +69,7 @@ public static class DependencyInjection
                     Scheme = "Bearer",
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme

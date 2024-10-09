@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using MessengerAPI.Application.Common;
 
-namespace MessengerAPI.Application.Common.Interfaces.Auth;
+namespace MessengerAPI.Application.Auth.Common.Interfaces;
 
 public interface IJweHelper
 {
