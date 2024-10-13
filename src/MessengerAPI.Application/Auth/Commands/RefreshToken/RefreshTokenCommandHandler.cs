@@ -11,13 +11,11 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
 {
     private readonly IUserRepository _userRepository;
     private readonly IAuthService _authService;
-    private readonly IJweHelper _jweHelper;
 
-    public RefreshTokenCommandHandler(IUserRepository userRepository, IAuthService authService, IJweHelper jweHelper)
+    public RefreshTokenCommandHandler(IUserRepository userRepository, IAuthService authService)
     {
         _userRepository = userRepository;
         _authService = authService;
-        _jweHelper = jweHelper;
     }
 
     /// <summary>
@@ -28,7 +26,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
     /// <returns><see cref="TokenPairResponse"/></returns>
     public async Task<ErrorOr<TokenPairResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        if (!_jweHelper.TryDecrypt(request.RefreshToken, out var payload))
+        if (!_authService.TryDecryptRefreshToken(request.RefreshToken, out var payload))
         {
             return Errors.Auth.InvalidToken;
         }

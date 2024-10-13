@@ -1,4 +1,5 @@
 using MessengerAPI.Domain.Common;
+using MessengerAPI.Domain.Common.ValueObjects;
 using MessengerAPI.Domain.UserAggregate.Entities;
 using MessengerAPI.Domain.UserAggregate.Events;
 using MessengerAPI.Domain.UserAggregate.ValueObjects;
@@ -8,12 +9,12 @@ namespace MessengerAPI.Domain.UserAggregate;
 public class User : IHasDomainEvents
 {
     private readonly List<IDomainEvent> _domainEvents = new();
-    private readonly List<UserImage> _images = new();
+    private readonly List<Image> _images = new();
 
     /// <summary>
-    /// List of user's images<see cref="UserImage"/>
+    /// List of user's images <see cref="Image"/>
     /// </summary>
-    public IReadOnlyList<UserImage> Images => _images.ToList();
+    public IReadOnlyList<Image> Images => _images.ToList();
 
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.ToList();
 
@@ -91,7 +92,7 @@ public class User : IHasDomainEvents
         User user = new User
         {
             Id = Guid.NewGuid(),
-            Username = username,
+            Username = username.ToLower(),
             UsernameUpdatedAt = dateOfCreation,
             PasswordHash = passwordHash,
             PasswordUpdatedAt = dateOfCreation,
@@ -100,7 +101,7 @@ public class User : IHasDomainEvents
             IsActive = true,
             CreatedAt = dateOfCreation,
             TwoFactorAuthentication = false,
-            Email = email,
+            Email = email.ToLower(),
             EmailUpdatedAt = dateOfCreation
         };
 

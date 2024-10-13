@@ -57,9 +57,9 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
                     {
                         var userIdentity = new UserIdentity(context.Principal);
 
-                        var _revokedTokenStore = scope.ServiceProvider.GetRequiredService<IRevokedTokenStore>();
+                        var _revokedTokenStore = scope.ServiceProvider.GetRequiredService<IRevokedTokenService>();
 
-                        if (!await _revokedTokenStore.IsTokenValidAsync(userIdentity.TokenId))
+                        if (await _revokedTokenStore.IsTokenRevokedAsync(userIdentity.TokenId))
                         {
                             context.Fail("Token revoked");
                             return;

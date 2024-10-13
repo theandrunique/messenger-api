@@ -1,22 +1,15 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Jose;
-using MessengerAPI.Application.Auth.Common.Interfaces;
-using MessengerAPI.Application.Common;
+using MessengerAPI.Infrastructure.Auth.Interfaces;
 
 namespace MessengerAPI.Infrastructure.Auth;
 
 public class JweHelper : IJweHelper
 {
-    private readonly IKeyManagementService _keyService;
-
-    public JweHelper(IKeyManagementService keyService)
-    {
-        _keyService = keyService;
-    }
-
-    private bool TryGetKeyIdFromJwe(string jwe, [NotNullWhen(true)] out string? kid)
+    public bool TryGetKeyIdFromJwe(string jwe, [NotNullWhen(true)] out string? kid)
     {
         kid = null;
         try
@@ -33,7 +26,7 @@ public class JweHelper : IJweHelper
                 return false;
             }
 
-            if (!protectedHeader.TryGetValue("kid", out var kidObject))
+            if (!protectedHeader.TryGetValue(AuthConstants.KeyIdHeaderName, out var kidObject))
             {
                 return false;
             }
@@ -51,19 +44,15 @@ public class JweHelper : IJweHelper
         }
     }
 
-    public string Encrypt(RefreshTokenPayload payload)
+    public string Encrypt(string jsonPayload, RSA recipient, string keyId)
     {
-        var jsonPayload = JsonSerializer.Serialize(payload);
-        // Get random key with its id
-        var (rsa, keyId) = _keyService.GetRandomKey();
-
         var recipients = new[]
         {
-            new JweRecipient(JweAlgorithm.RSA_OAEP_256, rsa),
+            new JweRecipient(JweAlgorithm.RSA_OAEP_256, recipient),
         };
         var headers = new Dictionary<string, object>
         {
-            { "kid", keyId },
+            { AuthConstants.KeyIdHeaderName, keyId },
         };
         // Encrypt the payload with given key
         var jwe = JWE.Encrypt(
@@ -76,25 +65,15 @@ public class JweHelper : IJweHelper
         return jwe;
     }
 
-    public bool TryDecrypt(string token, [NotNullWhen(true)] out RefreshTokenPayload? payload)
+    public bool TryDecrypt(string encryptedData, RSA key, [NotNullWhen(true)] out string? jsonPayload)
     {
-        payload = null;
+        jsonPayload = null;
         try
         {
-            // Extracting headers
-            if (!TryGetKeyIdFromJwe(token, out var kid))
-            {
-                return false;
-            }
-            if (!_keyService.TryGetKeyById(kid, out var rsa))
-            {
-                return false;
-            }
+            var jwe = JWE.Decrypt(encryptedData, key);
 
-            var jwe = JWE.Decrypt(token, rsa);
-
-            payload = JsonSerializer.Deserialize<RefreshTokenPayload>(jwe.Plaintext);
-            if (payload == null)
+            jsonPayload = jwe.Plaintext;
+            if (jsonPayload == null)
             {
                 return false;
             }

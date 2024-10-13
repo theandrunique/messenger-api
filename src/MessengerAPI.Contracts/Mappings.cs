@@ -3,8 +3,8 @@ using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.ChannelAggregate;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.Common.Entities;
+using MessengerAPI.Domain.Common.ValueObjects;
 using MessengerAPI.Domain.UserAggregate;
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
 
 namespace MessengerAPI.Contracts;
 
@@ -14,7 +14,7 @@ public class Mappings : Profile
     {
         CreateMap<FileData, string>().ConvertUsing(src => src.Url);
         CreateMap<FileData?, string?>().ConvertUsing(src => src != null ? src.Url : null);
-        CreateMap<UserImage, string>().ConvertUsing(src => src.Key);
+        CreateMap<Image, string>().ConstructUsing(src => src.Key);
 
         CreateMap<Channel, ChannelSchema>();
         CreateMap<Message, MessageSchema>();
@@ -38,7 +38,6 @@ public class Mappings : Profile
             order++;
             len = len / 1024;
         }
-        
         return $"{len:0.##} {sizes[order]}";
     }
 }

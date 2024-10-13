@@ -4,12 +4,12 @@ using StackExchange.Redis;
 
 namespace MessengerAPI.Infrastructure.Auth;
 
-public class RevokedTokenStore : IRevokedTokenStore
+public class RevokedTokenService : IRevokedTokenService
 {
     private readonly IDatabase _redis;
     private readonly string key;
 
-    public RevokedTokenStore(IConnectionMultiplexer redis, IOptions<AuthOptions> options)
+    public RevokedTokenService(IConnectionMultiplexer redis, IOptions<AuthOptions> options)
     {
         _redis = redis.GetDatabase();
         key = options.Value.RevokedTokensCacheKeyPrefix;
@@ -20,13 +20,13 @@ public class RevokedTokenStore : IRevokedTokenStore
         return $"{key}:{tokenId}";
     }
 
-    public async Task<bool> IsTokenValidAsync(Guid tokenId)
-    {
-        return !await _redis.KeyExistsAsync(GetKey(tokenId));
-    }
-
     public async Task RevokeTokenAsync(Guid tokenId, int expires)
     {
         await _redis.StringSetAsync(GetKey(tokenId), "true", expiry: TimeSpan.FromSeconds(expires));
+    }
+
+    public async Task<bool> IsTokenRevokedAsync(Guid tokenId)
+    {
+        return await _redis.KeyExistsAsync(GetKey(tokenId));
     }
 }

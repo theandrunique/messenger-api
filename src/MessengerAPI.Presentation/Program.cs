@@ -4,6 +4,7 @@ using MessengerAPI.Infrastructure;
 using MessengerAPI.Infrastructure.Common.FileStorage;
 using MessengerAPI.Infrastructure.Common.WebSockets;
 using MessengerAPI.Presentation.Common;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,8 @@ builder.Services
 
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 app.UseCors(CorsConstants.CorsPolicyName);
 

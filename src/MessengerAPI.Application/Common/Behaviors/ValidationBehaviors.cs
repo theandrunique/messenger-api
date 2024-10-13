@@ -1,10 +1,11 @@
 using ErrorOr;
 using FluentValidation;
 using MediatR;
+using MessengerAPI.Application.Common.Extensions;
 
 namespace MessengerAPI.Application.Common.Behaviors;
 
-public class ValidationBehavior<TRequest, TResponse> : 
+public class ValidationBehavior<TRequest, TResponse> :
     IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
         where TResponse : IErrorOr
@@ -38,11 +39,8 @@ public class ValidationBehavior<TRequest, TResponse> :
             return await next();
         }
 
-        var errors = validationResult.Errors
-            .ConvertAll(validationFailure => Error.Validation(
-                validationFailure.PropertyName,
-                validationFailure.ErrorMessage));
-        
+        List<Error> errors = validationResult.Errors.ToErrorOrList();
+
         return (dynamic)errors;
     }
 }

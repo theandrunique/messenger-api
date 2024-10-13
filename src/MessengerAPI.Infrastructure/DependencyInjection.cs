@@ -3,6 +3,7 @@ using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Application.Files.Common.Interfaces;
 using MessengerAPI.Infrastructure.Auth;
+using MessengerAPI.Infrastructure.Auth.Interfaces;
 using MessengerAPI.Infrastructure.Common;
 using MessengerAPI.Infrastructure.Common.Files;
 using MessengerAPI.Infrastructure.Common.Persistance;
@@ -88,7 +89,7 @@ public static class DependencyInjection
 
         services.AddScoped<IJweHelper, JweHelper>();
         services.AddSingleton<IJwtHelper, JwtHelper>();
-        services.AddScoped<IRevokedTokenStore, RevokedTokenStore>();
+        services.AddScoped<IRevokedTokenService, RevokedTokenService>();
         services.AddSingleton<IKeyManagementService, KeyManagementService>();
 
         services.ConfigureOptions<JwtBearerOptionsConfiguration>();

@@ -3,6 +3,7 @@ using MessengerAPI.Domain.ChannelAggregate.Events;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common;
 using MessengerAPI.Domain.Common.Entities;
+using MessengerAPI.Domain.Common.ValueObjects;
 using MessengerAPI.Domain.UserAggregate;
 
 namespace MessengerAPI.Domain.ChannelAggregate;
@@ -48,7 +49,7 @@ public class Channel : IHasDomainEvents
     /// <summary>
     /// Image of the channel, null if it's private
     /// </summary>
-    public ChatImage? Image { get; private set; }
+    public Image? Image { get; private set; }
     /// <summary>
     /// Type of the channel
     /// </summary>
@@ -92,12 +93,12 @@ public class Channel : IHasDomainEvents
     /// <param name="title">Title of the channel</param>
     /// <param name="image">Image of the channel</param>
     /// <returns><see cref="Channel"/></returns>
-    public static Channel CreateGroup(Guid ownerId, List<User> members, string? title = null, ChatImage? image = null)
+    public static Channel CreateGroup(Guid ownerId, List<User> members, string? title = null, Image? image = null)
     {
         return new Channel(ChannelType.Group, members, ownerId, title, image);
     }
 
-    private Channel(ChannelType type, List<User> members, Guid? ownerId = null, string? title = null, ChatImage? image = null)
+    private Channel(ChannelType type, List<User> members, Guid? ownerId = null, string? title = null, Image? image = null)
     {
         Id = Guid.NewGuid();
         OwnerId = ownerId;
