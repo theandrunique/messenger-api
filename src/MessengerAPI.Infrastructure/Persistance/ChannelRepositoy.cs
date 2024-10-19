@@ -21,6 +21,12 @@ public class ChannelRepository : IChannelRepository
         await _context.SaveChangesAsync(token);
     }
 
+    public async Task AddAttachmentsAsync(List<Attachment> attachments, CancellationToken token)
+    {
+        await _context.AddRangeAsync(attachments, token);
+        await _context.SaveChangesAsync(token);
+    }
+
     public async Task UpdateAsync(Channel channel, CancellationToken token)
     {
         _context.Channels.Update(channel);

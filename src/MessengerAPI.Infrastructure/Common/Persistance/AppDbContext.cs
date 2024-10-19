@@ -18,7 +18,6 @@ public class AppDbContext : DbContext
     public DbSet<Channel> Channels { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<ReactionGroup> ReactionGroups { get; set; }
-    public DbSet<FileData> Files { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options, IPublisher publisher) : base(options)
     {

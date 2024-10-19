@@ -1,3 +1,5 @@
+using MessengerAPI.Application.Channels.Common;
+
 namespace MessengerAPI.Presentation.Schemas.Channels;
 
 /// <summary>
@@ -16,5 +18,5 @@ public record CreateMessageRequestSchema
     /// <summary>
     /// List of file id to attach
     /// </summary>
-    public List<Guid>? attachments { get; init; }
+    public List<FileData2>? attachments { get; init; }
 }

@@ -11,6 +11,7 @@ public interface IChannelRepository
     /// <param name="channel"><see cref="Channel"/></param>
     /// <param name="token"><see cref="CancellationToken"/></param>
     Task AddAsync(Channel channel, CancellationToken token);
+    Task AddAttachmentsAsync(List<Attachment> attachments, CancellationToken token);
     /// <summary>
     /// Update channel
     /// </summary>

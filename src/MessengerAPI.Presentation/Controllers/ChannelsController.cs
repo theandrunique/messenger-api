@@ -1,6 +1,8 @@
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
 using MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
+using MessengerAPI.Application.Channels.Commands.PostAttachment;
+using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Contracts.Common;
@@ -159,5 +161,24 @@ public class ChannelsController : ApiController
             success => Ok(success),
             errors => Problem(errors)
         );
+    }
+
+    [HttpPost("{channelId}/attachments")]
+    public async Task<IActionResult> PostAttachmentAsync(
+        Guid channelId,
+        CreateChannelAttachmentSchema schema,
+        CancellationToken cancellationToken)
+    {
+        var command = new PostAttachmentCommand(schema.files.ConvertAll(f => new FileData
+        {
+            Filename = f.filename,
+            Size = f.size,
+        }));
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return result.Match(
+            success => Ok(success),
+            errors => Problem(errors));
     }
 }

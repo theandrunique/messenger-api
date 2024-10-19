@@ -12,6 +12,6 @@ public interface IRevokedTokenService
     /// revoke token
     /// </summary>
     /// <param name="tokenId">Id of token</param>
-    /// <param name="expiresInSeconds">Time for revocation to expire</param>
-    Task RevokeTokenAsync(Guid tokenId, int expiresInSeconds);
+    /// <param name="expirationInSeconds">Time for revocation to expire</param>
+    Task RevokeTokenAsync(Guid tokenId, int expirationInSeconds);
 }

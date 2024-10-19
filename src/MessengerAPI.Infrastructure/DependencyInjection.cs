@@ -1,7 +1,11 @@
+using System.Reflection;
+using Amazon;
+using Amazon.SimpleNotificationService;
+using MassTransit;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces.Files;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
-using MessengerAPI.Application.Files.Common.Interfaces;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Auth.Interfaces;
 using MessengerAPI.Infrastructure.Common;
@@ -25,6 +29,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         ConfigurationManager config)
     {
+        AWSConfigsS3.UseSignatureVersion4 = true;
         services.Configure<StorageOptions>(config.GetSection(nameof(StorageOptions)));
         services.AddSingleton<IStorageOptions>(sp => sp.GetRequiredService<IOptions<StorageOptions>>().Value);
 
@@ -36,6 +41,35 @@ public static class DependencyInjection
         services.AddPersistance(config);
         services.AddRedis(config);
         services.AddWebSockets();
+        services.AddConsumers(config);
+
+        return services;
+    }
+
+    public static IServiceCollection AddConsumers(this IServiceCollection services, ConfigurationManager config)
+    {
+        services.AddMassTransit(opt =>
+        {
+            opt.AddConsumers(Assembly.GetExecutingAssembly());
+            opt.SetKebabCaseEndpointNameFormatter();
+            opt.UsingAmazonSqs((context, cfg) =>
+            {
+                cfg.Host(new Uri("amazonsqs://elasticmq:9324"), h =>
+                {
+                    h.AccessKey("x");
+                    h.SecretKey("x");
+                    h.Config(new Amazon.SQS.AmazonSQSConfig
+                    {
+                        ServiceURL = "http://elasticmq:9324"
+                    });
+                    h.Config(new AmazonSimpleNotificationServiceConfig
+                    {
+                        ServiceURL = "http://elasticmq:9324"
+                    });
+                });
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         return services;
     }
@@ -49,7 +83,6 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(postgresSettings.ConnectionString));
 
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IFileRepository, fileRepository>();
         services.AddScoped<IChannelRepository, ChannelRepository>();
 
         return services;

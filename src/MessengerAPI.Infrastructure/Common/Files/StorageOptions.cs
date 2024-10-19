@@ -1,4 +1,4 @@
-using MessengerAPI.Application.Files.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces.Files;
 
 namespace MessengerAPI.Infrastructure.Common.Files;
 

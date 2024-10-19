@@ -1,5 +1,4 @@
 using MessengerAPI.Domain.ChannelAggregate.Entities;
-using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -37,13 +36,13 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
             .WithMany()
             .UsingEntity<Dictionary<string, object>>(
                 "MessageAttachments",
-                j => j.HasOne<FileData>().WithMany().HasForeignKey("FileDataId"),
+                j => j.HasOne<Attachment>().WithMany().HasForeignKey("AttachmentId"),
                 j => j.HasOne<Message>().WithMany().HasForeignKey("MessageId"),
                 j =>
                 {
-                    j.HasKey("MessageId", "FileDataId");
+                    j.HasKey("MessageId", "AttachmentId");
                     j.Property<long>("MessageId");
-                    j.Property<Guid>("FileDataId");
+                    j.Property<long>("AttachmentId");
                 });
     }
 }

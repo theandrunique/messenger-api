@@ -1,25 +1,25 @@
 using AutoMapper;
 using ErrorOr;
 using MediatR;
+using MessengerAPI.Application.Common.Interfaces.Files;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
-using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.Common.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 
-public class EditMessageCommandHandler : IRequestHandler<AddOrUpdateMessageCommand, ErrorOr<MessageSchema>>
+public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessageCommand, ErrorOr<MessageSchema>>
 {
     private readonly IChannelRepository _channelRepository;
-    private readonly IFileRepository _fileRepository;
     private readonly IMapper _mapper;
+    private readonly IFileStorageService _fileStorage;
 
-    public EditMessageCommandHandler(IChannelRepository channelRepository, IFileRepository fileRepository, IMapper mapper)
+    public AddOrEditMessageCommandHandler(IChannelRepository channelRepository, IMapper mapper, IFileStorageService fileStorage)
     {
         _channelRepository = channelRepository;
-        _fileRepository = fileRepository;
         _mapper = mapper;
+        _fileStorage = fileStorage;
     }
 
     /// <summary>
@@ -31,21 +31,40 @@ public class EditMessageCommandHandler : IRequestHandler<AddOrUpdateMessageComma
     public async Task<ErrorOr<MessageSchema>> Handle(AddOrUpdateMessageCommand request, CancellationToken cancellationToken)
     {
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId, cancellationToken);
-        if (channel is null)
-        {
-            return Errors.Channel.ChannelNotFound;
-        }
-        if (!channel.CanUserAccessChannel(request.Sub))
-        {
-            return Errors.Channel.NotAllowed;
-        }
+        if (channel is null) return Errors.Channel.ChannelNotFound;
+        if (!channel.CanUserAccessChannel(request.Sub)) return Errors.Channel.NotAllowed;
 
-        List<FileData>? attachments = null;
+        List<Attachment>? attachments = null;
 
         if (request.Attachments?.Count > 0)
         {
-            attachments = await _fileRepository.GetFilesByIdsAsync(request.Attachments, cancellationToken);
+            attachments = new();
+
+            foreach (var fileData in request.Attachments)
+            {
+                var objectMetadata = await _fileStorage.GetObjectMetadataAsync(fileData.UploadedFilename, cancellationToken);
+                if (objectMetadata is null) return Errors.File.NotFound(fileData.UploadedFilename);
+
+                var preSignedUrlExpiresAt = DateTime.UtcNow.AddDays(7);
+
+                var preSignedUrl = await _fileStorage.GeneratePreSignedUrlForDownloadAsync(
+                    fileData.UploadedFilename,
+                    preSignedUrlExpiresAt);
+
+                var attachment = Attachment.Create(
+                    channel.Id,
+                    fileData.Filename,
+                    fileData.UploadedFilename,
+                    objectMetadata.ContentType,
+                    objectMetadata.ObjectSize,
+                    preSignedUrl,
+                    preSignedUrlExpiresAt
+                );
+                attachments.Add(attachment);
+            }
+            await _channelRepository.AddAttachmentsAsync(attachments, cancellationToken);
         }
+
         if (request.ReplyTo.HasValue)
         {
             var replyToMessage = await _channelRepository.GetMessageByIdOrNullAsync(request.ReplyTo.Value, cancellationToken);
@@ -77,4 +96,3 @@ public class EditMessageCommandHandler : IRequestHandler<AddOrUpdateMessageComma
         return _mapper.Map<MessageSchema>(message);
     }
 }
-

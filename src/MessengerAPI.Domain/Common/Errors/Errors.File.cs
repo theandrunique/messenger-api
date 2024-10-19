@@ -13,6 +13,10 @@ public static partial class Errors
         public static Error TooBig(long maxSizeInMB) => Error.Validation(
             "files.too-big",
             $"Maximum allowed upload size is {maxSizeInMB} MB");
+        
+        public static Error NotFound(string uploadedFilename) => Error.NotFound(
+            "files.not-found",
+            $"File {uploadedFilename} not found");
 
     }
 }

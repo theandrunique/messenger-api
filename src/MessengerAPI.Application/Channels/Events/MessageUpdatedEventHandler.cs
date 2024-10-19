@@ -1,23 +1,16 @@
-using AutoMapper;
+using MassTransit;
 using MediatR;
-using MessengerAPI.Application.Common.Interfaces;
-using MessengerAPI.Application.Common.Interfaces.Persistance;
-using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.ChannelAggregate.Events;
 
 namespace MessengerAPI.Application.Channels.Events;
 
 public class MessageUpdatedEventHandler : INotificationHandler<MessageUpdated>
 {
-    private readonly INotificationService _notificationService;
-    private readonly IMapper _mapper;
-    private readonly IChannelRepository _channelRepository;
+    private readonly IPublishEndpoint _publisher;
 
-    public MessageUpdatedEventHandler(IChannelRepository channelRepository, IMapper mapper, INotificationService notificationService)
+    public MessageUpdatedEventHandler(IPublishEndpoint publisher)
     {
-        _channelRepository = channelRepository;
-        _mapper = mapper;
-        _notificationService = notificationService;
+        _publisher = publisher;
     }
     /// <summary>
     /// Send a notification about new message to all channel members
@@ -26,8 +19,6 @@ public class MessageUpdatedEventHandler : INotificationHandler<MessageUpdated>
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     public async Task Handle(MessageUpdated notification, CancellationToken cancellationToken)
     {
-        List<Guid> recipientIds = await _channelRepository.GetMemberIdsFromChannelByIdOrNullAsync(notification.NewMessage.ChannelId, cancellationToken);
-
-        await _notificationService.MessageUpdated(recipientIds, _mapper.Map<MessageSchema>(notification.NewMessage));
+        await _publisher.Publish(notification.NewMessage, cancellationToken);
     }
 }

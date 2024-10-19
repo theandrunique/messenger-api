@@ -1,7 +1,6 @@
 using MessengerAPI.Domain.ChannelAggregate.Events;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common;
-using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.UserAggregate;
 
 namespace MessengerAPI.Domain.ChannelAggregate.Entities;
@@ -10,7 +9,7 @@ public class Message : IHasDomainEvents
 {
     private readonly List<IDomainEvent> _domainEvents = new();
     private readonly List<UserReaction> _reactions = new List<UserReaction>();
-    private readonly List<FileData> _attachments = new List<FileData>();
+    private readonly List<Attachment> _attachments = new List<Attachment>();
 
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.ToList();
     /// <summary>
@@ -20,7 +19,7 @@ public class Message : IHasDomainEvents
     /// <summary>
     /// Attachments
     /// </summary>
-    public IReadOnlyList<FileData> Attachments => _attachments.ToList();
+    public IReadOnlyList<Attachment> Attachments => _attachments.ToList();
     public User Sender { get; private set; }
 
     /// <summary>
@@ -66,7 +65,7 @@ public class Message : IHasDomainEvents
         Guid senderId,
         string text,
         long? replyTo = null,
-        List<FileData>? attachments = null)
+        List<Attachment>? attachments = null)
     {
         var message = new Message(channelId, senderId, text, replyTo, attachments);
         message._domainEvents.Add(new NewMessageCreated(message));
@@ -78,7 +77,7 @@ public class Message : IHasDomainEvents
         Guid senderId,
         string text,
         long? replyTo = null,
-        List<FileData>? attachments = null)
+        List<Attachment>? attachments = null)
     {
         ChannelId = channelId;
         SenderId = senderId;
@@ -96,8 +95,7 @@ public class Message : IHasDomainEvents
     /// </summary>
     /// <param name="replyTo">The message id to reply</param>
     /// <param name="text">Text of the message</param>
-    /// <param name="attachments">List of file ids to attach</param>
-    public void Update(long? replyTo, string text, List<FileData>? attachments)
+    public void Update(long? replyTo, string text, List<Attachment>? attachments)
     {
         ReplyTo = replyTo;
         Text = text;
@@ -106,7 +104,7 @@ public class Message : IHasDomainEvents
         _domainEvents.Add(new MessageUpdated(this));
     }
 
-    private void SetAttachments(List<FileData>? attachments)
+    private void SetAttachments(List<Attachment>? attachments)
     {
         _attachments.Clear();
         if (attachments is not null) _attachments.AddRange(attachments);

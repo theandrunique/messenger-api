@@ -2,7 +2,6 @@ using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.ChannelAggregate.Events;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common;
-using MessengerAPI.Domain.Common.Entities;
 using MessengerAPI.Domain.Common.ValueObjects;
 using MessengerAPI.Domain.UserAggregate;
 
@@ -120,7 +119,7 @@ public class Channel : IHasDomainEvents
     /// <param name="replyTo">Id of the message to reply</param>
     /// <param name="attachments">List of files <see cref="FileData"/></param>
     /// <returns><see cref="Message"/></returns>
-    public Message AddMessage(Guid senderId, string text, long? replyTo = null, List<FileData>? attachments = null)
+    public Message AddMessage(Guid senderId, string text, long? replyTo = null, List<Attachment>? attachments = null)
     {
         var newMessage = Message.CreateNew(Id, senderId, text, replyTo, attachments);
         _messages.Add(newMessage);

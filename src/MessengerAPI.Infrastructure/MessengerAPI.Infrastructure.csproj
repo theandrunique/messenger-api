@@ -11,6 +11,8 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="DeviceDetector.NET" Version="6.3.3" />
     <PackageReference Include="jose-jwt" Version="5.0.0" />
+    <PackageReference Include="masstransit" Version="8.2.5" />
+    <PackageReference Include="masstransit.amazonsqs" Version="8.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="8.0.8" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />

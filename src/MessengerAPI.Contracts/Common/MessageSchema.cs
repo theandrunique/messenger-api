@@ -6,7 +6,7 @@ namespace MessengerAPI.Contracts.Common;
 public record MessageSchema
 {
     public List<UserReactionSchema> Reactions { get; init; }
-    public List<FileSchema> Attachments { get; init; }
+    public List<AttachmentSchema> Attachments { get; init; }
     public UserPublicSchema Sender { get; init; }
     public long Id { get; init; }
     public Guid ChannelId { get; init; }

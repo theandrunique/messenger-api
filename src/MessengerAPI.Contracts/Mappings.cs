@@ -12,8 +12,6 @@ public class Mappings : Profile
 {
     public Mappings()
     {
-        CreateMap<FileData, string>().ConvertUsing(src => src.Url);
-        CreateMap<FileData?, string?>().ConvertUsing(src => src != null ? src.Url : null);
         CreateMap<Image, string>().ConstructUsing(src => src.Key);
 
         CreateMap<Channel, ChannelSchema>();
@@ -22,9 +20,8 @@ public class Mappings : Profile
         CreateMap<User, UserPublicSchema>();
         CreateMap<User, UserPrivateSchema>();
 
-        CreateMap<FileData, FileSchema>()
-            .ForMember(dest => dest.Sha256, s => s.MapFrom(src => Convert.ToHexString(src.Sha256).ToLower()))
-            .ForMember(dest => dest.DisplaySize, s => s.MapFrom(src => GetHumanReadableFileSize(src.Size)));
+        CreateMap<Attachment, AttachmentSchema>()
+            .ForMember(a => a.Url, opt => opt.MapFrom(a => a.PreSignedUrl));
     }
 
     private string GetHumanReadableFileSize(long sizeInBytes)

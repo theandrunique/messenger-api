@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Contracts.Common;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
@@ -19,5 +20,5 @@ public record AddOrUpdateMessageCommand(
     Guid ChannelId,
     string Text,
     long? ReplyTo,
-    List<Guid>? Attachments
+    List<FileData2>? Attachments
 ) : IRequest<ErrorOr<MessageSchema>>;
