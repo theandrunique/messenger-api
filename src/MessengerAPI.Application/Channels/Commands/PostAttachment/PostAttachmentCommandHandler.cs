@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using MessengerAPI.Application.Channels.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Files;
 using MessengerAPI.Contracts.Common;
 
@@ -8,10 +9,12 @@ namespace MessengerAPI.Application.Channels.Commands.PostAttachment;
 class PostAttachmentCommandHandler : IRequestHandler<PostAttachmentCommand, ErrorOr<List<CloudAttachmentSchema>>>
 {
     private readonly IFileStorageService _fileStorage;
+    private IAttachmentService _attachmentService;
 
-    public PostAttachmentCommandHandler(IFileStorageService fileStorage)
+    public PostAttachmentCommandHandler(IFileStorageService fileStorage, IAttachmentService attachmentService)
     {
         _fileStorage = fileStorage;
+        _attachmentService = attachmentService;
     }
 
     private string GenerateStoragekey(string filename)
@@ -25,17 +28,14 @@ class PostAttachmentCommandHandler : IRequestHandler<PostAttachmentCommand, Erro
 
         foreach (var file in request.Files)
         {
-            var key = GenerateStoragekey(file.Filename);
-
-            var presignedUrl = await _fileStorage.GeneratePreSignedUrlForUploadAsync(
-                key,
-                DateTime.UtcNow.AddDays(1),
-                file.Size
-            );
+            (string uploadFilename, string presignedUrl) = await _attachmentService.GenerateUploadUrlAsync(
+                    file.Size,
+                    request.ChannelId,
+                    file.Filename);
 
             attachments.Add(new CloudAttachmentSchema
             {
-                UploadFilename = key,
+                UploadFilename = uploadFilename,
                 UploadUrl = presignedUrl,
             });
         }

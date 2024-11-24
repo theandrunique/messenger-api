@@ -11,5 +11,4 @@ public static class FluentValidationExtensions
                                 validationFailure.PropertyName,
                                 validationFailure.ErrorMessage));
     }
-
 }

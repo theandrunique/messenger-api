@@ -1,7 +1,7 @@
 using AutoMapper;
 using ErrorOr;
 using MediatR;
-using MessengerAPI.Application.Common.Interfaces.Files;
+using MessengerAPI.Application.Channels.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
@@ -13,13 +13,16 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
 {
     private readonly IChannelRepository _channelRepository;
     private readonly IMapper _mapper;
-    private readonly IFileStorageService _fileStorage;
+    private readonly IAttachmentService _attachmentService;
 
-    public AddOrEditMessageCommandHandler(IChannelRepository channelRepository, IMapper mapper, IFileStorageService fileStorage)
+    public AddOrEditMessageCommandHandler(
+        IChannelRepository channelRepository,
+        IMapper mapper,
+        IAttachmentService attachmentService)
     {
         _channelRepository = channelRepository;
         _mapper = mapper;
-        _fileStorage = fileStorage;
+        _attachmentService = attachmentService;
     }
 
     /// <summary>
@@ -42,25 +45,14 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
 
             foreach (var fileData in request.Attachments)
             {
-                var objectMetadata = await _fileStorage.GetObjectMetadataAsync(fileData.UploadedFilename, cancellationToken);
-                if (objectMetadata is null) return Errors.File.NotFound(fileData.UploadedFilename);
+                var attachment = await _attachmentService.ValidateAndCreateAttachmentsAsync(
+                            fileData.UploadedFilename,
+                            fileData.Filename,
+                            channel.Id,
+                            cancellationToken);
+                if (attachment.IsError) return attachment.Errors;
 
-                var preSignedUrlExpiresAt = DateTime.UtcNow.AddDays(7);
-
-                var preSignedUrl = await _fileStorage.GeneratePreSignedUrlForDownloadAsync(
-                    fileData.UploadedFilename,
-                    preSignedUrlExpiresAt);
-
-                var attachment = Attachment.Create(
-                    channel.Id,
-                    fileData.Filename,
-                    fileData.UploadedFilename,
-                    objectMetadata.ContentType,
-                    objectMetadata.ObjectSize,
-                    preSignedUrl,
-                    preSignedUrlExpiresAt
-                );
-                attachments.Add(attachment);
+                attachments.Add(attachment.Value);
             }
             await _channelRepository.AddAttachmentsAsync(attachments, cancellationToken);
         }
@@ -96,3 +88,4 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
         return _mapper.Map<MessageSchema>(message);
     }
 }
+

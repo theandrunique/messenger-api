@@ -169,11 +169,13 @@ public class ChannelsController : ApiController
         CreateChannelAttachmentSchema schema,
         CancellationToken cancellationToken)
     {
-        var command = new PostAttachmentCommand(schema.files.ConvertAll(f => new FileData
-        {
-            Filename = f.filename,
-            Size = f.size,
-        }));
+        var command = new PostAttachmentCommand(
+            channelId,
+            schema.files.ConvertAll(f => new FileData
+            {
+                Filename = f.filename,
+                Size = f.size,
+            }));
 
         var result = await _mediator.Send(command, cancellationToken);
 
@@ -181,4 +183,5 @@ public class ChannelsController : ApiController
             success => Ok(success),
             errors => Problem(errors));
     }
+
 }

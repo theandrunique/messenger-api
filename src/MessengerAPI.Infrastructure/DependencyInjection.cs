@@ -3,17 +3,15 @@ using Amazon;
 using Amazon.SimpleNotificationService;
 using MassTransit;
 using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Application.Channels.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Files;
-using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Auth.Interfaces;
+using MessengerAPI.Infrastructure.Channels;
 using MessengerAPI.Infrastructure.Common;
 using MessengerAPI.Infrastructure.Common.Files;
-using MessengerAPI.Infrastructure.Common.Persistance;
 using MessengerAPI.Infrastructure.Common.WebSockets;
-using MessengerAPI.Infrastructure.Persistance;
-using MessengerAPI.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -38,10 +36,17 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
 
         services.AddAuth(config);
-        services.AddPersistance(config);
         services.AddRedis(config);
         services.AddWebSockets();
         services.AddConsumers(config);
+        services.AddServices();
+
+        return services;
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAttachmentService, AttachmentService>();
 
         return services;
     }
@@ -70,20 +75,6 @@ public static class DependencyInjection
                 cfg.ConfigureEndpoints(context);
             });
         });
-
-        return services;
-    }
-
-    public static IServiceCollection AddPersistance(this IServiceCollection services, ConfigurationManager config)
-    {
-        var postgresSettings = new PostgresSettings();
-        config.Bind(nameof(PostgresSettings), postgresSettings);
-        services.AddSingleton(Options.Create(postgresSettings));
-
-        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(postgresSettings.ConnectionString));
-
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IChannelRepository, ChannelRepository>();
 
         return services;
     }

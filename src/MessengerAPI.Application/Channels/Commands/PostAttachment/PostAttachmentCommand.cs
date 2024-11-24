@@ -6,5 +6,6 @@ using MessengerAPI.Contracts.Common;
 namespace MessengerAPI.Application.Channels.Commands.PostAttachment;
 
 public record PostAttachmentCommand(
+    Guid ChannelId,
     IEnumerable<FileData> Files
 ) : IRequest<ErrorOr<List<CloudAttachmentSchema>>>;

@@ -1,12 +1,12 @@
 using AutoMapper;
 using ErrorOr;
 using MediatR;
-using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.ChannelAggregate;
 using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
 using MessengerAPI.Domain.Common.Errors;
 using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Channels.Commands;
 
@@ -37,8 +37,8 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             request.Members.Add(request.Sub);
         }
 
-        var members = await _userRepository.GetByIdsAsync(request.Members, cancellationToken);
-        if (members.Count != request.Members.Count)
+        var members = await _userRepository.GetByIdsAsync(request.Members);
+        if (members.Count() != request.Members.Count)
         {
             return Errors.User.NotFound;
         }

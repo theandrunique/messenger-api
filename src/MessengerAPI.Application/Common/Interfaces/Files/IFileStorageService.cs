@@ -14,5 +14,6 @@ public interface IFileStorageService
     Task<string> PutObjectAsync(Stream fileStream, string key, string fileName, string contentType, CancellationToken cancellationToken);
     Task<string> GeneratePreSignedUrlForUploadAsync(string key, DateTime expires, long size);
     Task<GetObjectMetadataResponseDTO> GetObjectMetadataAsync(string key, CancellationToken cancellationToken);
-    Task<string> GeneratePreSignedUrlForDownloadAsync(string key, DateTime expires);
+    Task<string> GeneratePreSignedUrlForDownloadOrNullAsync(string key, DateTime expires);
+    Task<bool> DeleteObjectAsync(string key, CancellationToken cancellationToken);
 }

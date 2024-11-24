@@ -2,9 +2,9 @@ using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
-using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.Common.Errors;
-using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Auth.Commands.Login;
 
@@ -12,12 +12,14 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
 {
     private readonly IHashHelper _hashHelper;
     private readonly IUserRepository _userRepository;
+    private readonly ISessionRepository _sessionRepository;
     private readonly IClientInfoProvider _userAgentParser;
     private readonly IAuthService _authService;
 
     public LoginCommandHandler(
         IHashHelper hashHelper,
         IUserRepository userRepository,
+        ISessionRepository sessionRepository,
         IClientInfoProvider userAgentParser,
         IAuthService authService)
     {
@@ -25,6 +27,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         _userRepository = userRepository;
         _userAgentParser = userAgentParser;
         _authService = authService;
+        _sessionRepository = sessionRepository;
     }
 
     /// <summary>
@@ -38,11 +41,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         User? user;
         if (request.Login.Contains("@"))
         {
-            user = await _userRepository.GetByEmailOrNullAsync(request.Login, cancellationToken);
+            user = await _userRepository.GetByEmailOrNullAsync(request.Login);
         }
         else
         {
-            user = await _userRepository.GetByUsernameOrNullAsync(request.Login, cancellationToken);
+            user = await _userRepository.GetByUsernameOrNullAsync(request.Login);
         }
         if (user is null) return Errors.Auth.InvalidCredentials;
 
@@ -51,11 +54,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
             return Errors.Auth.InvalidCredentials;
         }
 
-        var session = user.CreateSession(
+        var session = Session.Create(
+            user.Id,
             _userAgentParser.GetDeviceName(),
             _userAgentParser.GetClientName(),
             _userAgentParser.GetIpAddress());
-        await _userRepository.AddSessionAsync(session, cancellationToken);
+
+        await _sessionRepository.AddAsync(session);
 
         return _authService.GenerateTokenPairResponse(user, session);
     }

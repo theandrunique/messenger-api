@@ -57,16 +57,23 @@ public class FileStorageService : IFileStorageService
         return _s3Client.GetPreSignedURLAsync(getPreSignedUrlRequest);
     }
 
-    public Task<string> GeneratePreSignedUrlForDownloadAsync(string key, DateTime expires)
+    public Task<string> GeneratePreSignedUrlForDownloadOrNullAsync(string key, DateTime expires)
     {
-        var response = new GetPreSignedUrlRequest
+        try
         {
-            BucketName = _settings.BucketName,
-            Key = key,
-            Expires = expires,
-            Verb = HttpVerb.GET
-        };
-        return _s3Client.GetPreSignedURLAsync(response);
+            var response = new GetPreSignedUrlRequest
+            {
+                BucketName = _settings.BucketName,
+                Key = key,
+                Expires = expires,
+                Verb = HttpVerb.GET
+            };
+            return _s3Client.GetPreSignedURLAsync(response);
+        }
+        catch (AmazonS3Exception ex)
+        {
+            return null;
+        }
     }
 
     public async Task<GetObjectMetadataResponseDTO> GetObjectMetadataAsync(string key, CancellationToken cancellationToken)
@@ -83,5 +90,24 @@ public class FileStorageService : IFileStorageService
             ContentType = response.Headers.ContentType,
             ObjectSize = response.Headers.ContentLength,
         };
+    }
+
+    public async Task<bool> DeleteObjectAsync(string key, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var request = new DeleteObjectRequest
+            {
+                BucketName = _settings.BucketName,
+                Key = key,
+            };
+
+            var response = await _s3Client.DeleteObjectAsync(request, cancellationToken);
+            return true;
+        }
+        catch(AmazonS3Exception ex)
+        {
+            return false;
+        }
     }
 }

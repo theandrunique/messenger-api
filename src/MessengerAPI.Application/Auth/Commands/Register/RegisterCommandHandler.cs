@@ -2,9 +2,9 @@ using AutoMapper;
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Auth.Common.Interfaces;
-using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Auth.Commands.Register;
 
@@ -35,7 +35,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
             _hashHelper.Hash(request.Password),
             request.GlobalName);
 
-        await _userRepository.AddAsync(newUser, cancellationToken);
+        await _userRepository.AddAsync(newUser);
 
         return _mapper.Map<UserPrivateSchema>(newUser);
     }

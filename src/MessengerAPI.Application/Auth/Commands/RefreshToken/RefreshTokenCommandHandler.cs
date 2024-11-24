@@ -2,8 +2,8 @@ using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
-using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Auth.Commands.RefreshToken;
 
@@ -11,11 +11,13 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
 {
     private readonly IUserRepository _userRepository;
     private readonly IAuthService _authService;
+    private readonly ISessionRepository _sessionRepository;
 
-    public RefreshTokenCommandHandler(IUserRepository userRepository, IAuthService authService)
+    public RefreshTokenCommandHandler(IUserRepository userRepository, IAuthService authService, ISessionRepository sessionRepository)
     {
         _userRepository = userRepository;
         _authService = authService;
+        _sessionRepository = sessionRepository;
     }
 
     /// <summary>
@@ -31,15 +33,21 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
             return Errors.Auth.InvalidToken;
         }
 
-        var (session, user) = await _userRepository.GetSessionWithUserByTokenIdOrNullAsync(payload.TokenId, cancellationToken);
-        if (session == null || user == null)
+        var session = await _sessionRepository.GetByTokenIdOrNullAsync(payload.TokenId);
+        if (session == null)
+        {
+            return Errors.Auth.InvalidToken;
+        }
+
+        var user = await _userRepository.GetByIdOrNullAsync(session.UserId);
+        if (user == null)
         {
             return Errors.Auth.InvalidToken;
         }
 
         session.UpdateTokenId();
 
-        await _userRepository.UpdateSessionAsync(session, cancellationToken);
+        await _sessionRepository.UpdateTokenIdAsync(session.Id, session.TokenId);
 
         return _authService.GenerateTokenPairResponse(user, session);
     }

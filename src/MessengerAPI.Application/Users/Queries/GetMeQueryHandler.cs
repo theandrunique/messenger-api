@@ -1,9 +1,9 @@
 using AutoMapper;
 using ErrorOr;
 using MediatR;
-using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Users.Queries;
 
@@ -26,7 +26,7 @@ public class GetMeQueryHandler : IRequestHandler<GetMeQuery, ErrorOr<UserPrivate
     /// <returns><see cref="UserPrivateSchema"/></returns>
     public async Task<ErrorOr<UserPrivateSchema>> Handle(GetMeQuery request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdOrNullAsync(request.Sub, cancellationToken);
+        var user = await _userRepository.GetByIdOrNullAsync(request.Sub);
 
         if (user == null)
         {
