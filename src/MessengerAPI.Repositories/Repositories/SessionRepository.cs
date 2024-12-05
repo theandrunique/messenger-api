@@ -16,19 +16,31 @@ public class SessionRepository : ISessionRepository
         _table = new Table<Session>(_session);
     }
 
-    public Task AddAsync(Session session, CancellationToken token)
+    public Task AddAsync(Session session)
     {
         var statement = _table.Insert(session);
         return statement.ExecuteAsync();
     }
 
-    public Task RemoveAsync(Guid sessionId, CancellationToken token)
+    public Task<Session?> GetByIdOrNullAsync(Guid sessionId)
+    {
+        return _table.Where(s => s.Id == sessionId).FirstOrDefault().ExecuteAsync();
+    }
+
+    public Task<Session?> GetByTokenIdOrNullAsync(Guid tokenId)
+    {
+        return _table.Where(s => s.TokenId == tokenId).FirstOrDefault().ExecuteAsync();
+    }
+
+    public Task RemoveByIdAsync(Guid sessionId)
     {
         return _table.Where(s => s.Id == sessionId).Delete().ExecuteAsync();
     }
 
-    public Task UpdateAsync(Session session, CancellationToken token)
+    public Task UpdateTokenIdAsync(Guid sessionId, Guid tokenId)
     {
-        return _table.Where(s => s.Id == session.Id).Update().ExecuteAsync();
+        var query = $"UPDATE sessions SET {nameof(Session.TokenId)} = ? WHERE {nameof(Session.Id)} = ?";
+
+        return _session.ExecuteAsync(new SimpleStatement(query, tokenId, sessionId));
     }
 }
