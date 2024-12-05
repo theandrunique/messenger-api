@@ -1,5 +1,5 @@
 using FluentValidation;
-using MessengerAPI.Application.Common.Interfaces.Persistance;
+using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Auth.Commands.Register;
 
@@ -39,13 +39,13 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 
     private async Task<bool> IsUsernameAvailable(string username, CancellationToken token)
     {
-        var user = await _userRepository.GetByUsernameOrNullAsync(username, token);
+        var user = await _userRepository.GetByUsernameOrNullAsync(username);
         return user is null;
     }
 
     private async Task<bool> IsEmailAvailable(string email, CancellationToken token)
     {
-        var user = await _userRepository.GetByEmailOrNullAsync(email, token);
+        var user = await _userRepository.GetByEmailOrNullAsync(email);
         return user is null;
     }
 }

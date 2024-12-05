@@ -5,7 +5,7 @@ namespace MessengerAPI.Contracts.Common;
 /// </summary>
 public record UserPublicSchema
 {
-    public ICollection<string> ProfilePhotos { get; init; }
+    public ICollection<string> Images { get; init; }
     public Guid Id { get; init; }
     public string Username { get; init; }
     public DateTime UsernameUpdatedAt { get; init; }

@@ -10,4 +10,6 @@ public interface IChannelRepository
     Task<List<Guid>> GetMemberIdsFromChannelByIdAsync(Guid channelId);
     Task<Channel?> GetPrivateChannelOrNullByIdsAsync(Guid userId1, Guid userId2);
     Task<Channel?> GetSavedMessagesChannelOrNullAsync(Guid userId);
+
+
 }

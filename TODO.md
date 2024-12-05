@@ -11,3 +11,5 @@
 - [ ] Optimize database queries, refactor repository layer
 - [ ] Add metrics
 - [ ] Add tests
+- [ ] Restructure api errors
+- [ ] Restructure options

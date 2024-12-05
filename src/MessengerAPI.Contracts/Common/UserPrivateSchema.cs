@@ -1,5 +1,3 @@
-using MessengerAPI.Domain.UserAggregate.ValueObjects;
-
 namespace MessengerAPI.Contracts.Common;
 
 /// <summary>
@@ -8,7 +6,7 @@ namespace MessengerAPI.Contracts.Common;
 public record UserPrivateSchema : UserPublicSchema
 {
     public DateTime PasswordUpdatedAt { get; init; }
-    public TimeIntervals TerminateSessions { get; init; }
+    public string TerminateSessions { get; init; }
     public bool TwoFactorAuthentication { get; init; }
     public string Email { get; private set; }
     public bool IsEmailVerified { get; private set; }

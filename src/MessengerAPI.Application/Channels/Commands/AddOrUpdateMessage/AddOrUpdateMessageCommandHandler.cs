@@ -2,10 +2,10 @@ using AutoMapper;
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Channels.Common.Interfaces;
-using MessengerAPI.Application.Common.Interfaces.Persistance;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 
@@ -33,59 +33,62 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
     /// <returns><see cref="MessageSchema"/></returns>
     public async Task<ErrorOr<MessageSchema>> Handle(AddOrUpdateMessageCommand request, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId, cancellationToken);
+        var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null) return Errors.Channel.ChannelNotFound;
-        if (!channel.CanUserAccessChannel(request.Sub)) return Errors.Channel.NotAllowed;
 
-        List<Attachment>? attachments = null;
+        if (!channel.IsUserInTheChannel(request.Sub)) return Errors.Channel.NotAllowed;
 
-        if (request.Attachments?.Count > 0)
-        {
-            attachments = new();
+        throw new NotImplementedException();
 
-            foreach (var fileData in request.Attachments)
-            {
-                var attachment = await _attachmentService.ValidateAndCreateAttachmentsAsync(
-                            fileData.UploadedFilename,
-                            fileData.Filename,
-                            channel.Id,
-                            cancellationToken);
-                if (attachment.IsError) return attachment.Errors;
+        // List<Attachment>? attachments = null;
 
-                attachments.Add(attachment.Value);
-            }
-            await _channelRepository.AddAttachmentsAsync(attachments, cancellationToken);
-        }
+        // if (request.Attachments?.Count > 0)
+        // {
+            // attachments = new();
 
-        if (request.ReplyTo.HasValue)
-        {
-            var replyToMessage = await _channelRepository.GetMessageByIdOrNullAsync(request.ReplyTo.Value, cancellationToken);
-            if (replyToMessage is null)
-            {
-                return Errors.Channel.MessageNotFound;
-            }
-        }
+            // foreach (var fileData in request.Attachments)
+            // {
+                // var attachment = await _attachmentService.ValidateAndCreateAttachmentsAsync(
+                            // fileData.UploadedFilename,
+                            // fileData.Filename,
+                            // channel.Id,
+                            // cancellationToken);
+                // if (attachment.IsError) return attachment.Errors;
 
-        Message? message;
+                // attachments.Add(attachment.Value);
+            // }
+            // await _channelRepository.AddAttachmentsAsync(attachments, cancellationToken);
+        // }
 
-        if (request.MessageId.HasValue)
-        {
-            message = await _channelRepository.GetMessageByIdOrNullAsync(request.MessageId.Value, cancellationToken);
-            if (message is null)
-            {
-                return Errors.Channel.MessageNotFound;
-            }
+        // if (request.ReplyTo.HasValue)
+        // {
+            // var replyToMessage = await _channelRepository.GetMessageByIdOrNullAsync(request.ReplyTo.Value, cancellationToken);
+            // if (replyToMessage is null)
+            // {
+                // return Errors.Channel.MessageNotFound;
+            // }
+        // }
 
-            message.Update(request.ReplyTo, request.Text, attachments);
-        }
-        else
-        {
-            message = channel.AddMessage(request.Sub, request.Text, request.ReplyTo, attachments);
-        }
+        // Message? message;
 
-        await _channelRepository.UpdateAsync(channel, cancellationToken);
+        // if (request.MessageId.HasValue)
+        // {
+            // message = await _channelRepository.GetMessageByIdOrNullAsync(request.MessageId.Value, cancellationToken);
+            // if (message is null)
+            // {
+                // return Errors.Channel.MessageNotFound;
+            // }
 
-        return _mapper.Map<MessageSchema>(message);
+            // message.Update(request.ReplyTo, request.Text, attachments);
+        // }
+        // else
+        // {
+            // message = channel.AddMessage(request.Sub, request.Text, request.ReplyTo, attachments);
+        // }
+
+        // await _channelRepository.UpdateAsync(channel, cancellationToken);
+
+        // return _mapper.Map<MessageSchema>(message);
     }
 }
 

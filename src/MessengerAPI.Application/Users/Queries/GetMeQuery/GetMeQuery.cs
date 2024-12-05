@@ -2,7 +2,7 @@ using ErrorOr;
 using MediatR;
 using MessengerAPI.Contracts.Common;
 
-namespace MessengerAPI.Application.Users.Queries;
+namespace MessengerAPI.Application.Users.Queries.GetMeQuery;
 
 /// <summary>
 /// Get current user private data

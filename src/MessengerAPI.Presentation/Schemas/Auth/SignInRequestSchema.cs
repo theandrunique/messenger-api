@@ -5,4 +5,4 @@ namespace MessengerAPI.Presentation.Schemas.Auth;
 /// </summary>
 /// <param name="login">Login</param>
 /// <param name="password">Password</param>
-public record SignInRequestSchema(string login, string password);
+public record SignInRequestSchema(string login, string password, string captchaToken);

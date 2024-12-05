@@ -1,5 +1,4 @@
 using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Domain.Models.Entities;
 
@@ -10,12 +9,12 @@ public class User
     public DateTime UsernameUpdatedAt { get; private set; }
     public string PasswordHash { get; private set; }
     public DateTime PasswordUpdatedAt { get; private set; }
-    public TimeIntervals TerminateSessions { get; private set; }
+    public string TerminateSessions { get; private set; } = "";
     public string? Bio { get; private set; }
     public string GlobalName { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public string? Key { get; private set; }
+    public byte[] Key { get; private set; }
     public bool TwoFactorAuthentication { get; private set; }
     public string Email { get; private set; }
     public bool IsEmailVerified { get; private set; }
@@ -28,7 +27,8 @@ public class User
         string username,
         string email,
         string passwordHash,
-        string globalName)
+        string globalName,
+        byte[] key)
     {
         var dateOfCreation = DateTime.UtcNow;
 
@@ -39,13 +39,14 @@ public class User
             UsernameUpdatedAt = dateOfCreation,
             PasswordHash = passwordHash,
             PasswordUpdatedAt = dateOfCreation,
-            TerminateSessions = TimeIntervals.Month6,
+            // TerminateSessions = TimeIntervals.Month6,
             GlobalName = globalName,
             IsActive = true,
             CreatedAt = dateOfCreation,
             TwoFactorAuthentication = false,
             Email = email.ToLower(),
-            EmailUpdatedAt = dateOfCreation
+            EmailUpdatedAt = dateOfCreation,
+            Key = key,
         };
 
         return user;

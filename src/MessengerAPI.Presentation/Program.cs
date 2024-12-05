@@ -11,10 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddContractsMappings()
-    .AddRepositories()
+    .AddRepositories(builder.Configuration)
     .AddPresentation(builder.Configuration)
     .AddInfrastructure(builder.Configuration)
-    .AddApplication();
+    .AddApplication(builder.Configuration);
 
 
 var app = builder.Build();

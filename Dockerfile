@@ -6,9 +6,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY src/MessengerAPI.Contracts/*.csproj MessengerAPI.Contracts/
+COPY src/MessengerAPI.Repositories/*.csproj MessengerAPI.Repositories/
 COPY src/MessengerAPI.Presentation/*.csproj MessengerAPI.Presentation/
 COPY src/MessengerAPI.Infrastructure/*.csproj MessengerAPI.Infrastructure/
 COPY src/MessengerAPI.Domain/*.csproj MessengerAPI.Domain/
+COPY src/MessengerAPI.Domain.Models/*.csproj MessengerAPI.Domain.Models/
 COPY src/MessengerAPI.Application/*.csproj MessengerAPI.Application/
 
 RUN dotnet restore MessengerAPI.Presentation/MessengerAPI.Presentation.csproj

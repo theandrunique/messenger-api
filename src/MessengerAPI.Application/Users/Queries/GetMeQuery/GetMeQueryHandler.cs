@@ -5,7 +5,7 @@ using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.Common.Errors;
 using MessengerAPI.Repositories.Interfaces;
 
-namespace MessengerAPI.Application.Users.Queries;
+namespace MessengerAPI.Application.Users.Queries.GetMeQuery;
 
 public class GetMeQueryHandler : IRequestHandler<GetMeQuery, ErrorOr<UserPrivateSchema>>
 {

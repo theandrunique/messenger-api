@@ -5,6 +5,7 @@ using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Repositories.Interfaces;
+using OtpNet;
 
 namespace MessengerAPI.Application.Auth.Commands.Register;
 
@@ -33,7 +34,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
             request.Username,
             request.Email,
             _hashHelper.Hash(request.Password),
-            request.GlobalName);
+            request.GlobalName,
+            KeyGeneration.GenerateRandomKey(20));
 
         await _userRepository.AddAsync(newUser);
 

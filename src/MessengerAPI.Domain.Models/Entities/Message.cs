@@ -1,6 +1,4 @@
-using MessengerAPI.Domain.Models.Entities;
-
-namespace MessengerAPI.Domain.ChannelAggregate.Entities;
+namespace MessengerAPI.Domain.Models.Entities;
 
 public class Message
 {

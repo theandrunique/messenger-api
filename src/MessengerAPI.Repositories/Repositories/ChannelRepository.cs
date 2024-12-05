@@ -31,6 +31,26 @@ public class ChannelRepository : IChannelRepository
         return _session.ExecuteAsync(batch);
     }
 
+    public Task<Channel?> GetByIdOrNullAsync(Guid channelId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<Guid>> GetMemberIdsFromChannelByIdAsync(Guid channelId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Channel?> GetPrivateChannelOrNullByIdsAsync(Guid userId1, Guid userId2)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Channel?> GetSavedMessagesChannelOrNullAsync(Guid userId)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<IEnumerable<Channel>> GetUserChannelsAsync(Guid userId)
     {
         var userChannels = await _channelMemberTable

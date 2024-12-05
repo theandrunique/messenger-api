@@ -1,10 +1,7 @@
 using AutoMapper;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Domain.ChannelAggregate;
-using MessengerAPI.Domain.ChannelAggregate.Entities;
-using MessengerAPI.Domain.Common.Entities;
-using MessengerAPI.Domain.Common.ValueObjects;
-using MessengerAPI.Domain.UserAggregate;
+using MessengerAPI.Domain.Entities.ValueObjects;
+using MessengerAPI.Domain.Models.Entities;
 
 namespace MessengerAPI.Contracts;
 
@@ -16,7 +13,7 @@ public class Mappings : Profile
 
         CreateMap<Channel, ChannelSchema>();
         CreateMap<Message, MessageSchema>();
-        CreateMap<Reaction, ReactionSchema>();
+        // CreateMap<Reaction, ReactionSchema>();
         CreateMap<User, UserPublicSchema>();
         CreateMap<User, UserPrivateSchema>();
 

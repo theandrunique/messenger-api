@@ -2,6 +2,7 @@ using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Application.Common.Services;
 using MessengerAPI.Domain.Common.Errors;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Repositories.Interfaces;
@@ -15,19 +16,22 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
     private readonly ISessionRepository _sessionRepository;
     private readonly IClientInfoProvider _userAgentParser;
     private readonly IAuthService _authService;
+    private readonly CaptchaService _captchaService;
 
     public LoginCommandHandler(
         IHashHelper hashHelper,
         IUserRepository userRepository,
         ISessionRepository sessionRepository,
         IClientInfoProvider userAgentParser,
-        IAuthService authService)
+        IAuthService authService,
+        CaptchaService captchaService)
     {
         _hashHelper = hashHelper;
         _userRepository = userRepository;
         _userAgentParser = userAgentParser;
         _authService = authService;
         _sessionRepository = sessionRepository;
+        _captchaService = captchaService;
     }
 
     /// <summary>
@@ -38,6 +42,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
     /// <returns><see cref="TokenPairResponse"/></returns>
     public async Task<ErrorOr<TokenPairResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
+        if (!await _captchaService.Verify(request.CaptchaToken))
+        {
+            return Errors.Auth.InvalidCaptcha;
+        }
+
         User? user;
         if (request.Login.Contains("@"))
         {

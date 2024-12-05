@@ -1,4 +1,4 @@
-using MessengerAPI.Domain.ChannelAggregate.Entities;
+using MessengerAPI.Domain.Models.Entities;
 
 namespace MessengerAPI.Repositories.Interfaces;
 

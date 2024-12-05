@@ -1,6 +1,5 @@
 using Cassandra;
 using Cassandra.Data.Linq;
-using MessengerAPI.Domain.ChannelAggregate.Entities;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Repositories.Interfaces;
 

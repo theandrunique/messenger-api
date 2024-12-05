@@ -47,7 +47,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
 
         session.UpdateTokenId();
 
-        await _sessionRepository.UpdateTokenIdAsync(session.Id, session.TokenId);
+        await _sessionRepository.UpdateTokenIdAsync(user.Id, session.Id, session.TokenId);
 
         return _authService.GenerateTokenPairResponse(user, session);
     }

@@ -39,4 +39,9 @@ public class Channel
         _members.Clear();
         _members.AddRange(members);
     }
+
+    public bool IsUserInTheChannel(Guid userId)
+    {
+        return _members.Any(m => m.UserId == userId);
+    }
 }

@@ -3,11 +3,19 @@ services:
     image: redis
     ports:
       - 6379:6379
+  
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 8025:8025
+
+  scylla:
+    image: scylladb/scylla
 
   redisinsight:
     image: redislabs/redisinsight
     ports:
-      - '5540:5540'
+      - "5540:5540"
 
   elasticmq:
     image: softwaremill/elasticmq-native

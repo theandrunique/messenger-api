@@ -1,5 +1,7 @@
 using MediatR;
-using MessengerAPI.Application.Users.Queries;
+using MessengerAPI.Application.Users.Commands.VerifyEmail;
+using MessengerAPI.Application.Users.Queries.GetMeQuery;
+using MessengerAPI.Application.Users.Queries.RequestVerifyEmail;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Presentation.Common;
 using Microsoft.AspNetCore.Mvc;
@@ -35,5 +37,34 @@ public class UsersController : ApiController
             success => Ok(success),
             errors => Problem(errors)
         );
+    }
+
+    [HttpGet("verification-code")]
+    public async Task<IActionResult> RequestEmailVerificationCodeAsync(CancellationToken cancellationToken)
+    {
+        var identity = User.GetIdentity();
+
+        var query = new RequestVerifyEmailCommand(identity.UserId);
+
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return result.Match(
+            success => Ok(success),
+            errors => Problem(errors)
+        );
+    }
+
+    [HttpGet("verify-email")]
+    public async Task<IActionResult> VerifyEmailAsync([FromQuery] string code, CancellationToken cancellationToken)
+    {
+        var identity = User.GetIdentity();
+
+        var command = new VerifyEmailCommand(identity.UserId, code);
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return result.Match(
+            success => Ok(success),
+            errors => Problem(errors));
     }
 }

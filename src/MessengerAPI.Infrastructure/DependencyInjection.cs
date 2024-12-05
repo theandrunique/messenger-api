@@ -4,7 +4,9 @@ using Amazon.SimpleNotificationService;
 using MassTransit;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Channels.Common.Interfaces;
+using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Application.Common.Interfaces.Files;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Auth.Interfaces;
@@ -32,6 +34,9 @@ public static class DependencyInjection
         services.AddSingleton<IStorageOptions>(sp => sp.GetRequiredService<IOptions<StorageOptions>>().Value);
 
         services.AddScoped<IFileStorageService, FileStorageService>();
+
+        services.AddScoped<ISmtpClient, SmtpClient>();
+        services.AddScoped<ITotpHelper, TotpHelper>();
 
         services.AddHttpContextAccessor();
 

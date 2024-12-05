@@ -18,5 +18,6 @@ public static partial class Errors
         /// Error when token is invalid
         /// </summary>
         public static Error InvalidToken => Error.Unauthorized("auth.invalid-token", "Invalid token");
+        public static Error InvalidCaptcha => Error.Unauthorized("auth.invalid-captcha", "Invalid captcha");
     }
 }

@@ -14,6 +14,7 @@ public class SessionRepository : ISessionRepository
     {
         _session = session;
         _table = new Table<Session>(_session);
+        _table.CreateIfNotExists();
     }
 
     public Task AddAsync(Session session)
@@ -22,9 +23,9 @@ public class SessionRepository : ISessionRepository
         return statement.ExecuteAsync();
     }
 
-    public Task<Session?> GetByIdOrNullAsync(Guid sessionId)
+    public Task<Session?> GetByIdOrNullAsync(Guid userId, Guid sessionId)
     {
-        return _table.Where(s => s.Id == sessionId).FirstOrDefault().ExecuteAsync();
+        return _table.Where(s => s.UserId == userId && s.Id == sessionId).FirstOrDefault().ExecuteAsync();
     }
 
     public Task<Session?> GetByTokenIdOrNullAsync(Guid tokenId)
@@ -32,15 +33,15 @@ public class SessionRepository : ISessionRepository
         return _table.Where(s => s.TokenId == tokenId).FirstOrDefault().ExecuteAsync();
     }
 
-    public Task RemoveByIdAsync(Guid sessionId)
+    public Task RemoveByIdAsync(Guid userId, Guid sessionId)
     {
-        return _table.Where(s => s.Id == sessionId).Delete().ExecuteAsync();
+        return _table.Where(s => s.UserId == userId && s.Id == sessionId).Delete().ExecuteAsync();
     }
 
-    public Task UpdateTokenIdAsync(Guid sessionId, Guid tokenId)
+    public Task UpdateTokenIdAsync(Guid userId, Guid sessionId, Guid tokenId)
     {
-        var query = $"UPDATE sessions SET {nameof(Session.TokenId)} = ? WHERE {nameof(Session.Id)} = ?";
+        var query = $"UPDATE sessions SET {nameof(Session.TokenId)} = ? WHERE {nameof(Session.UserId)} = ? AND {nameof(Session.Id)} = ?";
 
-        return _session.ExecuteAsync(new SimpleStatement(query, tokenId, sessionId));
+        return _session.ExecuteAsync(new SimpleStatement(query, tokenId, userId, sessionId));
     }
 }
