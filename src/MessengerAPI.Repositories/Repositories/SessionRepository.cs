@@ -19,23 +19,31 @@ public class SessionRepository : ISessionRepository
 
     public Task AddAsync(Session session)
     {
-        var statement = _table.Insert(session);
-        return statement.ExecuteAsync();
+        return _table.Insert(session).ExecuteAsync();
     }
 
-    public Task<Session?> GetByIdOrNullAsync(Guid userId, Guid sessionId)
+    public Task<Session> GetByIdOrDefaultAsync(Guid userId, Guid sessionId)
     {
-        return _table.Where(s => s.UserId == userId && s.Id == sessionId).FirstOrDefault().ExecuteAsync();
+        return _table
+            .Where(s => s.UserId == userId && s.Id == sessionId)
+            .FirstOrDefault()
+            .ExecuteAsync();
     }
 
-    public Task<Session?> GetByTokenIdOrNullAsync(Guid tokenId)
+    public Task<Session> GetByTokenIdOrDefaultAsync(Guid tokenId)
     {
-        return _table.Where(s => s.TokenId == tokenId).FirstOrDefault().ExecuteAsync();
+        return _table
+            .Where(s => s.TokenId == tokenId)
+            .FirstOrDefault()
+            .ExecuteAsync();
     }
 
     public Task RemoveByIdAsync(Guid userId, Guid sessionId)
     {
-        return _table.Where(s => s.UserId == userId && s.Id == sessionId).Delete().ExecuteAsync();
+        return _table
+            .Where(s => s.UserId == userId && s.Id == sessionId)
+            .Delete()
+            .ExecuteAsync();
     }
 
     public Task UpdateTokenIdAsync(Guid userId, Guid sessionId, Guid tokenId)

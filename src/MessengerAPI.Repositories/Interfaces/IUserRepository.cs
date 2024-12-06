@@ -6,9 +6,9 @@ namespace MessengerAPI.Repositories.Interfaces;
 public interface IUserRepository
 {
     Task AddAsync(User user);
-    Task<User?> GetByIdOrNullAsync(Guid userId);
-    Task<User?> GetByEmailOrNullAsync(string email);
-    Task<User?> GetByUsernameOrNullAsync(string username);
+    Task<User> GetByIdOrDefaultAsync(Guid userId);
+    Task<User> GetByEmailOrDefaultAsync(string email);
+    Task<User> GetByUsernameOrDefaultAsync(string username);
     Task<IEnumerable<User>> GetByIdsAsync(List<Guid> members);
     Task SetEmailVerifiedAsync(Guid userId);
 }

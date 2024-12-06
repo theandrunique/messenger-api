@@ -19,20 +19,23 @@ public class UserRepository : IUserRepository
 
     public Task AddAsync(User user)
     {
-        var statement = _table.Insert(user);
-        return statement.ExecuteAsync();
+        return _table.Insert(user).ExecuteAsync();
     }
 
-    public Task<User?> GetByEmailOrNullAsync(string email)
+    public Task<User> GetByEmailOrDefaultAsync(string email)
     {
-        var statement = _table.Where(u => u.Email == email);
-        return statement.FirstOrDefault().ExecuteAsync();
+        return _table
+            .Where(u => u.Email == email)
+            .FirstOrDefault()
+            .ExecuteAsync();
     }
 
-    public Task<User?> GetByIdOrNullAsync(Guid id)
+    public Task<User> GetByIdOrDefaultAsync(Guid id)
     {
-        var statement = _table.Where(u => u.Id == id);
-        return statement.FirstOrDefault().ExecuteAsync();
+        return _table
+            .Where(u => u.Id == id)
+            .FirstOrDefault()
+            .ExecuteAsync();
     }
 
     public Task<IEnumerable<User>> GetByIdsAsync(List<Guid> members)
@@ -40,10 +43,12 @@ public class UserRepository : IUserRepository
         throw new NotImplementedException();
     }
 
-    public Task<User?> GetByUsernameOrNullAsync(string username)
+    public Task<User> GetByUsernameOrDefaultAsync(string username)
     {
-        var statement = _table.Where(u => u.Username == username);
-        return statement.FirstOrDefault().ExecuteAsync();
+        return _table
+            .Where(u => u.Username == username)
+            .FirstOrDefault()
+            .ExecuteAsync();
     }
 
     public Task SetEmailVerifiedAsync(Guid userId)

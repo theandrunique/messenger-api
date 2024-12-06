@@ -19,7 +19,7 @@ public class VerifyEmailCommandHandler : IRequestHandler<VerifyEmailCommand, Err
 
     public async Task<ErrorOr<bool>> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdOrNullAsync(request.Sub);
+        var user = await _userRepository.GetByIdOrDefaultAsync(request.Sub);
 
         if (user == null)
         {
