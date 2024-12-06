@@ -5,16 +5,21 @@ namespace MessengerAPI.Infrastructure.Common;
 
 public class TotpHelper : ITotpHelper
 {
-    public string GenerateTotp(byte[] secretKey, int step)
+    public byte[] GenerateSecretKey(int length)
     {
-        var totp = new Totp(secretKey, step, OtpHashMode.Sha512);
+        return KeyGeneration.GenerateRandomKey(length);
+    }
+
+    public string GenerateTotp(byte[] secretKey, int step, int totpSize)
+    {
+        var totp = new Totp(secretKey, step, OtpHashMode.Sha512, totpSize);
 
         return totp.ComputeTotp();
     }
 
-    public bool Verify(string totp, byte[] secretKey, int step)
+    public bool Verify(string totp, byte[] secretKey, int step, int totpSize)
     {
-        var totpL = new Totp(secretKey, step, OtpHashMode.Sha512);
+        var totpL = new Totp(secretKey, step, OtpHashMode.Sha512, totpSize);
 
         return totpL.VerifyTotp(totp, out _);
     }

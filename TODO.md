@@ -13,3 +13,4 @@
 - [ ] Add tests
 - [ ] Restructure api errors
 - [ ] Restructure options
+- [ ] Upgrade usage of TOTP

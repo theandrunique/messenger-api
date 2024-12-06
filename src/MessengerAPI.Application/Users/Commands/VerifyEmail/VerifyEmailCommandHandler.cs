@@ -26,7 +26,7 @@ public class VerifyEmailCommandHandler : IRequestHandler<VerifyEmailCommand, Err
             return Errors.User.NotFound;
         }
 
-        var result = _totpHelper.Verify(request.Code, user.Key, 500);
+        var result = _totpHelper.Verify(request.Code, user.Key, 500, 6);
         if (!result)
         {
             return Errors.User.InvalidEmailValidationCode;

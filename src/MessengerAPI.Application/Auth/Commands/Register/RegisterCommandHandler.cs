@@ -2,10 +2,10 @@ using AutoMapper;
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Application.Common;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Repositories.Interfaces;
-using OtpNet;
 
 namespace MessengerAPI.Application.Auth.Commands.Register;
 
@@ -14,12 +14,14 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
     private readonly IUserRepository _userRepository;
     private readonly IHashHelper _hashHelper;
     private readonly IMapper _mapper;
+    private readonly ITotpHelper _totpHelper;
 
-    public RegisterCommandHandler(IUserRepository userRepository, IHashHelper hashHelper, IMapper mapper)
+    public RegisterCommandHandler(IUserRepository userRepository, IHashHelper hashHelper, IMapper mapper, ITotpHelper totpHelper)
     {
         _userRepository = userRepository;
         _hashHelper = hashHelper;
         _mapper = mapper;
+        _totpHelper = totpHelper;
     }
 
     /// <summary>
@@ -35,7 +37,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
             request.Email,
             _hashHelper.Hash(request.Password),
             request.GlobalName,
-            KeyGeneration.GenerateRandomKey(20));
+            _totpHelper.GenerateSecretKey(20));
 
         await _userRepository.AddAsync(newUser);
 
