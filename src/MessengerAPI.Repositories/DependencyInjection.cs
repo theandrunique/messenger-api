@@ -10,7 +10,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddRepositories(this IServiceCollection services, ConfigurationManager config)
     {
-        var cluster = Cluster.Builder()                                                    // (1)
+        var cluster = Cluster.Builder()
             .AddContactPoint("scylla")
             .WithDefaultKeyspace("messenger")
             .WithPort(9042)

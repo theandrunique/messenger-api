@@ -36,8 +36,7 @@ public class ModelsMappings : Mappings
             .TableName("messages")
             .PartitionKey(m => m.ChannelId)
             .ClusteringKey(m => m.Id, SortOrder.Descending)
-            .Column(m => m.Id, i => i.WithDbType<TimeUuid>())
-            .Column(m => m.Attachments, a => a.Ignore());
+            .Column(m => m.Id, i => i.WithDbType<TimeUuid>());
 
         For<Attachment>()
             .TableName("attachments")

@@ -40,11 +40,6 @@ public class Message
         if (attachments is not null) _attachments = attachments;
     }
 
-    public void LoadAttachments(IEnumerable<Attachment> attachments)
-    {
-        _attachments.AddRange(attachments);
-    }
-
     public void SetId(Guid id)
     {
         if (Id != Guid.Empty)

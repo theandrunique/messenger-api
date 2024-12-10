@@ -144,7 +144,7 @@ CREATE TABLE attachments (
     size bigint,
     pre_signed_url text
     pre_signed_url_expires_at timestamp,
-    Placeholder text,
+    placeholder text,
     duration_secs double,
     waveform text,
     is_spoiler boolean,

@@ -13,20 +13,30 @@ public class MessageRepository : IMessageRepository
 
     public MessageRepository(ISession session)
     {
-        ArgumentNullException.ThrowIfNull(session);
-
         _session = session;
-
         _table = new Table<Message>(_session);
         _attachmentTable = new Table<Attachment>(_session);
     }
 
     public Task AddAsync(Message message)
     {
-        ArgumentNullException.ThrowIfNull(message);
-
         message.SetId(TimeUuid.NewId().ToGuid());
 
+        var batch = new BatchStatement()
+            .Add(_table.Insert(message));
+
+        var attachmentStatements = message.Attachments.Select(a => _attachmentTable.Insert(a)).ToList();
+
+        foreach (var attachmentStatement in attachmentStatements)
+        {
+            batch.Add(attachmentStatement);
+        }
+
+        return _session.ExecuteAsync(batch);
+    }
+
+    public Task RewriteAsync(Message message)
+    {
         var batch = new BatchStatement()
             .Add(_table.Insert(message));
 
@@ -45,43 +55,38 @@ public class MessageRepository : IMessageRepository
         var messages = await _table
             .Where(m => m.ChannelId == channelId)
             .Where(m => m.Id < after)
-            .OrderByDescending(m => m.Id)
             .Take(limit)
             .ExecuteAsync();
-
-        var messageIds = messages.Select(m => m.Id).ToList();
-
-        var attachments = await _attachmentTable
-            .Where(a => a.ChannelId == channelId)
-            .Where(a => messageIds.Contains(a.MessageId))
-            .ExecuteAsync();
-
-        var attachmentGroups = attachments.GroupBy(a => a.MessageId).ToDictionary(g => g.Key, g => g.ToList());
-        foreach (var message in messages)
-        {
-            message.LoadAttachments(attachmentGroups.TryGetValue(message.Id, out var group) ? group : new List<Attachment>());
-        }
 
         return messages;
     }
 
-    public Task UpdateAsync(Message message)
+    public Task UpdateAttachmentsPreSignedUrlsAsync(Message message)
     {
-        ArgumentNullException.ThrowIfNull(message);
+        var query = $"UPDATE messages SET {nameof(Message.Attachments)} = ? WHERE {nameof(Message.ChannelId)} = ? AND {nameof(Message.Id)} = ?";
 
-        var messageStatement = _table
-            .Where(m => m.Id == message.Id)
-            .Select(m => m.Text)
-            .Update();
+        var attachmentsQuery = $"""
+            UPDATE attachments
+            SET {nameof(Attachment.PreSignedUrl)} = ?,
+                {nameof(Attachment.PreSignedUrlExpiresAt)} = ?
 
-        var insertAttachmentStatements = message.Attachments.Select(a => _attachmentTable.Insert(a));
+            WHERE {nameof(Attachment.ChannelId)} = ? AND
+                {nameof(Attachment.MessageId)} = ? AND
+                {nameof(Attachment.Id)} = ?
+        """;
 
         var batch = new BatchStatement()
-            .Add(messageStatement);
+            .Add(new SimpleStatement(query, message.Attachments, message.ChannelId, message.Id));
 
-        foreach (var insertAttachment in insertAttachmentStatements)
+        foreach (var attachment in message.Attachments)
         {
-            batch.Add(insertAttachment);
+            batch.Add(new SimpleStatement(
+                attachmentsQuery,
+                attachment.PreSignedUrl,
+                attachment.PreSignedUrlExpiresAt,
+                attachment.ChannelId,
+                attachment.MessageId,
+                attachment.Id));
         }
 
         return _session.ExecuteAsync(batch);
