@@ -56,5 +56,12 @@ internal class UserRepository : IUserRepository
 
         return _session.ExecuteAsync(new SimpleStatement(statement, userId));
     }
+
+    public Task UpdateKeyAsync(User user)
+    {
+        var statement = $"UPDATE users SET {nameof(User.Key)} = ? WHERE {nameof(User.Id)} = ?";
+
+        return _session.ExecuteAsync(new SimpleStatement(statement, user.Key, user.Id));
+    }
 }
 

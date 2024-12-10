@@ -10,4 +10,5 @@ public interface IUserRepository
     Task<User> GetByUsernameOrDefaultAsync(string username);
     Task<IEnumerable<User>> GetByIdsAsync(List<Guid> members);
     Task SetEmailVerifiedAsync(Guid userId);
+    Task UpdateKeyAsync(User user);
 }

@@ -8,6 +8,7 @@ using MessengerAPI.Presentation.Common;
 using MessengerAPI.Application.Auth.Commands.RefreshToken;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Contracts.Common;
+using MessengerAPI.Application.Auth.Commands.LoginWithTotp;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -59,6 +60,23 @@ public class AuthController : ApiController
         var loginResult = await _mediator.Send(command, cancellationToken);
 
         return loginResult.Match(
+            success =>
+            {
+                AddRefreshTokenToCookies(success.RefreshToken);
+                return Ok(success);
+            },
+            errors => Problem(errors));
+    }
+
+    [HttpPost("sign-in-totp")]
+    [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SignInWithTotpAsync([FromForm] SignInWithTotpRequestSchema schema, CancellationToken cancellationToken)
+    {
+        var command = new LoginWithTotpCommand(schema.login, schema.totp, schema.captchaToken);
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return result.Match(
             success =>
             {
                 AddRefreshTokenToCookies(success.RefreshToken);

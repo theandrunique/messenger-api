@@ -1,4 +1,5 @@
 using MediatR;
+using MessengerAPI.Application.Users.Commands.SetUpTotp;
 using MessengerAPI.Application.Users.Commands.VerifyEmail;
 using MessengerAPI.Application.Users.Queries.GetMeQuery;
 using MessengerAPI.Application.Users.Queries.RequestVerifyEmail;
@@ -30,6 +31,22 @@ public class UsersController : ApiController
         var identity = User.GetIdentity();
 
         var query = new GetMeQuery(identity.UserId);
+
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return result.Match(
+            success => Ok(success),
+            errors => Problem(errors)
+        );
+    }
+
+    [HttpPut("me/otp")]
+    [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateMyTotpAsync(CancellationToken cancellationToken)
+    {
+        var identity = User.GetIdentity();
+
+        var query = new SetUpTotpCommand(identity.UserId);
 
         var result = await _mediator.Send(query, cancellationToken);
 

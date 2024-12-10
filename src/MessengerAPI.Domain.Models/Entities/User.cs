@@ -51,5 +51,7 @@ public class User
 
         return user;
     }
+
+    public void SetKey(byte[] key) => Key = key;
 }
 
