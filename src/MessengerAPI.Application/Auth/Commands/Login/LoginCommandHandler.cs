@@ -3,9 +3,9 @@ using MediatR;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common.Services;
+using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Common.Errors;
 using MessengerAPI.Domain.Models.Entities;
-using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Auth.Commands.Login;
 

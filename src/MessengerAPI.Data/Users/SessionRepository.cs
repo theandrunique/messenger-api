@@ -1,11 +1,10 @@
 using Cassandra;
 using Cassandra.Data.Linq;
-using MessengerAPI.Repositories.Interfaces;
 using Session = MessengerAPI.Domain.Models.Entities.Session;
 
-namespace MessengerAPI.Repositories;
+namespace MessengerAPI.Data.Users;
 
-public class SessionRepository : ISessionRepository
+internal class SessionRepository : ISessionRepository
 {
     private readonly ISession _session;
     private readonly Table<Session> _table;

@@ -2,8 +2,8 @@ using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Common.Errors;
-using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Auth.Commands.RefreshToken;
 

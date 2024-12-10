@@ -1,11 +1,10 @@
 using Cassandra;
 using Cassandra.Data.Linq;
 using MessengerAPI.Domain.Models.Entities;
-using MessengerAPI.Repositories.Interfaces;
 
-namespace MessengerAPI.Repositories;
+namespace MessengerAPI.Data.Users;
 
-public class UserRepository : IUserRepository
+internal class UserRepository : IUserRepository
 {
     private readonly ISession _session;
     private readonly Table<User> _table;

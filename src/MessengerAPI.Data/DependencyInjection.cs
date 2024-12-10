@@ -1,14 +1,15 @@
 using Cassandra;
 using Cassandra.Mapping;
-using MessengerAPI.Repositories.Interfaces;
+using MessengerAPI.Data.Channels;
+using MessengerAPI.Data.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MessengerAPI.Repositories;
+namespace MessengerAPI.Data;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddRepositories(this IServiceCollection services, ConfigurationManager config)
+    public static IServiceCollection AddDataServices(this IServiceCollection services, ConfigurationManager config)
     {
         var cluster = Cluster.Builder()
             .AddContactPoint("scylla")

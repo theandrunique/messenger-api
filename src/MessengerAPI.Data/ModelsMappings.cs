@@ -3,7 +3,7 @@ using Cassandra.Mapping;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Domain.Models.Relations;
 
-namespace MessengerAPI.Repositories;
+namespace MessengerAPI.Data;
 
 public class ModelsMappings : Mappings
 {

@@ -2,8 +2,8 @@ using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces.Auth;
+using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Common.Errors;
-using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Users.Queries.RequestVerifyEmail;
 

@@ -2,9 +2,8 @@ using AutoMapper;
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Domain.Models.Entities;
-using MessengerAPI.Domain.Models.ValueObjects;
-using MessengerAPI.Repositories.Interfaces;
+using MessengerAPI.Data.Channels;
+using MessengerAPI.Data.Users;
 
 namespace MessengerAPI.Application.Channels.Commands;
 
@@ -33,72 +32,72 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
         throw new NotImplementedException("CreateChannelCommandHandler is not implemented");
         // if (!request.Members.Contains(request.Sub))
         // {
-            // request.Members.Add(request.Sub);
+        // request.Members.Add(request.Sub);
         // }
 
         // var members = await _userRepository.GetByIdsAsync(request.Members);
         // if (members.Count() != request.Members.Count)
         // {
-            // return Errors.User.NotFound;
+        // return Errors.User.NotFound;
         // }
 
         // Channel? channel = null;
 
         // if (request.Type == ChannelType.Private)
         // {
-            // channel = await CreatePrivateChannel(request, members, cancellationToken);
+        // channel = await CreatePrivateChannel(request, members, cancellationToken);
         // }
         // else if (request.Type == ChannelType.Group)
         // {
-            // channel = await CreateGroupChannel(request, members, cancellationToken);
+        // channel = await CreateGroupChannel(request, members, cancellationToken);
         // }
 
 
         // if (channel == null)
-            // throw new NotImplementedException($"Channel type {request.Type} is not implemented");
+        // throw new NotImplementedException($"Channel type {request.Type} is not implemented");
 
         // return _mapper.Map<ChannelSchema>(channel);
     }
 
     // private async Task<Channel> CreatePrivateChannel(CreateChannelCommand request, List<User> members, CancellationToken token)
     // {
-        // if (request.Members.Count == 1)
-        // {
-            // var savedMessagesChannel = await _channelRepository.GetSavedMessagesChannelOrNullAsync(request.Sub, token);
-            // if (savedMessagesChannel is not null)
-            // {
-                // return savedMessagesChannel;
-            // }
+    // if (request.Members.Count == 1)
+    // {
+    // var savedMessagesChannel = await _channelRepository.GetSavedMessagesChannelOrNullAsync(request.Sub, token);
+    // if (savedMessagesChannel is not null)
+    // {
+    // return savedMessagesChannel;
+    // }
 
-            // var newSavedMessages = Channel.CreateSavedMessages(members[0]);
+    // var newSavedMessages = Channel.CreateSavedMessages(members[0]);
 
-            // await _channelRepository.AddAsync(newSavedMessages, token);
+    // await _channelRepository.AddAsync(newSavedMessages, token);
 
-            // return newSavedMessages;
-        // }
-        // if (request.Members.Count == 2)
-        // {
-            // Channel? existedChannel = await _channelRepository.GetPrivateChannelOrNullAsync(members[0].Id, request.Sub, token);
-            // if (existedChannel is not null)
-            // {
-                // return existedChannel;
-            // }
+    // return newSavedMessages;
+    // }
+    // if (request.Members.Count == 2)
+    // {
+    // Channel? existedChannel = await _channelRepository.GetPrivateChannelOrNullAsync(members[0].Id, request.Sub, token);
+    // if (existedChannel is not null)
+    // {
+    // return existedChannel;
+    // }
 
-            // var newChannel = Channel.CreatePrivate(members[0], members[1]);
+    // var newChannel = Channel.CreatePrivate(members[0], members[1]);
 
-            // await _channelRepository.AddAsync(newChannel);
+    // await _channelRepository.AddAsync(newChannel);
 
-            // return newChannel;
-        // }
-        // throw new ArgumentOutOfRangeException("Members count must be 1 or 2 to create Private channel");
+    // return newChannel;
+    // }
+    // throw new ArgumentOutOfRangeException("Members count must be 1 or 2 to create Private channel");
     // }
 
     // private async Task<Channel> CreateGroupChannel(CreateChannelCommand request, List<User> members, CancellationToken token)
     // {
-        // Channel channel = Channel.CreateGroup(request.Sub, members, request.Title);
+    // Channel channel = Channel.CreateGroup(request.Sub, members, request.Title);
 
-        // await _channelRepository.AddAsync(channel);
+    // await _channelRepository.AddAsync(channel);
 
-        // return channel;
+    // return channel;
     // }
 }

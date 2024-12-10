@@ -1,6 +1,6 @@
-namespace MessengerAPI.Repositories;
+namespace MessengerAPI.Data;
 
-public class CassandraOptions
+internal class CassandraOptions
 {
     public string[] ContactPoints { get; init; }
     public int Port { get; set; } = 9042;

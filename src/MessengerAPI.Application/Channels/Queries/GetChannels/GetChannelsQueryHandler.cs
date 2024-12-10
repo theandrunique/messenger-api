@@ -2,8 +2,7 @@ using AutoMapper;
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Domain.ChannelAggregate;
-using MessengerAPI.Repositories.Interfaces;
+using MessengerAPI.Data.Channels;
 
 namespace MessengerAPI.Application.Channels.Queries.GetChannels;
 

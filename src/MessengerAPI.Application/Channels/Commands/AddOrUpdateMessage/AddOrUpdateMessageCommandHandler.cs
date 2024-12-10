@@ -3,9 +3,8 @@ using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Channels.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Domain.ChannelAggregate.Entities;
+using MessengerAPI.Data.Channels;
 using MessengerAPI.Domain.Common.Errors;
-using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 
@@ -44,46 +43,46 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
 
         // if (request.Attachments?.Count > 0)
         // {
-            // attachments = new();
+        // attachments = new();
 
-            // foreach (var fileData in request.Attachments)
-            // {
-                // var attachment = await _attachmentService.ValidateAndCreateAttachmentsAsync(
-                            // fileData.UploadedFilename,
-                            // fileData.Filename,
-                            // channel.Id,
-                            // cancellationToken);
-                // if (attachment.IsError) return attachment.Errors;
+        // foreach (var fileData in request.Attachments)
+        // {
+        // var attachment = await _attachmentService.ValidateAndCreateAttachmentsAsync(
+        // fileData.UploadedFilename,
+        // fileData.Filename,
+        // channel.Id,
+        // cancellationToken);
+        // if (attachment.IsError) return attachment.Errors;
 
-                // attachments.Add(attachment.Value);
-            // }
-            // await _channelRepository.AddAttachmentsAsync(attachments, cancellationToken);
+        // attachments.Add(attachment.Value);
+        // }
+        // await _channelRepository.AddAttachmentsAsync(attachments, cancellationToken);
         // }
 
         // if (request.ReplyTo.HasValue)
         // {
-            // var replyToMessage = await _channelRepository.GetMessageByIdOrNullAsync(request.ReplyTo.Value, cancellationToken);
-            // if (replyToMessage is null)
-            // {
-                // return Errors.Channel.MessageNotFound;
-            // }
+        // var replyToMessage = await _channelRepository.GetMessageByIdOrNullAsync(request.ReplyTo.Value, cancellationToken);
+        // if (replyToMessage is null)
+        // {
+        // return Errors.Channel.MessageNotFound;
+        // }
         // }
 
         // Message? message;
 
         // if (request.MessageId.HasValue)
         // {
-            // message = await _channelRepository.GetMessageByIdOrNullAsync(request.MessageId.Value, cancellationToken);
-            // if (message is null)
-            // {
-                // return Errors.Channel.MessageNotFound;
-            // }
+        // message = await _channelRepository.GetMessageByIdOrNullAsync(request.MessageId.Value, cancellationToken);
+        // if (message is null)
+        // {
+        // return Errors.Channel.MessageNotFound;
+        // }
 
-            // message.Update(request.ReplyTo, request.Text, attachments);
+        // message.Update(request.ReplyTo, request.Text, attachments);
         // }
         // else
         // {
-            // message = channel.AddMessage(request.Sub, request.Text, request.ReplyTo, attachments);
+        // message = channel.AddMessage(request.Sub, request.Text, request.ReplyTo, attachments);
         // }
 
         // await _channelRepository.UpdateAsync(channel, cancellationToken);

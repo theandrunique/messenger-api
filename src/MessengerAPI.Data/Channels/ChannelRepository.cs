@@ -2,9 +2,8 @@ using Cassandra;
 using Cassandra.Data.Linq;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Domain.Models.Relations;
-using MessengerAPI.Repositories.Interfaces;
 
-namespace MessengerAPI.Repositories;
+namespace MessengerAPI.Data.Channels;
 
 public class ChannelRepository : IChannelRepository
 {

@@ -3,8 +3,8 @@ using AutoMapper;
 using ErrorOr;
 using MediatR;
 using MessengerAPI.Contracts.Common;
+using MessengerAPI.Data.Channels;
 using MessengerAPI.Domain.Common.Errors;
-using MessengerAPI.Repositories.Interfaces;
 
 namespace MessengerAPI.Application.Channels.Queries.GetMessages;
 

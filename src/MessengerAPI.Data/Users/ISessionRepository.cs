@@ -1,6 +1,6 @@
 using MessengerAPI.Domain.Models.Entities;
 
-namespace MessengerAPI.Repositories.Interfaces;
+namespace MessengerAPI.Data.Users;
 
 public interface ISessionRepository
 {
