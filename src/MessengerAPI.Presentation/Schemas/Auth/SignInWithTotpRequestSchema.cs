@@ -1,3 +1,3 @@
 namespace MessengerAPI.Presentation.Schemas.Auth;
 
-public record SignInWithTotpRequestSchema(string login, string totp, string captchaToken);
+public record SignInWithTotpRequestSchema(string login, string totp);

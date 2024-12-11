@@ -1,6 +1,5 @@
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace MessengerAPI.Application.Common.Services;
 
@@ -18,7 +17,6 @@ public class CaptchaService
     public async Task<bool> Verify(string token)
     {
         var response = await _client.Verify(_options.Secret, token);
-        Console.WriteLine(JsonConvert.SerializeObject(response));
         return response.Success;
     }
 }

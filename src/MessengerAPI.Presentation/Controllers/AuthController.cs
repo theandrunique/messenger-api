@@ -9,6 +9,7 @@ using MessengerAPI.Application.Auth.Commands.RefreshToken;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Application.Auth.Commands.LoginWithTotp;
+using MessengerAPI.Application.Auth.Commands.PasswordRecovery;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -72,7 +73,7 @@ public class AuthController : ApiController
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignInWithTotpAsync([FromForm] SignInWithTotpRequestSchema schema, CancellationToken cancellationToken)
     {
-        var command = new LoginWithTotpCommand(schema.login, schema.totp, schema.captchaToken);
+        var command = new LoginWithTotpCommand(schema.login, schema.totp);
 
         var result = await _mediator.Send(command, cancellationToken);
 
@@ -82,6 +83,21 @@ public class AuthController : ApiController
                 AddRefreshTokenToCookies(success.RefreshToken);
                 return Ok(success);
             },
+            errors => Problem(errors));
+    }
+
+    [HttpPost("password-recovery")]
+    [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
+    public async Task<IActionResult> PasswordRecoveryAsync(
+        [FromBody] PasswordRecoveryRequestSchema schema,
+        CancellationToken cancellationToken)
+    {
+        var command = new PasswordRecoveryCommand(schema.login);
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return result.Match(
+            success => Ok(success),
             errors => Problem(errors));
     }
 

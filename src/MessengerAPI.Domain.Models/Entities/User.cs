@@ -53,5 +53,6 @@ public class User
     }
 
     public void SetKey(byte[] key) => Key = key;
+    public void SetNewPassword(string passwordHash) => PasswordHash = passwordHash;
 }
 

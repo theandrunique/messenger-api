@@ -63,5 +63,20 @@ internal class UserRepository : IUserRepository
 
         return _session.ExecuteAsync(new SimpleStatement(statement, user.Key, user.Id));
     }
+
+    public Task UpdatePasswordAsync(User user)
+    {
+        var statement = $"""
+            UPDATE
+                users
+            SET
+                {nameof(User.PasswordHash)} = ?,
+                {nameof(User.PasswordUpdatedAt)} = ?
+            WHERE
+                {nameof(User.Id)} = ?
+        """;
+
+        return _session.ExecuteAsync(new SimpleStatement(statement, user.PasswordHash, user.PasswordUpdatedAt, user.Id));
+    }
 }
 
