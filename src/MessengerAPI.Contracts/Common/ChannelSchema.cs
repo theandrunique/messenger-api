@@ -1,4 +1,4 @@
-using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
+using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Contracts.Common;
 

@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\MessengerAPI.Domain\MessengerAPI.Domain.csproj" />
     <ProjectReference Include="..\MessengerAPI.Domain.Models\MessengerAPI.Domain.Models.csproj" />
     <ProjectReference Include="..\MessengerAPI.Errors\MessengerAPI.Errors.csproj" />
   </ItemGroup>

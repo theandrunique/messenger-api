@@ -1,5 +1,5 @@
 using FluentValidation;
-using MessengerAPI.Domain.ChannelAggregate.ValueObjects;
+using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Application.Channels.Commands.CreateChannel;
 

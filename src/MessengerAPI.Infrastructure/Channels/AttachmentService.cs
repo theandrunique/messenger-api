@@ -1,6 +1,6 @@
 using MessengerAPI.Application.Channels.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Files;
-using MessengerAPI.Domain.ChannelAggregate.Entities;
+using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Infrastructure.Channels;
@@ -44,7 +44,7 @@ public class AttachmentService : IAttachmentService
             uploadedFilename,
             preSignedUrlExpiresAt);
 
-        return Attachment.Create(
+        return new Attachment(
             channelId,
             filename,
             uploadedFilename,

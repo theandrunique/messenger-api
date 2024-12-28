@@ -1,6 +1,6 @@
 using MassTransit;
 using MediatR;
-using MessengerAPI.Domain.ChannelAggregate.Events;
+using MessengerAPI.Domain.Models.Events;
 
 namespace MessengerAPI.Application.Channels.Events;
 
