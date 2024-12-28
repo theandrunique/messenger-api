@@ -1,5 +1,5 @@
-using ErrorOr;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Common.Interfaces;
 

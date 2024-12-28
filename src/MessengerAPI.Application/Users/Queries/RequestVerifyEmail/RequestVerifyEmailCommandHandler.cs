@@ -1,9 +1,8 @@
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Data.Users;
-using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Users.Queries.RequestVerifyEmail;
 
@@ -26,7 +25,7 @@ public class RequestVerifyEmailCommandHandler : IRequestHandler<RequestVerifyEma
 
         if (user == null)
         {
-            return Errors.User.NotFound;
+            return Error.User.NotFound;
         }
 
         var totp = _totpHelper.GenerateTotp(user.Key, 500, 6);

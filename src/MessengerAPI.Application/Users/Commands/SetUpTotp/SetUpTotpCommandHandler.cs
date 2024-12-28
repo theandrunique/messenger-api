@@ -1,8 +1,7 @@
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Data.Users;
-using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Users.Commands.SetUpTotp;
 
@@ -23,7 +22,7 @@ public class SetUpTotpCommandHandler : IRequestHandler<SetUpTotpCommand, ErrorOr
 
         if (user == null)
         {
-            return Errors.User.NotFound;
+            return Error.User.NotFound;
         }
 
         user.SetKey(_totpHelper.GenerateSecretKey(20));

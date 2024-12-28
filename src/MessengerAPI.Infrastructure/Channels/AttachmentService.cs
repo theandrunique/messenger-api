@@ -1,8 +1,7 @@
-using ErrorOr;
 using MessengerAPI.Application.Channels.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Files;
 using MessengerAPI.Domain.ChannelAggregate.Entities;
-using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Infrastructure.Channels;
 
@@ -36,7 +35,7 @@ public class AttachmentService : IAttachmentService
         var objectMetadata = await _fileStorage.GetObjectMetadataAsync(uploadedFilename, cancellationToken);
         if (objectMetadata is null)
         {
-            return Errors.File.NotFound(uploadedFilename);
+            return Error.File.NotFound(uploadedFilename);
         }
 
         var preSignedUrlExpiresAt = DateTime.UtcNow.AddDays(7);
@@ -61,7 +60,7 @@ public class AttachmentService : IAttachmentService
         var result = await _fileStorage.DeleteObjectAsync(uploadedFilename, cancellationToken);
         if (!result)
         {
-            return Errors.File.NotFound(uploadedFilename);
+            return Error.File.NotFound(uploadedFilename);
         }
         return true;
     }

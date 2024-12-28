@@ -1,7 +1,11 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MessengerAPI.Contracts.Common;
+using MessengerAPI.Errors;
 using MessengerAPI.Presentation.Common;
+using MessengerAPI.Presentation.Common.Filters;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -49,6 +53,25 @@ public static class DependencyInjection
     {
         services
             .AddControllers()
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = new Dictionary<string, List<string>>();
+                    foreach (var kvp in context.ModelState)
+                    {
+                        var key = kvp.Key;
+                        var errorMessages = kvp.Value.Errors.Select(e => e.ErrorMessage).ToList();
+                        if (!errors.ContainsKey(key))
+                        {
+                            errors[key] = new List<string>();
+                        }
+                        errors[key].AddRange(errorMessages);
+                    }
+                    var errorResponse = Error.Common.InvalidRequestBody(errors);
+                    return new BadRequestObjectResult(ApiErrorSchema.FromApiError(errorResponse));
+                };
+            })
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());

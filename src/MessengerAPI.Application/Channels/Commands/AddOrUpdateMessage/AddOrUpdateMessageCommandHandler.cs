@@ -1,10 +1,9 @@
 using AutoMapper;
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Channels.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Channels;
-using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 
@@ -33,9 +32,9 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
     public async Task<ErrorOr<MessageSchema>> Handle(AddOrUpdateMessageCommand request, CancellationToken cancellationToken)
     {
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
-        if (channel is null) return Errors.Channel.ChannelNotFound;
+        if (channel is null) return Error.Channel.ChannelNotFound;
 
-        if (!channel.IsUserInTheChannel(request.Sub)) return Errors.Channel.NotAllowed;
+        if (!channel.IsUserInTheChannel(request.Sub)) return Error.Channel.NotAllowed;
 
         throw new NotImplementedException();
 

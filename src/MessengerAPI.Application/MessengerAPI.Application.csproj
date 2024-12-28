@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="automapper" Version="13.0.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
@@ -14,11 +12,10 @@
     <PackageReference Include="refit" Version="8.0.0" />
     <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\MessengerAPI.Domain\MessengerAPI.Domain.csproj" />
     <ProjectReference Include="..\MessengerAPI.Contracts\MessengerAPI.Contracts.csproj" />
     <ProjectReference Include="..\MessengerAPI.Data\MessengerAPI.Data.csproj" />
+    <ProjectReference Include="..\MessengerAPI.Errors\MessengerAPI.Errors.csproj" />
   </ItemGroup>
-
 </Project>

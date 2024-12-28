@@ -1,11 +1,11 @@
 using AutoMapper;
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Auth.Commands.Register;
 

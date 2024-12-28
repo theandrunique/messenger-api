@@ -1,10 +1,9 @@
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Data.Users;
-using MessengerAPI.Domain.Common.Errors;
 using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Auth.Commands.PasswordRecovery;
 
@@ -35,7 +34,7 @@ public class PasswordRecoveryCommandHandler : IRequestHandler<PasswordRecoveryCo
 
         if (user == null)
         {
-            return Errors.User.NotFound;
+            return Error.User.NotFound;
         }
 
         var totp = _totpHelper.GenerateTotp(user.Key, 500, 6);

@@ -5,20 +5,21 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="automapper" Version="13.0.1"/>
+    <PackageReference Include="automapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6"/>
-    <PackageReference Include="Serilog.AspNetCore" Version="8.0.3"/>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3"/>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MessengerAPI.Application\MessengerAPI.Application.csproj"/>
-    <ProjectReference Include="..\MessengerAPI.Infrastructure\MessengerAPI.Infrastructure.csproj"/>
-    <ProjectReference Include="..\MessengerAPI.Domain.Models\MessengerAPI.Domain.Models.csproj"/>
-    <ProjectReference Include="..\MessengerAPI.Data\MessengerAPI.Data.csproj"/>
+    <ProjectReference Include="..\MessengerAPI.Application\MessengerAPI.Application.csproj" />
+    <ProjectReference Include="..\MessengerAPI.Infrastructure\MessengerAPI.Infrastructure.csproj" />
+    <ProjectReference Include="..\MessengerAPI.Domain.Models\MessengerAPI.Domain.Models.csproj" />
+    <ProjectReference Include="..\MessengerAPI.Data\MessengerAPI.Data.csproj" />
+    <ProjectReference Include="..\MessengerAPI.Errors\MessengerAPI.Errors.csproj" />
   </ItemGroup>
 </Project>

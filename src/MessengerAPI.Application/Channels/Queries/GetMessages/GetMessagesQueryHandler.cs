@@ -1,10 +1,8 @@
-using System.Net.NetworkInformation;
 using AutoMapper;
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Channels;
-using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Queries.GetMessages;
 
@@ -32,11 +30,11 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null)
         {
-            return Errors.Channel.ChannelNotFound;
+            return Error.Channel.ChannelNotFound;
         }
         if (!channel.IsUserInTheChannel(request.Sub))
         {
-            return Errors.Channel.NotAllowed;
+            return Error.Channel.NotAllowed;
         }
 
         var messages = await _messageRepository.GetMessagesAsync(request.ChannelId, request.Limit, Guid.Empty);

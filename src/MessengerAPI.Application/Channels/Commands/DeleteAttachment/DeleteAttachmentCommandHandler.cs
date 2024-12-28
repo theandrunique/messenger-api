@@ -1,6 +1,6 @@
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Channels.Common.Interfaces;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands.DeleteAttachment;
 
@@ -18,7 +18,7 @@ public class DeleteAttachmentCommandHandler : IRequestHandler<DeleteAttachmentCo
         var result = await _attachmentService.DeleteAttachmentAsync(request.uploadFilename, cancellationToken);
         if (result.IsError)
         {
-            return result.Errors;
+            return result.Error;
         }
         return true;
     }

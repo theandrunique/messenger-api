@@ -1,6 +1,6 @@
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Auth.Common;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Auth.Commands.LoginWithTotp;
 

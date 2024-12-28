@@ -1,9 +1,8 @@
 using AutoMapper;
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Users;
-using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Users.Queries.GetMeQuery;
 
@@ -30,7 +29,7 @@ public class GetMeQueryHandler : IRequestHandler<GetMeQuery, ErrorOr<UserPrivate
 
         if (user == null)
         {
-            return Errors.User.NotFound;
+            return Error.User.NotFound;
         }
 
         return _mapper.Map<UserPrivateSchema>(user);

@@ -9,7 +9,7 @@ public class PostAttachmentCommandValidator : AbstractValidator<PostAttachmentCo
     {
         RuleFor(x => x.Files)
             .NotEmpty();
-        
+
         RuleForEach(x => x.Files)
             .NotEmpty()
             .Must(file => file.Size > 0)

@@ -1,14 +1,12 @@
-using ErrorOr;
 using FluentValidation;
 using MediatR;
-using MessengerAPI.Application.Common.Extensions;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Common.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse> :
     IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
-        where TResponse : IErrorOr
 {
     private readonly IValidator<TRequest>? _validator;
 
@@ -39,8 +37,19 @@ public class ValidationBehavior<TRequest, TResponse> :
             return await next();
         }
 
-        List<Error> errors = validationResult.Errors.ToErrorOrList();
+        Dictionary<string, List<string>> fieldErrors = new();
 
-        return (dynamic)errors;
+        foreach (var fieldError in validationResult.Errors)
+        {
+            if (!fieldErrors.ContainsKey(fieldError.PropertyName))
+            {
+                fieldErrors[fieldError.PropertyName] = new();
+            }
+            fieldErrors[fieldError.PropertyName].Add(fieldError.ErrorMessage);
+        }
+
+        var error = Error.Common.InvalidRequestBody(fieldErrors);
+
+        return (dynamic)error;
     }
 }

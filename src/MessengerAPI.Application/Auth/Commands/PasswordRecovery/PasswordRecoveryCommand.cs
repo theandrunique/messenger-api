@@ -1,5 +1,5 @@
-using ErrorOr;
 using MediatR;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Auth.Commands.PasswordRecovery;
 

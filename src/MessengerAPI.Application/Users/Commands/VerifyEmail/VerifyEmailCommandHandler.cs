@@ -1,8 +1,7 @@
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Data.Users;
-using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Users.Commands.VerifyEmail;
 
@@ -23,13 +22,13 @@ public class VerifyEmailCommandHandler : IRequestHandler<VerifyEmailCommand, Err
 
         if (user == null)
         {
-            return Errors.User.NotFound;
+            return Error.User.NotFound;
         }
 
         var result = _totpHelper.Verify(request.Code, user.Key, 500, 6);
         if (!result)
         {
-            return Errors.User.InvalidEmailValidationCode;
+            return Error.User.InvalidEmailValidationCode;
         }
 
         await _userRepository.SetEmailVerifiedAsync(user.Id);

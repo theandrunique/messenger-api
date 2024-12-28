@@ -1,9 +1,8 @@
-using ErrorOr;
 using MediatR;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Data.Users;
-using MessengerAPI.Domain.Common.Errors;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Auth.Commands.RefreshToken;
 
@@ -30,19 +29,19 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
     {
         if (!_authService.TryDecryptRefreshToken(request.RefreshToken, out var payload))
         {
-            return Errors.Auth.InvalidToken;
+            return Error.Auth.InvalidToken;
         }
 
         var session = await _sessionRepository.GetByTokenIdOrDefaultAsync(payload.TokenId);
         if (session == null)
         {
-            return Errors.Auth.InvalidToken;
+            return Error.Auth.InvalidToken;
         }
 
         var user = await _userRepository.GetByIdOrDefaultAsync(session.UserId);
         if (user == null)
         {
-            return Errors.Auth.InvalidToken;
+            return Error.Auth.InvalidToken;
         }
 
         session.UpdateTokenId();
