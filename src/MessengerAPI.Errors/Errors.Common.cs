@@ -9,5 +9,8 @@ public static partial class Error
 
         public static BaseApiError InvalidJson
             => new BaseApiError(ErrorCode.InvalidJson, "The request body contains invalid JSON");
+
+        public static BaseApiError InternalServerError
+            => new BaseApiError(ErrorCode.InternalServerError, "Internal server error");
     }
 }

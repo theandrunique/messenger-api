@@ -24,5 +24,6 @@ public enum ErrorCode
     // Common
     InvalidRequestBody = 50001,
     InvalidJson = 50002,
+    InternalServerError = 50003,
 }
 

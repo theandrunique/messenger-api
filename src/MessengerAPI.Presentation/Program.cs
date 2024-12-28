@@ -9,6 +9,8 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddExceptionHandler<GlobalErrorHandler>();
+
 builder.Services
     .AddContractsMappings()
     .AddDataServices(builder.Configuration)
