@@ -1,7 +1,10 @@
 using Cassandra;
 using Cassandra.Mapping;
+using Cassandra.Mapping.Attributes;
+using MessengerAPI.Data.Tables;
+using MessengerAPI.Domain.Entities.ValueObjects;
 using MessengerAPI.Domain.Models.Entities;
-using MessengerAPI.Domain.Models.Relations;
+using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Data;
 
@@ -21,21 +24,26 @@ public class ModelsMappings : Mappings
             .ClusteringKey(s => s.Id)
             .Column(s => s.TokenId, t => t.WithSecondaryIndex());
 
-        For<Channel>()
-            .TableName("channels")
-            .PartitionKey(c => c.Id)
-            .Column(c => c.Members, m => m.Ignore());
-
-        For<ChannelMember>()
-            .TableName("channel_members")
+        For<ChannelById>()
+            .TableName("channels_by_id")
             .PartitionKey(c => c.ChannelId)
-            .ClusteringKey(c => c.UserId)
-            .Column(c => c.UserId, ui => ui.WithSecondaryIndex());
+            .Column(c => c.ChannelType, cm => cm.WithDbType<int>());
+        For<PrivateChannel>()
+            .TableName("private_channels")
+            .PartitionKey(p => p.UserId1, p => p.UserId2);
+        For<ChannelUsers>()
+            .TableName("channel_users_by_user_id")
+            .Column(c => c.Images, cm => cm.WithFrozenValue())
+            .PartitionKey(c => c.UserId);
+        For<ChannelUsers>()
+            .TableName("channel_users_by_channel_id")
+            .PartitionKey(c => c.ChannelId);
 
         For<Message>()
             .TableName("messages")
             .PartitionKey(m => m.ChannelId)
             .ClusteringKey(m => m.Id, SortOrder.Descending)
+            .Column(m => m.Author, cm => cm.AsFrozen())
             .Column(m => m.Id, i => i.WithDbType<TimeUuid>());
 
         For<Attachment>()

@@ -13,31 +13,34 @@ public class AttachmentRepository : IAttachmentRepository
     {
         _session = session;
         _table = new Table<Attachment>(_session);
+        _table.CreateIfNotExists();
     }
 
     public Task AddAsync(Attachment attachment)
     {
-        var statement = _table.Insert(attachment);
-        return statement.ExecuteAsync();
+        return _table
+            .Insert(attachment)
+            .ExecuteAsync();
     }
 
     public Task<IEnumerable<Attachment>> GetChannelAttachmentsAsync(Guid channelId, int limit)
     {
-        var statement = _table
+        return _table
             .Where(a => a.ChannelId == channelId)
-            .Take(limit);
-
-        return statement.ExecuteAsync();
+            .Take(limit)
+            .ExecuteAsync();
     }
     public Task RemoveAsync(long attachmentId)
     {
-        var statement = _table.Where(a => a.Id == attachmentId).Delete();
-        return statement.ExecuteAsync();
+        return _table
+            .Where(a => a.Id == attachmentId).Delete()
+            .ExecuteAsync();
     }
 
     public Task UpdateAsync(Attachment attachment)
     {
-        var statement = _table.Where(a => a.Id == attachment.Id).Update();
-        return statement.ExecuteAsync();
+        return _table
+            .Where(a => a.Id == attachment.Id).Update()
+            .ExecuteAsync();
     }
 }

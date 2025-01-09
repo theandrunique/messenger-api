@@ -1,3 +1,5 @@
+using MessengerAPI.Domain.Models.ValueObjects;
+
 namespace MessengerAPI.Domain.Models.Entities;
 
 public class Message
@@ -5,35 +7,37 @@ public class Message
     public Guid Id { get; private set; }
     public Guid ChannelId { get; private set; }
     public Guid SenderId { get; private set; }
-    public string Text { get; private set; }
+    public string Content { get; private set; }
     public DateTime SentAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     public long? ReplyTo { get; private set; }
+    public MessageSenderInfo Author { get; private set; }
 
     private readonly List<Attachment> _attachments = new();
     public IReadOnlyList<Attachment> Attachments => _attachments.ToList();
 
     public static Message Create(
         Guid channelId,
-        Guid senderId,
-        string text,
+        User sender,
+        string content,
         long? replyTo = null,
         List<Attachment>? attachments = null)
     {
-        var message = new Message(channelId, senderId, text, replyTo, attachments);
+        var message = new Message(channelId, sender, content, replyTo, attachments);
         return message;
     }
 
     private Message(
         Guid channelId,
-        Guid senderId,
-        string text,
+        User sender,
+        string content,
         long? replyTo = null,
         List<Attachment>? attachments = null)
     {
         ChannelId = channelId;
-        SenderId = senderId;
-        Text = text;
+        SenderId = sender.Id;
+        Author = new MessageSenderInfo(sender);
+        Content = content;
         SentAt = DateTime.UtcNow;
         ReplyTo = replyTo;
 

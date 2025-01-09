@@ -15,6 +15,8 @@ public class MessageRepository : IMessageRepository
         _session = session;
         _table = new Table<Message>(_session);
         _attachmentTable = new Table<Attachment>(_session);
+
+        _table.CreateIfNotExists();
     }
 
     public Task AddAsync(Message message)

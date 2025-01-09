@@ -1,5 +1,4 @@
 using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.Relations;
 using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Domain.Models.Entities;
@@ -11,10 +10,11 @@ public class Channel
     public string? Title { get; private set; }
     public Image? Image { get; private set; }
     public ChannelType Type { get; private set; }
-    public long? LastMessageId { get; private set; }
+    public DateTime? LastMessageAt { get; private set; }
+    public MessageInfo? LastMessage { get; private set; }
 
-    public IReadOnlyList<ChannelMember> Members => _members.ToList();
-    private readonly List<ChannelMember> _members = new();
+    public IReadOnlyList<ChannelMemberInfo> Members => _members.ToList();
+    private readonly List<ChannelMemberInfo> _members = new();
 
     public Channel(
         ChannelType type,
@@ -29,12 +29,30 @@ public class Channel
         Type = type;
     }
 
-    public void AddMember(Guid userId)
+    public Channel(
+        Guid id,
+        Guid? ownerId,
+        string? title,
+        Image? image,
+        ChannelType type,
+        DateTime? lastMessageAt,
+        MessageInfo? lastMessage)
     {
-        _members.Add(new ChannelMember(userId, Id));
+        Id = id;
+        OwnerId = ownerId;
+        Title = title;
+        Image = image;
+        Type = type;
+        LastMessageAt = lastMessageAt;
+        LastMessage = lastMessage;
     }
 
-    public void SetMembers(IEnumerable<ChannelMember> members)
+    public void AddMember(User user)
+    {
+        _members.Add(new ChannelMemberInfo(user));
+    }
+
+    public void SetMembers(IEnumerable<ChannelMemberInfo> members)
     {
         _members.Clear();
         _members.AddRange(members);
@@ -42,6 +60,12 @@ public class Channel
 
     public bool IsUserInTheChannel(Guid userId)
     {
-        return _members.Any(m => m.UserId == userId);
+        return _members.Any(m => m.Id == userId);
+    }
+
+    public void SetLastMessage(Message message)
+    {
+        LastMessageAt = message.SentAt;
+        LastMessage = new MessageInfo(message);
     }
 }

@@ -20,7 +20,7 @@ public class User
     public bool IsEmailVerified { get; private set; }
     public DateTime EmailUpdatedAt { get; private set; }
 
-    public IReadOnlyList<Image> Images => _images.ToList();
+    public IEnumerable<Image> Images => _images.ToList();
     private readonly List<Image> _images = new();
 
     public static User Create(
