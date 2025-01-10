@@ -366,5 +366,4 @@ FodyWeavers.xsd
 .env
 .env.docker
 keys/
-migrations/
 

@@ -13,7 +13,6 @@ internal class SessionRepository : ISessionRepository
     {
         _session = session;
         _table = new Table<Session>(_session);
-        _table.CreateIfNotExists();
     }
 
     public Task AddAsync(Session session)

@@ -13,7 +13,6 @@ internal class UserRepository : IUserRepository
     {
         _session = session;
         _table = new Table<User>(_session);
-        _table.CreateIfNotExists();
     }
 
     public Task AddAsync(User user)

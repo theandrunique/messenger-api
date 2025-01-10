@@ -1,10 +1,7 @@
 using Cassandra;
 using Cassandra.Mapping;
-using Cassandra.Mapping.Attributes;
 using MessengerAPI.Data.Tables;
-using MessengerAPI.Domain.Entities.ValueObjects;
 using MessengerAPI.Domain.Models.Entities;
-using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Data;
 
@@ -35,15 +32,14 @@ public class ModelsMappings : Mappings
             .TableName("channel_users_by_user_id")
             .Column(c => c.Images, cm => cm.WithFrozenValue())
             .PartitionKey(c => c.UserId);
-        For<ChannelUsers>()
-            .TableName("channel_users_by_channel_id")
-            .PartitionKey(c => c.ChannelId);
+        For<SavedMessagesChannel>()
+            .TableName("saved_messages_channel")
+            .PartitionKey(s => s.UserId);
 
         For<Message>()
             .TableName("messages")
             .PartitionKey(m => m.ChannelId)
             .ClusteringKey(m => m.Id, SortOrder.Descending)
-            .Column(m => m.Author, cm => cm.AsFrozen())
             .Column(m => m.Id, i => i.WithDbType<TimeUuid>());
 
         For<Attachment>()

@@ -1,11 +1,8 @@
 using Cassandra;
-using Cassandra.Data.Linq;
 using Cassandra.Mapping;
 using MessengerAPI.Data.Channels;
-using MessengerAPI.Data.Tables;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Domain.Models.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +27,11 @@ public static class DependencyInjection
 
         var session = cluster.Connect();
 
-        CreateTablesIfNotExists(session);
+        session.UserDefinedTypes.Define(
+            UdtMap.For<Image>("image"),
+            UdtMap.For<MessageInfo>("messageinfo"),
+            UdtMap.For<MessageSenderInfo>("messagesenderinfo")
+        );
 
         services.AddSingleton<ISession>(s => session);
 
@@ -44,22 +45,5 @@ public static class DependencyInjection
         services.AddScoped<IChannelRepository, ChannelRepository>();
 
         return services;
-    }
-
-    private static void CreateTablesIfNotExists(ISession session)
-    {
-        session.UserDefinedTypes.Define(
-            UdtMap.For<Image>("image"),
-            UdtMap.For<MessageInfo>("messageinfo"),
-            UdtMap.For<MessageSenderInfo>("messagesenderinfo")
-        );
-
-        new Table<User>(session).CreateIfNotExists();
-        new Table<Domain.Models.Entities.Session>(session).CreateIfNotExists();
-        new Table<ChannelById>(session).CreateIfNotExists();
-        new Table<PrivateChannel>(session).CreateIfNotExists();
-        new Table<ChannelUsers>(session).CreateIfNotExists();
-        new Table<Message>(session).CreateIfNotExists();
-        new Table<Attachment>(session).CreateIfNotExists();
     }
 }

@@ -13,7 +13,6 @@ public class AttachmentRepository : IAttachmentRepository
     {
         _session = session;
         _table = new Table<Attachment>(_session);
-        _table.CreateIfNotExists();
     }
 
     public Task AddAsync(Attachment attachment)
