@@ -12,7 +12,7 @@ public class JsonExceptionFilter : IExceptionFilter
     {
         if (context.Exception is JsonException)
         {
-            var errorResponse = Error.Common.InvalidJson;
+            var errorResponse = Errors.ApiErrors.Common.InvalidJson;
 
             context.Result = new BadRequestObjectResult(ApiErrorSchema.FromApiError(errorResponse));
 

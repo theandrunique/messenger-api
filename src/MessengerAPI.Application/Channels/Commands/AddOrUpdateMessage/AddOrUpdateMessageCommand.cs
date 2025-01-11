@@ -11,14 +11,14 @@ namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 /// <param name="MessageId">Message id, null when message is new</param>
 /// <param name="Sub">User id</param>
 /// <param name="ChannelId">Channel id</param>
-/// <param name="Text">Message text</param>
+/// <param name="Content">Message text</param>
 /// <param name="ReplyTo">Message id to reply</param>
 /// <param name="Attachments">List of file ids to attach</param>
 public record AddOrUpdateMessageCommand(
-    long? MessageId,
+    Guid? MessageId,
     Guid Sub,
     Guid ChannelId,
-    string Text,
-    long? ReplyTo,
+    string Content,
+    Guid? ReplyTo,
     List<FileData2>? Attachments
 ) : IRequest<ErrorOr<MessageSchema>>;

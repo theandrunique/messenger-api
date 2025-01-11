@@ -10,7 +10,7 @@ public class Message
     public string Content { get; private set; }
     public DateTime SentAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
-    public long? ReplyTo { get; private set; }
+    public Guid? ReplyTo { get; private set; }
     public MessageSenderInfo Author { get; private set; }
 
     private readonly List<Attachment> _attachments = new();
@@ -20,7 +20,7 @@ public class Message
         Guid channelId,
         User sender,
         string content,
-        long? replyTo = null,
+        Guid? replyTo = null,
         List<Attachment>? attachments = null)
     {
         var message = new Message(channelId, sender, content, replyTo, attachments);
@@ -31,7 +31,7 @@ public class Message
         Guid channelId,
         User sender,
         string content,
-        long? replyTo = null,
+        Guid? replyTo = null,
         List<Attachment>? attachments = null)
     {
         ChannelId = channelId;
@@ -44,11 +44,26 @@ public class Message
         if (attachments is not null) _attachments = attachments;
     }
 
+    public Message() { }
+
     public void SetId(Guid id)
     {
         if (Id != Guid.Empty)
             throw new InvalidOperationException("Id is already set");
 
         Id = id;
+    }
+
+    public void Update(Guid? replyTo, string content, List<Attachment>? attachments = null)
+    {
+        ReplyTo = replyTo;
+        Content = content;
+        UpdatedAt = DateTime.UtcNow;
+
+        if (attachments is not null)
+        {
+            _attachments.Clear();
+            _attachments.AddRange(attachments);
+        }
     }
 }

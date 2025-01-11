@@ -34,13 +34,13 @@ public class PasswordRecoveryCompleteCommandHandler : IRequestHandler<PasswordRe
 
         if (user == null)
         {
-            return Error.User.NotFound;
+            return Errors.ApiErrors.User.NotFound;
         }
 
         var result = _totpHelper.Verify(request.Totp, user.Key, 500, 6);
         if (!result)
         {
-            return Error.User.InvalidEmailValidationCode;
+            return Errors.ApiErrors.User.InvalidEmailValidationCode;
         }
 
         user.SetNewPassword(_hashHelper.Hash(request.NewPassword));

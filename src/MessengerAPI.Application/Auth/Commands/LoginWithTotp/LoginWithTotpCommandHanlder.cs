@@ -45,11 +45,11 @@ public class LoginWithTotpCommandHandler : IRequestHandler<LoginWithTotpCommand,
         {
             user = await _userRepository.GetByUsernameOrDefaultAsync(request.Login);
         }
-        if (user is null) return Error.Auth.InvalidCredentials;
+        if (user is null) return Errors.ApiErrors.Auth.InvalidCredentials;
 
         if (!_totpHelper.Verify(request.Totp, user.Key, 30, 6))
         {
-            return Error.Auth.InvalidCredentials;
+            return Errors.ApiErrors.Auth.InvalidCredentials;
         }
 
         var session = Session.Create(

@@ -6,7 +6,7 @@ public class AddOrUpdateMessageCommandValidator : AbstractValidator<AddOrUpdateM
 {
     public AddOrUpdateMessageCommandValidator()
     {
-        RuleFor(x => x.Text)
+        RuleFor(x => x.Content)
             .NotEmpty()
             .MaximumLength(10000);
 

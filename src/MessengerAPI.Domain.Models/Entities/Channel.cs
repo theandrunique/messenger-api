@@ -16,7 +16,33 @@ public class Channel
     public IReadOnlyList<ChannelMemberInfo> Members => _members.ToList();
     private readonly List<ChannelMemberInfo> _members = new();
 
-    public Channel(
+    public static Channel CreateSavedMessages(User user)
+    {
+        var channel = new Channel(ChannelType.SavedMessages, null, null, null);
+        channel.AddMember(user);
+        return channel;
+    }
+
+    public static Channel CreatePrivate(User user1, User user2)
+    {
+        var channel = new Channel(ChannelType.Private, null, null, null);
+        channel.AddMember(user1);
+        channel.AddMember(user2);
+        return channel;
+    }
+
+    public static Channel CreateGroup(Guid ownerId, List<User> members, string title)
+    {
+        var channel = new Channel(ChannelType.Group, ownerId, title, null);
+
+        foreach (var member in members)
+        {
+            channel.AddMember(member);
+        }
+        return channel;
+    }
+
+    private Channel(
         ChannelType type,
         Guid? ownerId = null,
         string? title = null,

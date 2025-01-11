@@ -30,14 +30,14 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null)
         {
-            return Error.Channel.ChannelNotFound;
+            return ApiErrors.Channel.ChannelNotFound;
         }
         if (!channel.IsUserInTheChannel(request.Sub))
         {
-            return Error.Channel.NotAllowed;
+            return ApiErrors.Channel.NotAllowed;
         }
 
-        var messages = await _messageRepository.GetMessagesAsync(request.ChannelId, request.Limit, Guid.Empty);
+        var messages = await _messageRepository.GetMessagesAsync(request.ChannelId, request.Before, request.Limit);
 
         return _mapper.Map<List<MessageSchema>>(messages);
     }

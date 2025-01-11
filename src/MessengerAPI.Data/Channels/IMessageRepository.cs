@@ -5,7 +5,8 @@ namespace MessengerAPI.Data.Channels;
 public interface IMessageRepository
 {
     Task AddAsync(Message message);
-    Task<IEnumerable<Message>> GetMessagesAsync(Guid channelId, int limit, Guid after);
+    Task<Message> GetMessageByIdAsync(Guid channelId, Guid messageId);
+    Task<IEnumerable<Message>> GetMessagesAsync(Guid channelId, Guid before, int limit);
     Task RewriteAsync(Message message);
     Task UpdateAttachmentsPreSignedUrlsAsync(Message message);
 }

@@ -22,7 +22,7 @@ public class SetUpTotpCommandHandler : IRequestHandler<SetUpTotpCommand, ErrorOr
 
         if (user == null)
         {
-            return Error.User.NotFound;
+            return Errors.ApiErrors.User.NotFound;
         }
 
         user.SetKey(_totpHelper.GenerateSecretKey(20));

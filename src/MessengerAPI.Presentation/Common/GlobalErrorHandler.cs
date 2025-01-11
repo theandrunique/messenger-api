@@ -16,7 +16,7 @@ public class GlobalErrorHandler : IExceptionHandler
 
         var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
 
-        var error = Error.Common.InternalServerError;
+        var error = Errors.ApiErrors.Common.InternalServerError;
 
         await httpContext.Response.WriteAsJsonAsync(ApiErrorSchema.FromApiError(error), cancellationToken);
 

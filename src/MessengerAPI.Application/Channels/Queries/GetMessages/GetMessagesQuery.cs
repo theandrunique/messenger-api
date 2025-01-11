@@ -4,15 +4,8 @@ using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Queries.GetMessages;
 
-/// <summary>
-/// Get messages from requested channel
-/// </summary>
-/// <param name="Sub">User id</param>
-/// <param name="ChannelId"></param>
-/// <param name="Offset">offset</param>
-/// <param name="Limit">limit</param>
 public record GetMessagesQuery(
     Guid Sub,
     Guid ChannelId,
-    int Offset,
+    Guid Before,
     int Limit) : IRequest<ErrorOr<List<MessageSchema>>>;

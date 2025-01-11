@@ -26,7 +26,7 @@ public class ModelStateValidationFilter : IActionFilter
             errors[key].AddRange(errorMessages);
         }
 
-        var errorResponse = Error.Common.InvalidRequestBody(errors);
+        var errorResponse = Errors.ApiErrors.Common.InvalidRequestBody(errors);
 
         context.Result = new BadRequestObjectResult(ApiErrorSchema.FromApiError(errorResponse));
     }

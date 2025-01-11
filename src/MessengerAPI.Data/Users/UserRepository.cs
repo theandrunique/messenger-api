@@ -38,7 +38,9 @@ internal class UserRepository : IUserRepository
 
     public Task<IEnumerable<User>> GetByIdsAsync(List<Guid> members)
     {
-        throw new NotImplementedException();
+        return _table
+            .Where(u => members.Contains(u.Id))
+            .ExecuteAsync();
     }
 
     public Task<User> GetByUsernameOrDefaultAsync(string username)

@@ -114,12 +114,14 @@ public class ChannelsController : ApiController
     public async Task<IActionResult> GetMessagesAsync(
         Guid channelId,
         CancellationToken cancellationToken,
-        int offset = 0,
+        Guid? before = null,
         int limit = 50)
     {
         var identity = User.GetIdentity();
 
-        var query = new GetMessagesQuery(identity.UserId, channelId, offset, limit);
+        var actualBefore = before ?? Guid.Empty;
+
+        var query = new GetMessagesQuery(identity.UserId, channelId, actualBefore, limit);
 
         var result = await _mediator.Send(query, cancellationToken);
 
@@ -142,7 +144,7 @@ public class ChannelsController : ApiController
     public async Task<IActionResult> EditMessageAsync(
         CreateMessageRequestSchema schema,
         Guid channelId,
-        long messageId,
+        Guid messageId,
         CancellationToken cancellationToken)
     {
         var identity = User.GetIdentity();

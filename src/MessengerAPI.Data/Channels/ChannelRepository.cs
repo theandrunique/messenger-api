@@ -69,10 +69,10 @@ public class ChannelRepository : IChannelRepository
         {
             return default;
         }
-
-        var members = await _tableChannelUsers
-            .Where(c => c.ChannelId == channelId)
-            .ExecuteAsync();
+        
+        var members = await _mapper.FetchAsync<ChannelUsers>(
+            "SELECT * FROM channel_users_by_channel_id WHERE channelid = ?",
+            channelId);
 
         var response = channel.ToChannel();
         response.SetMembers(members.Select(m => m.ToChannelMemberInfo()));
@@ -85,7 +85,7 @@ public class ChannelRepository : IChannelRepository
             SELECT userid FROM channel_users_by_channel_id
             WHERE channelid = ?
         """;
-    
+
         var statement = new SimpleStatement(query, channelId);
 
         var resultSet = await _session.ExecuteAsync(statement);
@@ -118,7 +118,7 @@ public class ChannelRepository : IChannelRepository
             return default;
         }
 
-        
+
         var members = await _mapper.FetchAsync<ChannelUsers>(
             "SELECT * FROM channel_users_by_channel_id WHERE channelid = ?",
             privateChannel.ChannelId);
@@ -135,6 +135,11 @@ public class ChannelRepository : IChannelRepository
         var savedMessagesChannel = _tableSavedMessagesChannels
             .FirstOrDefault(c => c.UserId == userId)
             .Execute();
+
+        if (savedMessagesChannel is null)
+        {
+            return default;
+        }
 
         var channelInfo = await _tableChannelsById
             .FirstOrDefault(c => c.ChannelId == savedMessagesChannel.ChannelId)
@@ -162,7 +167,7 @@ public class ChannelRepository : IChannelRepository
         var channels = await _tableChannelsById
             .Where(c => channelIds.Contains(c.ChannelId))
             .ExecuteAsync();
-        
+
         var channelsMembers = await _mapper.FetchAsync<ChannelUsers>(
             "SELECT * FROM channel_users_by_channel_id WHERE channelid IN ?",
             channelIds

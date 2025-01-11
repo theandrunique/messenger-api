@@ -1,6 +1,6 @@
 namespace MessengerAPI.Errors;
 
-public static partial class Error
+public static partial class ApiErrors
 {
     public static class User
     {

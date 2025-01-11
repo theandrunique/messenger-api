@@ -1,3 +1,5 @@
+using MessengerAPI.Domain.Models.ValueObjects;
+
 namespace MessengerAPI.Contracts.Common;
 
 /// <summary>
@@ -5,14 +7,13 @@ namespace MessengerAPI.Contracts.Common;
 /// </summary>
 public record MessageSchema
 {
-    public List<UserReactionSchema> Reactions { get; init; }
-    public List<AttachmentSchema> Attachments { get; init; }
-    public UserPublicSchema Sender { get; init; }
-    public long Id { get; init; }
+    public Guid Id { get; init; }
     public Guid ChannelId { get; init; }
     public Guid SenderId { get; init; }
-    public string Text { get; init; }
+    public string Content { get; init; }
     public DateTime SentAt { get; init; }
     public DateTime? UpdatedAt { get; init; }
-    public long? ReplyTo { get; init; }
+    public Guid? ReplyTo { get; init; }
+    public MessageSenderInfo Author { get; init; }
+    public List<AttachmentSchema> Attachments { get; init; }
 }

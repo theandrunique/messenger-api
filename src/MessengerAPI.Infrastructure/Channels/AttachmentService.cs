@@ -35,7 +35,7 @@ public class AttachmentService : IAttachmentService
         var objectMetadata = await _fileStorage.GetObjectMetadataAsync(uploadedFilename, cancellationToken);
         if (objectMetadata is null)
         {
-            return Error.File.NotFound(uploadedFilename);
+            return Errors.ApiErrors.File.NotFound(uploadedFilename);
         }
 
         var preSignedUrlExpiresAt = DateTime.UtcNow.AddDays(7);
@@ -60,7 +60,7 @@ public class AttachmentService : IAttachmentService
         var result = await _fileStorage.DeleteObjectAsync(uploadedFilename, cancellationToken);
         if (!result)
         {
-            return Error.File.NotFound(uploadedFilename);
+            return Errors.ApiErrors.File.NotFound(uploadedFilename);
         }
         return true;
     }

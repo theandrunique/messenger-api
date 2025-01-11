@@ -1,3 +1,4 @@
+using System.Threading.Channels;
 using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Contracts.Common;
@@ -12,7 +13,7 @@ public record ChannelSchema
     public string? Title { get; init; }
     public string? Image { get; init; }
     public ChannelType Type { get; init; }
-    public long? LastMessageId { get; init; }
-    public List<UserPublicSchema> Members { get; init; }
-    public List<Guid> AdminIds { get; init; }
+    public DateTime? LastMessageAt { get; init; }
+    public MessageInfo? LastMessage { get; init; }
+    public List<ChannelMemberInfo> Members { get; init; }
 }

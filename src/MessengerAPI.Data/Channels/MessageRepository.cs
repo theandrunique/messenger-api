@@ -34,6 +34,13 @@ public class MessageRepository : IMessageRepository
         return _session.ExecuteAsync(batch);
     }
 
+    public Task<Message> GetMessageByIdAsync(Guid channelId, Guid messageId)
+    {
+        return _table
+            .FirstOrDefault(m => m.ChannelId == channelId && m.Id == messageId)
+            .ExecuteAsync();
+    }
+
     public Task RewriteAsync(Message message)
     {
         var batch = new BatchStatement()
@@ -49,15 +56,16 @@ public class MessageRepository : IMessageRepository
         return _session.ExecuteAsync(batch);
     }
 
-    public async Task<IEnumerable<Message>> GetMessagesAsync(Guid channelId, int limit, Guid after)
+    public Task<IEnumerable<Message>> GetMessagesAsync(Guid channelId, Guid before, int limit)
     {
-        var messages = await _table
-            .Where(m => m.ChannelId == channelId)
-            .Where(m => m.Id < after)
-            .Take(limit)
-            .ExecuteAsync();
+        var query = _table.Where(m => m.ChannelId == channelId);
 
-        return messages;
+        if (before != Guid.Empty)
+        {
+            query = query.Where(m => m.Id < before);
+        }
+
+        return query.OrderByDescending(m => m.Id).Take(limit).ExecuteAsync();
     }
 
     public Task UpdateAttachmentsPreSignedUrlsAsync(Message message)

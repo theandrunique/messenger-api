@@ -68,7 +68,7 @@ public static class DependencyInjection
                         }
                         errors[key].AddRange(errorMessages);
                     }
-                    var errorResponse = Error.Common.InvalidRequestBody(errors);
+                    var errorResponse = Errors.ApiErrors.Common.InvalidRequestBody(errors);
                     return new BadRequestObjectResult(ApiErrorSchema.FromApiError(errorResponse));
                 };
             })

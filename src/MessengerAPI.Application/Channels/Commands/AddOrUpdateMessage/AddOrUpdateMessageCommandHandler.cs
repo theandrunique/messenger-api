@@ -3,6 +3,8 @@ using MediatR;
 using MessengerAPI.Application.Channels.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Channels;
+using MessengerAPI.Data.Users;
+using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
@@ -12,81 +14,95 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
     private readonly IChannelRepository _channelRepository;
     private readonly IMapper _mapper;
     private readonly IAttachmentService _attachmentService;
+    private readonly IMessageRepository _messageRepository;
+    private readonly IUserRepository _userRepository;
 
     public AddOrEditMessageCommandHandler(
         IChannelRepository channelRepository,
         IMapper mapper,
-        IAttachmentService attachmentService)
+        IMessageRepository messageRepository,
+        IAttachmentService attachmentService,
+        IUserRepository userRepository)
     {
         _channelRepository = channelRepository;
         _mapper = mapper;
+        _messageRepository = messageRepository;
         _attachmentService = attachmentService;
+        _userRepository = userRepository;
     }
 
-    /// <summary>
-    /// Creates new or updates existing message 
-    /// </summary>
-    /// <param name="request"><see cref="AddOrUpdateMessageCommand"/></param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="MessageSchema"/></returns>
     public async Task<ErrorOr<MessageSchema>> Handle(AddOrUpdateMessageCommand request, CancellationToken cancellationToken)
     {
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
-        if (channel is null) return Error.Channel.ChannelNotFound;
+        if (channel is null)
+        {
+            return ApiErrors.Channel.ChannelNotFound;
+        }
 
-        if (!channel.IsUserInTheChannel(request.Sub)) return Error.Channel.NotAllowed;
+        if (!channel.IsUserInTheChannel(request.Sub))
+        {
+            return ApiErrors.Channel.NotAllowed;
+        }
 
-        throw new NotImplementedException();
+        var user = await _userRepository.GetByIdOrDefaultAsync(request.Sub);
+        if (user is null)
+        {
+            throw new ArgumentException("User was expected to be found.");
+        }
 
-        // List<Attachment>? attachments = null;
+        List<Attachment>? attachments = null;
 
-        // if (request.Attachments?.Count > 0)
-        // {
-        // attachments = new();
+        if (request.Attachments?.Count > 0)
+        {
+            attachments = new();
 
-        // foreach (var fileData in request.Attachments)
-        // {
-        // var attachment = await _attachmentService.ValidateAndCreateAttachmentsAsync(
-        // fileData.UploadedFilename,
-        // fileData.Filename,
-        // channel.Id,
-        // cancellationToken);
-        // if (attachment.IsError) return attachment.Errors;
+            foreach (var fileData in request.Attachments)
+            {
+                var attachment = await _attachmentService.ValidateAndCreateAttachmentsAsync(
+                    fileData.UploadedFilename,
+                    fileData.Filename,
+                    channel.Id,
+                    cancellationToken);
 
-        // attachments.Add(attachment.Value);
-        // }
-        // await _channelRepository.AddAttachmentsAsync(attachments, cancellationToken);
-        // }
+                if (attachment.IsError)
+                {
+                    return attachment.Error;
+                }
 
-        // if (request.ReplyTo.HasValue)
-        // {
-        // var replyToMessage = await _channelRepository.GetMessageByIdOrNullAsync(request.ReplyTo.Value, cancellationToken);
-        // if (replyToMessage is null)
-        // {
-        // return Errors.Channel.MessageNotFound;
-        // }
-        // }
+                attachments.Add(attachment.Value);
+            }
+        }
 
-        // Message? message;
+        if (request.ReplyTo.HasValue)
+        {
+            var replyToMessage = await _messageRepository.GetMessageByIdAsync(request.ChannelId, request.ReplyTo.Value);
+            if (replyToMessage is null)
+            {
+                return ApiErrors.Channel.MessageNotFound;
+            }
+        }
 
-        // if (request.MessageId.HasValue)
-        // {
-        // message = await _channelRepository.GetMessageByIdOrNullAsync(request.MessageId.Value, cancellationToken);
-        // if (message is null)
-        // {
-        // return Errors.Channel.MessageNotFound;
-        // }
+        Message? message;
 
-        // message.Update(request.ReplyTo, request.Text, attachments);
-        // }
-        // else
-        // {
-        // message = channel.AddMessage(request.Sub, request.Text, request.ReplyTo, attachments);
-        // }
+        if (request.MessageId.HasValue)
+        {
+            message = await _messageRepository.GetMessageByIdAsync(request.ChannelId, request.MessageId.Value);
+            if (message is null)
+            {
+                return ApiErrors.Channel.MessageNotFound;
+            }
 
-        // await _channelRepository.UpdateAsync(channel, cancellationToken);
+            message.Update(request.ReplyTo, request.Content, attachments);
+            await _messageRepository.RewriteAsync(message);
+        }
+        else
+        {
+            message = Message.Create(request.ChannelId, user, request.Content, request.ReplyTo, attachments);
+            await _messageRepository.AddAsync(message);
+        }
 
-        // return _mapper.Map<MessageSchema>(message);
+
+        return _mapper.Map<MessageSchema>(message);
     }
 }
 

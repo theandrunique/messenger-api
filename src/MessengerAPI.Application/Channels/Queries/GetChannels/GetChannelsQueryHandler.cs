@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Channels;
+using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Queries.GetChannels;
@@ -24,8 +25,8 @@ public class GetChannelsQueryHandler : IRequestHandler<GetChannelsQuery, ErrorOr
     /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
     public async Task<ErrorOr<List<ChannelSchema>>> Handle(GetChannelsQuery request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-        // List<Channel> channels = await _channelRepository.GetChannelsByUserIdOrNullAsync(request.Sub, cancellationToken);
-        // return _mapper.Map<List<ChannelSchema>>(channels);
+        List<Channel> channels = await _channelRepository.GetUserChannelsAsync(request.Sub);
+
+        return _mapper.Map<List<ChannelSchema>>(channels);
     }
 }
