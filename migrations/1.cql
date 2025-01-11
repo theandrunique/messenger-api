@@ -44,7 +44,7 @@ CREATE TABLE messenger.attachments (
 
 CREATE TABLE messenger.channel_users_by_user_id(
     userid uuid,
-    channelid timeuuid,
+    channelid uuid,
     readat timeuuid,
     username text,
     globalname text,
@@ -79,7 +79,7 @@ CREATE TABLE messenger.messages (
     id timeuuid,
     author frozen<messagesenderinfo>,
     content text,
-    replyto bigint,
+    replyto uuid,
     senderid uuid,
     sentat timestamp,
     updatedat timestamp,
