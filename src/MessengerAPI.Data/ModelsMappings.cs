@@ -1,4 +1,3 @@
-using Cassandra;
 using Cassandra.Mapping;
 using MessengerAPI.Data.Tables;
 using MessengerAPI.Domain.Models.Entities;
@@ -15,7 +14,7 @@ public class ModelsMappings : Mappings
             .Column(u => u.Username, u => u.WithSecondaryIndex())
             .Column(u => u.Email, e => e.WithSecondaryIndex());
 
-        For<Domain.Models.Entities.Session>()
+        For<Session>()
             .TableName("sessions")
             .PartitionKey(s => s.UserId)
             .ClusteringKey(s => s.Id)
@@ -36,7 +35,7 @@ public class ModelsMappings : Mappings
             .TableName("saved_messages_channel")
             .PartitionKey(s => s.UserId);
 
-        For<Message>()
+        For<MessageByChannelId>()
             .TableName("messages")
             .PartitionKey(m => m.ChannelId)
             .ClusteringKey(m => m.Id, SortOrder.Descending);

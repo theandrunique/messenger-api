@@ -1,5 +1,6 @@
 using Cassandra;
 using Cassandra.Data.Linq;
+using MessengerAPI.Data.Tables;
 using MessengerAPI.Domain.Models.Entities;
 
 namespace MessengerAPI.Data.Channels;
@@ -7,20 +8,20 @@ namespace MessengerAPI.Data.Channels;
 public class MessageRepository : IMessageRepository
 {
     private readonly ISession _session;
-    private readonly Table<Message> _table;
+    private readonly Table<MessageByChannelId> _table;
     private readonly Table<Attachment> _attachmentTable;
 
     public MessageRepository(ISession session)
     {
         _session = session;
-        _table = new Table<Message>(_session);
+        _table = new Table<MessageByChannelId>(_session);
         _attachmentTable = new Table<Attachment>(_session);
     }
 
     public Task AddAsync(Message message)
     {
         var batch = new BatchStatement()
-            .Add(_table.Insert(message));
+            .Add(_table.Insert(MessageByChannelId.FromMessage(message)));
 
         var attachmentStatements = message.Attachments.Select(a => _attachmentTable.Insert(a)).ToList();
 
@@ -32,17 +33,19 @@ public class MessageRepository : IMessageRepository
         return _session.ExecuteAsync(batch);
     }
 
-    public Task<Message> GetMessageByIdAsync(long channelId, long messageId)
+    public async Task<Message> GetMessageByIdAsync(long channelId, long messageId)
     {
-        return _table
+        var result = await _table
             .FirstOrDefault(m => m.ChannelId == channelId && m.Id == messageId)
             .ExecuteAsync();
+        
+        return result?.ToMessage();
     }
 
     public Task RewriteAsync(Message message)
     {
         var batch = new BatchStatement()
-            .Add(_table.Insert(message));
+            .Add(_table.Insert(MessageByChannelId.FromMessage(message)));
 
         var attachmentStatements = message.Attachments.Select(a => _attachmentTable.Insert(a)).ToList();
 
@@ -54,14 +57,16 @@ public class MessageRepository : IMessageRepository
         return _session.ExecuteAsync(batch);
     }
 
-    public Task<IEnumerable<Message>> GetMessagesAsync(long channelId, long before, int limit)
+    public async Task<IEnumerable<Message>> GetMessagesAsync(long channelId, long before, int limit)
     {
-        return _table
+        var result = await _table
             .Where(m => m.ChannelId == channelId)
             .Where(m => m.Id < before)
             .OrderByDescending(m => m.Id)
             .Take(limit)
             .ExecuteAsync();
+        
+        return result.Select(m => m.ToMessage());
     }
 
     public Task UpdateAttachmentsPreSignedUrlsAsync(Message message)
