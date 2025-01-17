@@ -3,6 +3,7 @@ using MediatR;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Contracts.Common;
+using MessengerAPI.Core;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Errors;
@@ -15,13 +16,20 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
     private readonly IHashHelper _hashHelper;
     private readonly IMapper _mapper;
     private readonly ITotpHelper _totpHelper;
+    private readonly IIdGenerator _idGenerator;
 
-    public RegisterCommandHandler(IUserRepository userRepository, IHashHelper hashHelper, IMapper mapper, ITotpHelper totpHelper)
+    public RegisterCommandHandler(
+        IUserRepository userRepository,
+        IHashHelper hashHelper,
+        IMapper mapper,
+        ITotpHelper totpHelper,
+        IIdGenerator idGenerator)
     {
         _userRepository = userRepository;
         _hashHelper = hashHelper;
         _mapper = mapper;
         _totpHelper = totpHelper;
+        _idGenerator = idGenerator;
     }
 
     /// <summary>
@@ -33,6 +41,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
     public async Task<ErrorOr<UserPrivateSchema>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var newUser = User.Create(
+            _idGenerator.CreateId(),
             request.Username,
             request.Email,
             _hashHelper.Hash(request.Password),

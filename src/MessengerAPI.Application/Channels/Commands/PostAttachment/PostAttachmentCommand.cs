@@ -6,6 +6,6 @@ using MessengerAPI.Errors;
 namespace MessengerAPI.Application.Channels.Commands.PostAttachment;
 
 public record PostAttachmentCommand(
-    Guid ChannelId,
-    IEnumerable<FileData> Files
+    long ChannelId,
+    IEnumerable<UploadFileData> Files
 ) : IRequest<ErrorOr<List<CloudAttachmentSchema>>>;

@@ -4,7 +4,7 @@ namespace MessengerAPI.Domain.Models.Entities;
 
 public class User
 {
-    public Guid Id { get; private set; }
+    public long Id { get; private set; }
     public string Username { get; private set; }
     public DateTime UsernameUpdatedAt { get; private set; }
     public string PasswordHash { get; private set; }
@@ -24,6 +24,7 @@ public class User
     private readonly List<Image> _images = new();
 
     public static User Create(
+        long id,
         string username,
         string email,
         string passwordHash,
@@ -34,7 +35,7 @@ public class User
 
         User user = new User
         {
-            Id = Guid.NewGuid(),
+            Id = id,
             Username = username.ToLower(),
             UsernameUpdatedAt = dateOfCreation,
             PasswordHash = passwordHash,

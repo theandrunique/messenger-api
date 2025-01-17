@@ -5,7 +5,7 @@ namespace MessengerAPI.Domain.Models.ValueObjects;
 
 public class MessageSenderInfo
 {
-    public Guid Id { get; init; }
+    public long Id { get; init; }
     public string Username { get; init; }
     public string GlobalName { get; init; }
     public List<Image> Images { get; init; }

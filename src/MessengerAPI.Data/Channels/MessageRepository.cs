@@ -19,8 +19,6 @@ public class MessageRepository : IMessageRepository
 
     public Task AddAsync(Message message)
     {
-        message.SetId(TimeUuid.NewId().ToGuid());
-
         var batch = new BatchStatement()
             .Add(_table.Insert(message));
 
@@ -34,7 +32,7 @@ public class MessageRepository : IMessageRepository
         return _session.ExecuteAsync(batch);
     }
 
-    public Task<Message> GetMessageByIdAsync(Guid channelId, Guid messageId)
+    public Task<Message> GetMessageByIdAsync(long channelId, long messageId)
     {
         return _table
             .FirstOrDefault(m => m.ChannelId == channelId && m.Id == messageId)
@@ -56,16 +54,14 @@ public class MessageRepository : IMessageRepository
         return _session.ExecuteAsync(batch);
     }
 
-    public Task<IEnumerable<Message>> GetMessagesAsync(Guid channelId, Guid before, int limit)
+    public Task<IEnumerable<Message>> GetMessagesAsync(long channelId, long before, int limit)
     {
-        var query = _table.Where(m => m.ChannelId == channelId);
-
-        if (before != Guid.Empty)
-        {
-            query = query.Where(m => m.Id < before);
-        }
-
-        return query.OrderByDescending(m => m.Id).Take(limit).ExecuteAsync();
+        return _table
+            .Where(m => m.ChannelId == channelId)
+            .Where(m => m.Id < before)
+            .OrderByDescending(m => m.Id)
+            .Take(limit)
+            .ExecuteAsync();
     }
 
     public Task UpdateAttachmentsPreSignedUrlsAsync(Message message)

@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using MessengerAPI.Contracts.Common;
+using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Models.Entities;
@@ -14,12 +15,18 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
     private readonly IChannelRepository _channelRepository;
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
+    private readonly IIdGenerator _idGenerator;
 
-    public CreateChannelCommandHandler(IChannelRepository channelRepository, IUserRepository userRepository, IMapper mapper)
+    public CreateChannelCommandHandler(
+        IChannelRepository channelRepository,
+        IUserRepository userRepository,
+        IMapper mapper,
+        IIdGenerator idGenerator)
     {
         _channelRepository = channelRepository;
         _userRepository = userRepository;
         _mapper = mapper;
+        _idGenerator = idGenerator;
     }
 
     public async Task<ErrorOr<ChannelSchema>> Handle(CreateChannelCommand request, CancellationToken cancellationToken)
@@ -72,7 +79,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             return savedMessagesChannel;
         }
 
-        var newSavedMessages = Channel.CreateSavedMessages(members[0]);
+        var newSavedMessages = Channel.CreateSavedMessages(_idGenerator.CreateId(), members[0]);
 
         await _channelRepository.AddAsync(newSavedMessages);
 
@@ -92,7 +99,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             return existedChannel;
         }
 
-        var newChannel = Channel.CreatePrivate(members[0], members[1]);
+        var newChannel = Channel.CreatePrivate(_idGenerator.CreateId(), members[0], members[1]);
 
         await _channelRepository.AddAsync(newChannel);
 
@@ -106,7 +113,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             throw new ArgumentException("Title is required for Group channel");
         }
 
-        Channel channel = Channel.CreateGroup(request.Sub, members, request.Title);
+        Channel channel = Channel.CreateGroup(_idGenerator.CreateId(), request.Sub, members, request.Title);
 
         await _channelRepository.AddAsync(channel);
 

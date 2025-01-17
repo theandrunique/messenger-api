@@ -4,6 +4,6 @@ using MessengerAPI.Errors;
 namespace MessengerAPI.Application.Users.Commands.SetUpTotp;
 
 public record SetUpTotpCommand(
-    Guid Sub
+    long Sub
 ) : IRequest<ErrorOr<SetUpTotpCommandResponse>>;
 

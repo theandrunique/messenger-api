@@ -15,10 +15,10 @@ namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 /// <param name="ReplyTo">Message id to reply</param>
 /// <param name="Attachments">List of file ids to attach</param>
 public record AddOrUpdateMessageCommand(
-    Guid? MessageId,
-    Guid Sub,
-    Guid ChannelId,
+    long? MessageId,
+    long Sub,
+    long ChannelId,
     string Content,
-    Guid? ReplyTo,
-    List<FileData2>? Attachments
+    long? ReplyTo,
+    List<MessageAttachmentDto>? Attachments
 ) : IRequest<ErrorOr<MessageSchema>>;

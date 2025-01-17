@@ -1,3 +1,3 @@
 namespace MessengerAPI.Application.Common;
 
-public record AccessTokenPayload(Guid UserId, Guid TokenId);
+public record AccessTokenPayload(long UserId, Guid TokenId);

@@ -28,7 +28,7 @@ internal class UserRepository : IUserRepository
             .ExecuteAsync();
     }
 
-    public Task<User> GetByIdOrDefaultAsync(Guid id)
+    public Task<User> GetByIdOrDefaultAsync(long id)
     {
         return _table
             .Where(u => u.Id == id)
@@ -36,7 +36,7 @@ internal class UserRepository : IUserRepository
             .ExecuteAsync();
     }
 
-    public Task<IEnumerable<User>> GetByIdsAsync(List<Guid> members)
+    public Task<IEnumerable<User>> GetByIdsAsync(List<long> members)
     {
         return _table
             .Where(u => members.Contains(u.Id))
@@ -51,7 +51,7 @@ internal class UserRepository : IUserRepository
             .ExecuteAsync();
     }
 
-    public Task SetEmailVerifiedAsync(Guid userId)
+    public Task SetEmailVerifiedAsync(long userId)
     {
         var statement = $"UPDATE users SET {nameof(User.IsEmailVerified)} = true WHERE {nameof(User.Id)} = ?";
 

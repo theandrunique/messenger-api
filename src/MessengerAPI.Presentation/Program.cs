@@ -1,5 +1,6 @@
 using MessengerAPI.Application;
 using MessengerAPI.Contracts;
+using MessengerAPI.Core;
 using MessengerAPI.Data;
 using MessengerAPI.Infrastructure;
 using MessengerAPI.Infrastructure.Common.FileStorage;
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddExceptionHandler<GlobalErrorHandler>();
 
 builder.Services
+    .AddCoreServices()
     .AddContractsMappings()
     .AddDataServices(builder.Configuration)
     .AddPresentation(builder.Configuration)

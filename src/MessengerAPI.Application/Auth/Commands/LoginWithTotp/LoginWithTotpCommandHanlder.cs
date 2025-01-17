@@ -3,6 +3,7 @@ using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Services;
+using MessengerAPI.Core;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Errors;
@@ -17,6 +18,7 @@ public class LoginWithTotpCommandHandler : IRequestHandler<LoginWithTotpCommand,
     private readonly IClientInfoProvider _userAgentParser;
     private readonly IAuthService _authService;
     private readonly CaptchaService _captchaService;
+    private readonly IIdGenerator _idGenerator;
 
     public LoginWithTotpCommandHandler(
         ITotpHelper totpHelper,
@@ -24,7 +26,8 @@ public class LoginWithTotpCommandHandler : IRequestHandler<LoginWithTotpCommand,
         ISessionRepository sessionRepository,
         IClientInfoProvider userAgentParser,
         IAuthService authService,
-        CaptchaService captchaService)
+        CaptchaService captchaService,
+        IIdGenerator idGenerator)
     {
         _totpHelper = totpHelper;
         _userRepository = userRepository;
@@ -32,6 +35,7 @@ public class LoginWithTotpCommandHandler : IRequestHandler<LoginWithTotpCommand,
         _authService = authService;
         _sessionRepository = sessionRepository;
         _captchaService = captchaService;
+        _idGenerator = idGenerator;
     }
 
     public async Task<ErrorOr<TokenPairResponse>> Handle(LoginWithTotpCommand request, CancellationToken cancellationToken)
@@ -45,14 +49,15 @@ public class LoginWithTotpCommandHandler : IRequestHandler<LoginWithTotpCommand,
         {
             user = await _userRepository.GetByUsernameOrDefaultAsync(request.Login);
         }
-        if (user is null) return Errors.ApiErrors.Auth.InvalidCredentials;
+        if (user is null) return ApiErrors.Auth.InvalidCredentials;
 
         if (!_totpHelper.Verify(request.Totp, user.Key, 30, 6))
         {
-            return Errors.ApiErrors.Auth.InvalidCredentials;
+            return ApiErrors.Auth.InvalidCredentials;
         }
 
         var session = Session.Create(
+            _idGenerator.CreateId(),
             user.Id,
             _userAgentParser.GetDeviceName(),
             _userAgentParser.GetClientName(),

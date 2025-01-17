@@ -6,8 +6,8 @@ namespace MessengerAPI.Data.Tables;
 
 internal class ChannelById
 {
-    public Guid ChannelId { get; set; }
-    public Guid? OwnerId { get; set; }
+    public long ChannelId { get; set; }
+    public long? OwnerId { get; set; }
     public string? Title { get; set; }
     public Image? Image { get; set; }
     public ChannelType ChannelType { get; set; }

@@ -1,20 +1,22 @@
-using MessengerAPI.Application.Channels.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Files;
+using MessengerAPI.Core;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Errors;
 
-namespace MessengerAPI.Infrastructure.Channels;
+namespace MessengerAPI.Application.Channels.Common;
 
-public class AttachmentService : IAttachmentService
+public class AttachmentService
 {
     private readonly IFileStorageService _fileStorage;
+    private readonly IIdGenerator _idGenerator;
 
-    public AttachmentService(IFileStorageService fileStorage)
+    public AttachmentService(IFileStorageService fileStorage, IIdGenerator idGenerator)
     {
         _fileStorage = fileStorage;
+        _idGenerator = idGenerator;
     }
 
-    public async Task<(string, string)> GenerateUploadUrlAsync(long size, Guid channelId, string filename)
+    public async Task<UploadUrlDto> GenerateUploadUrlAsync(long size, long channelId, string filename)
     {
         var uploadFilename = GenerateUploadFilename(filename, channelId);
 
@@ -23,28 +25,29 @@ public class AttachmentService : IAttachmentService
             DateTime.UtcNow.AddDays(1),
             size
         );
-        return (uploadFilename, preSignedUrl);
+        return new UploadUrlDto(uploadFilename, preSignedUrl);
     }
 
     public async Task<ErrorOr<Attachment>> ValidateAndCreateAttachmentsAsync(
         string uploadedFilename,
         string filename,
-        Guid channelId,
+        long channelId,
         CancellationToken cancellationToken)
     {
         var objectMetadata = await _fileStorage.GetObjectMetadataAsync(uploadedFilename, cancellationToken);
         if (objectMetadata is null)
         {
-            return Errors.ApiErrors.File.NotFound(uploadedFilename);
+            return ApiErrors.File.NotFound(uploadedFilename);
         }
 
         var preSignedUrlExpiresAt = DateTime.UtcNow.AddDays(7);
 
-        var preSignedUrl = await _fileStorage.GeneratePreSignedUrlForDownloadOrNullAsync(
+        var preSignedUrl = await _fileStorage.GeneratePreSignedUrlForDownloadAsync(
             uploadedFilename,
             preSignedUrlExpiresAt);
 
         return new Attachment(
+            _idGenerator.CreateId(),
             channelId,
             filename,
             uploadedFilename,
@@ -57,15 +60,15 @@ public class AttachmentService : IAttachmentService
 
     public async Task<ErrorOr<bool>> DeleteAttachmentAsync(string uploadedFilename, CancellationToken cancellationToken)
     {
-        var result = await _fileStorage.DeleteObjectAsync(uploadedFilename, cancellationToken);
-        if (!result)
+        if (!await _fileStorage.IsObjectExistsAsync(uploadedFilename, cancellationToken))
         {
-            return Errors.ApiErrors.File.NotFound(uploadedFilename);
+            return ApiErrors.File.NotFound(uploadedFilename);
         }
+        await _fileStorage.DeleteObjectAsync(uploadedFilename, cancellationToken);
         return true;
     }
 
-    private string GenerateUploadFilename(string filename, Guid channelId)
+    private string GenerateUploadFilename(string filename, long channelId)
     {
         return $"attachment/{channelId}/{Guid.NewGuid()}/{filename}";
     }

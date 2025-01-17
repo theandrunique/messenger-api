@@ -15,14 +15,7 @@ public class AttachmentRepository : IAttachmentRepository
         _table = new Table<Attachment>(_session);
     }
 
-    public Task AddAsync(Attachment attachment)
-    {
-        return _table
-            .Insert(attachment)
-            .ExecuteAsync();
-    }
-
-    public Task<IEnumerable<Attachment>> GetChannelAttachmentsAsync(Guid channelId, int limit)
+    public Task<IEnumerable<Attachment>> GetChannelAttachmentsAsync(long channelId, int limit)
     {
         return _table
             .Where(a => a.ChannelId == channelId)
@@ -33,13 +26,6 @@ public class AttachmentRepository : IAttachmentRepository
     {
         return _table
             .Where(a => a.Id == attachmentId).Delete()
-            .ExecuteAsync();
-    }
-
-    public Task UpdateAsync(Attachment attachment)
-    {
-        return _table
-            .Where(a => a.Id == attachment.Id).Update()
             .ExecuteAsync();
     }
 }

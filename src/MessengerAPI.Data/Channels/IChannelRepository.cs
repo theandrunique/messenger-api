@@ -7,12 +7,12 @@ namespace MessengerAPI.Data.Channels;
 public interface IChannelRepository
 {
     Task AddAsync(Channel channel);
-    Task<List<Channel>> GetUserChannelsAsync(Guid userId);
-    Task<Channel> GetByIdOrNullAsync(Guid channelId);
-    Task<IEnumerable<Guid>> GetMemberIdsFromChannelByIdAsync(Guid channelId);
-    Task<Channel> GetPrivateChannelOrNullByIdsAsync(Guid userId1, Guid userId2);
-    Task<Channel> GetSavedMessagesChannelOrNullAsync(Guid userId);
-    Task AddMemberToChannel(Guid channelId, ChannelMemberInfo member);
-    Task UpdateChannelInfo(Guid channelId, string title, Image? image);
-    Task UpdateOwnerId(Guid channelId, Guid ownerId);
+    Task<List<Channel>> GetUserChannelsAsync(long userId);
+    Task<Channel> GetByIdOrNullAsync(long channelId);
+    Task<IEnumerable<long>> GetMemberIdsFromChannelByIdAsync(long channelId);
+    Task<Channel> GetPrivateChannelOrNullByIdsAsync(long userId1, long userId2);
+    Task<Channel> GetSavedMessagesChannelOrNullAsync(long userId);
+    Task AddMemberToChannel(long channelId, ChannelMemberInfo member);
+    Task UpdateChannelInfo(long channelId, string title, Image? image);
+    Task UpdateOwnerId(long channelId, long ownerId);
 }

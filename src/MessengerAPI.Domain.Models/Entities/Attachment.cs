@@ -3,8 +3,8 @@ namespace MessengerAPI.Domain.Models.Entities;
 public class Attachment
 {
     public long Id { get; private set; }
-    public Guid MessageId { get; private set; }
-    public Guid ChannelId { get; private set; }
+    public long MessageId { get; private set; }
+    public long ChannelId { get; private set; }
     public string Filename { get; private set; }
     public string UploadedFilename { get; private set; }
     public string ContentType { get; private set; }
@@ -17,7 +17,8 @@ public class Attachment
     public bool IsSpoiler { get; private set; }
 
     public Attachment(
-        Guid channelId,
+        long id,
+        long channelId,
         string filename,
         string uploadedFilename,
         string contentType,
@@ -25,6 +26,7 @@ public class Attachment
         string preSignedUrl,
         DateTime preSignedUrlExpiresAt)
     {
+        Id = id;
         ChannelId = channelId;
         Filename = filename;
         UploadedFilename = uploadedFilename;

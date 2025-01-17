@@ -17,17 +17,15 @@ CREATE TYPE messenger.image (
 );
 
 CREATE TYPE messenger.messagesenderinfo (
-    id uuid,
+    id bigint,
     username text,
     globalname text,
     images list<frozen<image>>
 );
 
--- TABLES
-
-CREATE TABLE messenger.attachments (
-    channelid uuid,
-    messageid uuid,
+CREATE TYPE messenger.attachment (
+    channelid bigint,
+    messageid bigint,
     id bigint,
     contenttype text,
     durationsecs float,
@@ -39,69 +37,95 @@ CREATE TABLE messenger.attachments (
     size bigint,
     uploadedfilename text,
     waveform text,
+);
+
+-- TABLES
+
+CREATE TABLE messenger.attachments (
+    channelid bigint,
+    messageid bigint,
+    id bigint,
+    contenttype text,
+    durationsecs float,
+    filename text,
+    isspoiler boolean,
+    placeholder text,
+    presignedurl text,
+    presignedurlexpiresat timestamp,
+    size bigint,
+    uploadedfilename text,
+    waveform text,
+
     PRIMARY KEY (channelid, messageid, id)
 );
 
-CREATE TABLE messenger.channel_users_by_user_id(
-    userid uuid,
-    channelid uuid,
-    readat timeuuid,
+CREATE TABLE messenger.channel_users_by_user_id (
+    userid bigint,
+    channelid bigint,
+    readat bigint,
     username text,
     globalname text,
     images list<frozen<image>>,
+
     PRIMARY KEY (userid)
 );
 
 CREATE MATERIALIZED VIEW messenger.channel_users_by_channel_id AS
-    SELECT userid, channelid, username, globalname, images FROM messenger.channel_users_by_user_id
+    SELECT userid, channelid, username, globalname, images
+    FROM messenger.channel_users_by_user_id
     WHERE channelid IS NOT NULL AND userid IS NOT NULL
     PRIMARY KEY(channelid, userid);
 
 CREATE TABLE messenger.channels_by_id (
-    channelid uuid,
+    channelid bigint,
     channeltype int,
     image image,
     lastmessage messageinfo,
     lastmessageat timestamp,
-    ownerid uuid,
+    ownerid bigint,
     title text,
     PRIMARY KEY (channelid)
 );
 
 CREATE TABLE messenger.saved_messages_channel(
-    userid uuid,
-    channelid uuid,
+    userid bigint,
+    channelid bigint,
+
     PRIMARY KEY(userid)
 );
 
 CREATE TABLE messenger.messages (
-    channelid uuid,
-    id timeuuid,
+    channelid bigint,
+    id bigint,
     author frozen<messagesenderinfo>,
     content text,
-    replyto uuid,
-    senderid uuid,
+    replyto bigint,
+    senderid bigint,
     sentat timestamp,
     updatedat timestamp,
+    attachments list<frozen<attachment>>,
+
     PRIMARY KEY (channelid, id)
 );
 
 CREATE TABLE messenger.private_channels (
-    userid1 uuid,
-    userid2 uuid,
-    channelid uuid,
+    userid1 bigint,
+    userid2 bigint,
+    channelid bigint,
+
     PRIMARY KEY ((userid1, userid2))
 );
 
 CREATE TABLE messenger.sessions (
-    userid uuid,
-    id uuid,
+    userid bigint,
+    id bigint,
     clientname text,
     createdat timestamp,
     devicename text,
     lastusedat timestamp,
     location text,
     tokenid uuid,
+
     PRIMARY KEY (userid, id)
 );
 
@@ -109,7 +133,7 @@ CREATE INDEX sessions_tokenid_idx ON messenger.sessions(tokenid);
 
 
 CREATE TABLE messenger.users (
-    id uuid,
+    id bigint,
     bio text,
     createdat timestamp,
     email text,
@@ -124,6 +148,7 @@ CREATE TABLE messenger.users (
     twofactorauthentication boolean,
     username text,
     usernameupdatedat timestamp,
+
     PRIMARY KEY (id)
 );
 

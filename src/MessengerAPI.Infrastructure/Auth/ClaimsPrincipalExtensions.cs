@@ -5,11 +5,11 @@ namespace MessengerAPI.Infrastructure.Auth;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static Guid GetUserId(this ClaimsPrincipal user)
+    public static long GetUserId(this ClaimsPrincipal user)
     {
         var subString = user.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
-        if (Guid.TryParse(subString, out var sub))
+        if (long.TryParse(subString, out var sub))
         {
             return sub;
         }

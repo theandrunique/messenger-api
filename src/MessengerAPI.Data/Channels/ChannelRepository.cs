@@ -52,14 +52,14 @@ public class ChannelRepository : IChannelRepository
         return _session.ExecuteAsync(batch);
     }
 
-    public Task AddMemberToChannel(Guid channelId, ChannelMemberInfo member)
+    public Task AddMemberToChannel(long channelId, ChannelMemberInfo member)
     {
         return _tableChannelUsers
             .Insert(ChannelUsers.FromMember(member, channelId))
             .ExecuteAsync();
     }
 
-    public async Task<Channel> GetByIdOrNullAsync(Guid channelId)
+    public async Task<Channel> GetByIdOrNullAsync(long channelId)
     {
         var channel = await _tableChannelsById
             .FirstOrDefault(c => c.ChannelId == channelId)
@@ -79,7 +79,7 @@ public class ChannelRepository : IChannelRepository
         return response;
     }
 
-    public async Task<IEnumerable<Guid>> GetMemberIdsFromChannelByIdAsync(Guid channelId)
+    public async Task<IEnumerable<long>> GetMemberIdsFromChannelByIdAsync(long channelId)
     {
         var query = """
             SELECT userid FROM channel_users_by_channel_id
@@ -90,10 +90,10 @@ public class ChannelRepository : IChannelRepository
 
         var resultSet = await _session.ExecuteAsync(statement);
 
-        return resultSet.Select(row => row.GetValue<Guid>("userid"));
+        return resultSet.Select(row => row.GetValue<long>("userid"));
     }
 
-    public async Task<Channel> GetPrivateChannelOrNullByIdsAsync(Guid userId1, Guid userId2)
+    public async Task<Channel> GetPrivateChannelOrNullByIdsAsync(long userId1, long userId2)
     {
         if (userId1.CompareTo(userId2) > 0)
         {
@@ -130,7 +130,7 @@ public class ChannelRepository : IChannelRepository
         return result;
     }
 
-    public async Task<Channel> GetSavedMessagesChannelOrNullAsync(Guid userId)
+    public async Task<Channel> GetSavedMessagesChannelOrNullAsync(long userId)
     {
         var savedMessagesChannel = _tableSavedMessagesChannels
             .FirstOrDefault(c => c.UserId == userId)
@@ -156,7 +156,7 @@ public class ChannelRepository : IChannelRepository
         return channel;
     }
 
-    public async Task<List<Channel>> GetUserChannelsAsync(Guid userId)
+    public async Task<List<Channel>> GetUserChannelsAsync(long userId)
     {
         var userChannels = await _tableChannelUsers
             .Where(c => c.UserId == userId)
@@ -185,7 +185,7 @@ public class ChannelRepository : IChannelRepository
         return response;
     }
 
-    public Task UpdateChannelInfo(Guid channelId, string title, Image? image)
+    public Task UpdateChannelInfo(long channelId, string title, Image? image)
     {
         var query = """
             UPDATE channels_by_id
@@ -198,7 +198,7 @@ public class ChannelRepository : IChannelRepository
         return _session.ExecuteAsync(statement);
     }
 
-    public Task UpdateOwnerId(Guid channelId, Guid ownerId)
+    public Task UpdateOwnerId(long channelId, long ownerId)
     {
         var query = """
             UPDATE channels_by_id

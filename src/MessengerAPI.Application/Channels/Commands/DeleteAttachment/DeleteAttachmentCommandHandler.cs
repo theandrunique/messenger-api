@@ -1,14 +1,14 @@
 using MediatR;
-using MessengerAPI.Application.Channels.Common.Interfaces;
+using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands.DeleteAttachment;
 
 public class DeleteAttachmentCommandHandler : IRequestHandler<DeleteAttachmentCommand, ErrorOr<bool>>
 {
-    private readonly IAttachmentService _attachmentService;
+    private readonly AttachmentService _attachmentService;
 
-    public DeleteAttachmentCommandHandler(IAttachmentService attachmentService)
+    public DeleteAttachmentCommandHandler(AttachmentService attachmentService)
     {
         _attachmentService = attachmentService;
     }

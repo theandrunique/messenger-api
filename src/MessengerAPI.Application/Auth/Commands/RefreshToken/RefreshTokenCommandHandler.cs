@@ -29,19 +29,19 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
     {
         if (!_authService.TryDecryptRefreshToken(request.RefreshToken, out var payload))
         {
-            return Errors.ApiErrors.Auth.InvalidToken;
+            return ApiErrors.Auth.InvalidToken;
         }
 
         var session = await _sessionRepository.GetByTokenIdOrDefaultAsync(payload.TokenId);
         if (session == null)
         {
-            return Errors.ApiErrors.Auth.InvalidToken;
+            return ApiErrors.Auth.InvalidToken;
         }
 
         var user = await _userRepository.GetByIdOrDefaultAsync(session.UserId);
         if (user == null)
         {
-            return Errors.ApiErrors.Auth.InvalidToken;
+            return ApiErrors.Auth.InvalidToken;
         }
 
         session.UpdateTokenId();

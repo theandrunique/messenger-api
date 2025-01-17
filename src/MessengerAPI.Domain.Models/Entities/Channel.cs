@@ -5,8 +5,8 @@ namespace MessengerAPI.Domain.Models.Entities;
 
 public class Channel
 {
-    public Guid Id { get; private set; }
-    public Guid? OwnerId { get; private set; }
+    public long Id { get; private set; }
+    public long? OwnerId { get; private set; }
     public string? Title { get; private set; }
     public Image? Image { get; private set; }
     public ChannelType Type { get; private set; }
@@ -16,24 +16,24 @@ public class Channel
     public IReadOnlyList<ChannelMemberInfo> Members => _members.ToList();
     private readonly List<ChannelMemberInfo> _members = new();
 
-    public static Channel CreateSavedMessages(User user)
+    public static Channel CreateSavedMessages(long id, User user)
     {
-        var channel = new Channel(ChannelType.SavedMessages, null, null, null);
+        var channel = new Channel(id, ChannelType.SavedMessages, null, null, null);
         channel.AddMember(user);
         return channel;
     }
 
-    public static Channel CreatePrivate(User user1, User user2)
+    public static Channel CreatePrivate(long id, User user1, User user2)
     {
-        var channel = new Channel(ChannelType.Private, null, null, null);
+        var channel = new Channel(id, ChannelType.Private, null, null, null);
         channel.AddMember(user1);
         channel.AddMember(user2);
         return channel;
     }
 
-    public static Channel CreateGroup(Guid ownerId, List<User> members, string title)
+    public static Channel CreateGroup(long id, long ownerId, List<User> members, string title)
     {
-        var channel = new Channel(ChannelType.Group, ownerId, title, null);
+        var channel = new Channel(id, ChannelType.Group, ownerId, title, null);
 
         foreach (var member in members)
         {
@@ -43,12 +43,13 @@ public class Channel
     }
 
     private Channel(
+        long id,
         ChannelType type,
-        Guid? ownerId = null,
+        long? ownerId = null,
         string? title = null,
         Image? image = null)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         OwnerId = ownerId;
         Title = title;
         Image = image;
@@ -56,8 +57,8 @@ public class Channel
     }
 
     public Channel(
-        Guid id,
-        Guid? ownerId,
+        long id,
+        long? ownerId,
         string? title,
         Image? image,
         ChannelType type,
@@ -84,7 +85,7 @@ public class Channel
         _members.AddRange(members);
     }
 
-    public bool IsUserInTheChannel(Guid userId)
+    public bool IsUserInTheChannel(long userId)
     {
         return _members.Any(m => m.Id == userId);
     }

@@ -5,7 +5,7 @@ namespace MessengerAPI.Domain.Models.ValueObjects;
 
 public class ChannelMemberInfo
 {
-    public Guid Id { get; private set; }
+    public long Id { get; private set; }
     public string Username { get; init; }
     public string GlobalName { get; init; }
     public IEnumerable<Image> Images { get; init; }
@@ -18,7 +18,7 @@ public class ChannelMemberInfo
         Images = member.Images.ToList();
     }
 
-    public ChannelMemberInfo(Guid id, string username, string globalName, IEnumerable<Image> images)
+    public ChannelMemberInfo(long id, string username, string globalName, IEnumerable<Image> images)
     {
         Id = id;
         Username = username;

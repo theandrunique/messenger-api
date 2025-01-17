@@ -1,7 +1,7 @@
 using MediatR;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
-using MessengerAPI.Application.Common.Services;
+using MessengerAPI.Core;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Errors;
@@ -15,7 +15,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
     private readonly ISessionRepository _sessionRepository;
     private readonly IClientInfoProvider _userAgentParser;
     private readonly IAuthService _authService;
-    private readonly CaptchaService _captchaService;
+    private readonly IIdGenerator _idGenerator;
 
     public LoginCommandHandler(
         IHashHelper hashHelper,
@@ -23,22 +23,16 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         ISessionRepository sessionRepository,
         IClientInfoProvider userAgentParser,
         IAuthService authService,
-        CaptchaService captchaService)
+        IIdGenerator idGenerator)
     {
         _hashHelper = hashHelper;
         _userRepository = userRepository;
         _userAgentParser = userAgentParser;
         _authService = authService;
         _sessionRepository = sessionRepository;
-        _captchaService = captchaService;
+        _idGenerator = idGenerator;
     }
 
-    /// <summary>
-    /// Login user, check password and login if correct create session
-    /// </summary>
-    /// <param name="request"><see cref="LoginCommand"/></param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="TokenPairResponse"/></returns>
     public async Task<ErrorOr<TokenPairResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         User? user;
@@ -50,14 +44,15 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         {
             user = await _userRepository.GetByUsernameOrDefaultAsync(request.Login);
         }
-        if (user is null) return Errors.ApiErrors.Auth.InvalidCredentials;
+        if (user is null) return ApiErrors.Auth.InvalidCredentials;
 
         if (!_hashHelper.Verify(user.PasswordHash, request.Password))
         {
-            return Errors.ApiErrors.Auth.InvalidCredentials;
+            return ApiErrors.Auth.InvalidCredentials;
         }
 
         var session = Session.Create(
+            _idGenerator.CreateId(),
             user.Id,
             _userAgentParser.GetDeviceName(),
             _userAgentParser.GetClientName(),

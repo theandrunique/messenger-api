@@ -25,7 +25,12 @@ public class FileStorageService : IFileStorageService
         _s3Client = new AmazonS3Client(credentials, config);
     }
 
-    public async Task<string> PutObjectAsync(Stream fileStream, string key, string fileName, string contentType, CancellationToken cancellationToken)
+    public Task PutObjectAsync(
+        Stream fileStream,
+        string key,
+        string fileName,
+        string contentType,
+        CancellationToken cancellationToken)
     {
         var uploadRequest = new TransferUtilityUploadRequest
         {
@@ -39,10 +44,9 @@ public class FileStorageService : IFileStorageService
         uploadRequest.Headers.ContentDisposition = "attachment; filename=\"" + fileName + "\"";
 
         var fileTransferUtility = new TransferUtility(_s3Client);
-        await fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
-
-        return $"{_settings.BucketUrl}/{key}";
+        return fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
     }
+
     public Task<string> GeneratePreSignedUrlForUploadAsync(string key, DateTime expires, long size)
     {
         var getPreSignedUrlRequest = new GetPreSignedUrlRequest
@@ -57,23 +61,16 @@ public class FileStorageService : IFileStorageService
         return _s3Client.GetPreSignedURLAsync(getPreSignedUrlRequest);
     }
 
-    public Task<string> GeneratePreSignedUrlForDownloadOrNullAsync(string key, DateTime expires)
+    public Task<string> GeneratePreSignedUrlForDownloadAsync(string key, DateTime expires)
     {
-        try
+        var response = new GetPreSignedUrlRequest
         {
-            var response = new GetPreSignedUrlRequest
-            {
-                BucketName = _settings.BucketName,
-                Key = key,
-                Expires = expires,
-                Verb = HttpVerb.GET
-            };
-            return _s3Client.GetPreSignedURLAsync(response);
-        }
-        catch (AmazonS3Exception ex)
-        {
-            return null;
-        }
+            BucketName = _settings.BucketName,
+            Key = key,
+            Expires = expires,
+            Verb = HttpVerb.GET
+        };
+        return _s3Client.GetPreSignedURLAsync(response);
     }
 
     public async Task<GetObjectMetadataResponseDTO> GetObjectMetadataAsync(string key, CancellationToken cancellationToken)
@@ -92,22 +89,31 @@ public class FileStorageService : IFileStorageService
         };
     }
 
-    public async Task<bool> DeleteObjectAsync(string key, CancellationToken cancellationToken)
+    public Task DeleteObjectAsync(string key, CancellationToken cancellationToken)
+    {
+        var request = new DeleteObjectRequest
+        {
+            BucketName = _settings.BucketName,
+            Key = key,
+        };
+
+        return _s3Client.DeleteObjectAsync(request, cancellationToken);
+    }
+
+    public async Task<bool> IsObjectExistsAsync(string key, CancellationToken cancellationToken)
     {
         try
         {
-            var request = new DeleteObjectRequest
-            {
-                BucketName = _settings.BucketName,
-                Key = key,
-            };
-
-            var response = await _s3Client.DeleteObjectAsync(request, cancellationToken);
+            var response = await _s3Client.GetObjectMetadataAsync(_settings.BucketName, key);
             return true;
         }
-        catch(AmazonS3Exception ex)
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return false;
+        }
+        catch
+        {
+            throw;
         }
     }
 }

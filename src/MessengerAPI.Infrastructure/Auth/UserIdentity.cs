@@ -15,6 +15,6 @@ public class UserIdentity : ClaimsIdentity
         TokenId = claims.GetTokenId();
     }
 
-    public Guid UserId { get; private set; }
+    public long UserId { get; private set; }
     public Guid TokenId { get; private set; }
 }

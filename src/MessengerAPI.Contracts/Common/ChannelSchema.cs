@@ -8,8 +8,8 @@ namespace MessengerAPI.Contracts.Common;
 /// </summary>
 public record ChannelSchema
 {
-    public Guid Id { get; init; }
-    public Guid? OwnerId { get; init; }
+    public string Id { get; init; }
+    public string? OwnerId { get; init; }
     public string? Title { get; init; }
     public string? Image { get; init; }
     public ChannelType Type { get; init; }

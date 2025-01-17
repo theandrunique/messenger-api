@@ -1,7 +1,8 @@
 using AutoMapper;
 using MediatR;
-using MessengerAPI.Application.Channels.Common.Interfaces;
+using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Contracts.Common;
+using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Models.Entities;
@@ -13,22 +14,25 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
 {
     private readonly IChannelRepository _channelRepository;
     private readonly IMapper _mapper;
-    private readonly IAttachmentService _attachmentService;
+    private readonly AttachmentService _attachmentService;
     private readonly IMessageRepository _messageRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IIdGenerator _idGenerator;
 
     public AddOrEditMessageCommandHandler(
         IChannelRepository channelRepository,
         IMapper mapper,
         IMessageRepository messageRepository,
-        IAttachmentService attachmentService,
-        IUserRepository userRepository)
+        AttachmentService attachmentService,
+        IUserRepository userRepository,
+        IIdGenerator idGenerator)
     {
         _channelRepository = channelRepository;
         _mapper = mapper;
         _messageRepository = messageRepository;
         _attachmentService = attachmentService;
         _userRepository = userRepository;
+        _idGenerator = idGenerator;
     }
 
     public async Task<ErrorOr<MessageSchema>> Handle(AddOrUpdateMessageCommand request, CancellationToken cancellationToken)
@@ -97,7 +101,13 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
         }
         else
         {
-            message = Message.Create(request.ChannelId, user, request.Content, request.ReplyTo, attachments);
+            message = Message.Create(
+                _idGenerator.CreateId(),
+                request.ChannelId,
+                user,
+                request.Content,
+                request.ReplyTo,
+                attachments);
             await _messageRepository.AddAsync(message);
         }
 

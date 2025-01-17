@@ -3,14 +3,13 @@ using Amazon;
 using Amazon.SimpleNotificationService;
 using MassTransit;
 using MessengerAPI.Application.Auth.Common.Interfaces;
-using MessengerAPI.Application.Channels.Common.Interfaces;
+using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Application.Common.Interfaces.Files;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Auth.Interfaces;
-using MessengerAPI.Infrastructure.Channels;
 using MessengerAPI.Infrastructure.Common;
 using MessengerAPI.Infrastructure.Common.Files;
 using MessengerAPI.Infrastructure.Common.WebSockets;
@@ -51,7 +50,7 @@ public static class DependencyInjection
 
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IAttachmentService, AttachmentService>();
+        services.AddScoped<AttachmentService>();
 
         return services;
     }

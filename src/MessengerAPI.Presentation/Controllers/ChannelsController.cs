@@ -80,7 +80,7 @@ public class ChannelsController : ApiController
     [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateMessageAsync(
         CreateMessageRequestSchema schema,
-        Guid channelId,
+        long channelId,
         CancellationToken cancellationToken)
     {
         var identity = User.GetIdentity();
@@ -112,14 +112,14 @@ public class ChannelsController : ApiController
     [HttpGet("{channelId}/messages")]
     [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMessagesAsync(
-        Guid channelId,
+        long channelId,
         CancellationToken cancellationToken,
-        Guid? before = null,
+        long? before = null,
         int limit = 50)
     {
         var identity = User.GetIdentity();
 
-        var actualBefore = before ?? Guid.Empty;
+        var actualBefore = before ?? long.MaxValue;
 
         var query = new GetMessagesQuery(identity.UserId, channelId, actualBefore, limit);
 
@@ -143,8 +143,8 @@ public class ChannelsController : ApiController
     [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> EditMessageAsync(
         CreateMessageRequestSchema schema,
-        Guid channelId,
-        Guid messageId,
+        long channelId,
+        long messageId,
         CancellationToken cancellationToken)
     {
         var identity = User.GetIdentity();
@@ -167,13 +167,13 @@ public class ChannelsController : ApiController
 
     [HttpPost("{channelId}/attachments")]
     public async Task<IActionResult> PostAttachmentAsync(
-        Guid channelId,
+        long channelId,
         CreateChannelAttachmentSchema schema,
         CancellationToken cancellationToken)
     {
         var command = new PostAttachmentCommand(
             channelId,
-            schema.files.ConvertAll(f => new FileData
+            schema.files.ConvertAll(f => new UploadFileData
             {
                 Filename = f.filename,
                 Size = f.size,

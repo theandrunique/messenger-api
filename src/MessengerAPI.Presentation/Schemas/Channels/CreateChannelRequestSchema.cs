@@ -18,5 +18,5 @@ public record CreateChannelRequestSchema
     /// <summary>
     /// List of members
     /// </summary>
-    public List<Guid> members { get; init; }
+    public List<long> members { get; init; }
 }

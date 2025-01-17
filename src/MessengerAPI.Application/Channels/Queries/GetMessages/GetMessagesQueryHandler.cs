@@ -19,12 +19,6 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
         _mapper = mapper;
     }
 
-    /// <summary>
-    /// Get messages from requested channel
-    /// </summary>
-    /// <param name="request"><see cref="GetMessagesQuery"/></param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns>A list of messages <see cref="MessageSchema"/></returns>
     public async Task<ErrorOr<List<MessageSchema>>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
     {
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);

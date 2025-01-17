@@ -14,9 +14,9 @@ public record CreateMessageRequestSchema
     /// <summary>
     /// Id of the message to reply
     /// </summary>
-    public Guid? replyTo { get; init; }
+    public long? replyTo { get; init; }
     /// <summary>
     /// List of file id to attach
     /// </summary>
-    public List<FileData2>? attachments { get; init; }
+    public List<MessageAttachmentDto>? attachments { get; init; }
 }

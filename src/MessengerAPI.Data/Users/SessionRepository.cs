@@ -20,7 +20,7 @@ internal class SessionRepository : ISessionRepository
         return _table.Insert(session).ExecuteAsync();
     }
 
-    public Task<Session> GetByIdOrDefaultAsync(Guid userId, Guid sessionId)
+    public Task<Session> GetByIdOrDefaultAsync(long userId, long sessionId)
     {
         return _table
             .Where(s => s.UserId == userId && s.Id == sessionId)
@@ -36,7 +36,7 @@ internal class SessionRepository : ISessionRepository
             .ExecuteAsync();
     }
 
-    public Task RemoveByIdAsync(Guid userId, Guid sessionId)
+    public Task RemoveByIdAsync(long userId, long sessionId)
     {
         return _table
             .Where(s => s.UserId == userId && s.Id == sessionId)
@@ -44,7 +44,7 @@ internal class SessionRepository : ISessionRepository
             .ExecuteAsync();
     }
 
-    public Task UpdateTokenIdAsync(Guid userId, Guid sessionId, Guid tokenId)
+    public Task UpdateTokenIdAsync(long userId, long sessionId, Guid tokenId)
     {
         var query = $"UPDATE sessions SET {nameof(Session.TokenId)} = ? WHERE {nameof(Session.UserId)} = ? AND {nameof(Session.Id)} = ?";
 

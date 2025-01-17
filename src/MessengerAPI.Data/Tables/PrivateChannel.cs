@@ -1,13 +1,12 @@
 using MessengerAPI.Domain.Models.Entities;
-using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Data.Tables;
 
 internal class PrivateChannel
 {
-    public Guid UserId1 { get; set; }
-    public Guid UserId2 { get; set; }
-    public Guid ChannelId { get; set; }
+    public long UserId1 { get; set; }
+    public long UserId2 { get; set; }
+    public long ChannelId { get; set; }
 
     public static PrivateChannel FromChannel(Channel channel)
     {

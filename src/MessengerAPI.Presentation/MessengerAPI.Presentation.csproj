@@ -21,5 +21,6 @@
     <ProjectReference Include="..\MessengerAPI.Domain.Models\MessengerAPI.Domain.Models.csproj" />
     <ProjectReference Include="..\MessengerAPI.Data\MessengerAPI.Data.csproj" />
     <ProjectReference Include="..\MessengerAPI.Errors\MessengerAPI.Errors.csproj" />
+    <ProjectReference Include="..\MessengerAPI.Core\MessengerAPI.Core.csproj" />
   </ItemGroup>
 </Project>
