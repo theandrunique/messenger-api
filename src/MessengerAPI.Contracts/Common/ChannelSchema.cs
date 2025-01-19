@@ -15,5 +15,5 @@ public record ChannelSchema
     public ChannelType Type { get; init; }
     public DateTimeOffset? LastMessageTimestamp { get; init; }
     public MessageInfo? LastMessage { get; init; }
-    public List<ChannelMemberInfo> Members { get; init; }
+    public List<ChannelMemberInfoSchema> Members { get; init; }
 }

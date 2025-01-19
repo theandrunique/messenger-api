@@ -18,6 +18,7 @@ public class Mappings : Profile
         CreateMap<User, UserPublicSchema>();
         CreateMap<User, UserPrivateSchema>();
         CreateMap<MessageSenderInfo, MessageAuthorInfoSchema>();
+        CreateMap<ChannelMemberInfo, ChannelMemberInfoSchema>();
 
         CreateMap<Attachment, AttachmentSchema>()
             .ForMember(a => a.Url, opt => opt.MapFrom(a => a.PreSignedUrl));
