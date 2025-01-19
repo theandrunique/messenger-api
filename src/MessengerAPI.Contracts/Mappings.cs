@@ -2,6 +2,7 @@ using AutoMapper;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Domain.Entities.ValueObjects;
 using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Contracts;
 
@@ -16,6 +17,7 @@ public class Mappings : Profile
         // CreateMap<Reaction, ReactionSchema>();
         CreateMap<User, UserPublicSchema>();
         CreateMap<User, UserPrivateSchema>();
+        CreateMap<MessageSenderInfo, MessageAuthorInfoSchema>();
 
         CreateMap<Attachment, AttachmentSchema>()
             .ForMember(a => a.Url, opt => opt.MapFrom(a => a.PreSignedUrl));

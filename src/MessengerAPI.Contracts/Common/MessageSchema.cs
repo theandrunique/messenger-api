@@ -1,5 +1,3 @@
-using MessengerAPI.Domain.Models.ValueObjects;
-
 namespace MessengerAPI.Contracts.Common;
 
 /// <summary>
@@ -13,6 +11,6 @@ public record MessageSchema
     public DateTimeOffset Timestamp { get; init; }
     public DateTimeOffset? EditedTimestamp { get; init; }
     public string? ReplyTo { get; init; }
-    public MessageSenderInfo Author { get; init; }
+    public MessageAuthorInfoSchema Author { get; init; }
     public List<AttachmentSchema> Attachments { get; init; }
 }
