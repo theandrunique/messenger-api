@@ -11,5 +11,10 @@ public static partial class ApiErrors
         public static BaseApiError NotFound(string uploadedFilename) => new BaseApiError(
             ErrorCode.FileNotFound,
             $"File {uploadedFilename} not found");
+        
+        public static BaseApiError InvalidUploadFilename(string uploadFilename) => new BaseApiError(
+            ErrorCode.InvalidUploadFilename,
+            $"Invalid upload filename: {uploadFilename}"
+        );
     }
 }

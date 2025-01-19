@@ -65,7 +65,6 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
                 var attachment = await _attachmentService.ValidateAndCreateAttachmentsAsync(
                     fileData.UploadedFilename,
                     fileData.Filename,
-                    channel.Id,
                     cancellationToken);
 
                 if (attachment.IsError)

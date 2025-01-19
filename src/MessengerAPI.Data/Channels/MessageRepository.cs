@@ -3,7 +3,6 @@ using Cassandra.Data.Linq;
 using MessengerAPI.Data.Mappers;
 using MessengerAPI.Data.Queries;
 using MessengerAPI.Domain.Models.Entities;
-using Newtonsoft.Json;
 
 namespace MessengerAPI.Data.Channels;
 
@@ -13,20 +12,21 @@ internal class MessageRepository : IMessageRepository
     private readonly Table<Message> _table;
     private readonly Table<Attachment> _attachmentTable;
     private readonly ChannelUserQueries _channelUsers;
+    private readonly MessageQueries _messages;
 
-    public MessageRepository(ISession session, ChannelUserQueries channelUserQueries)
+    public MessageRepository(ISession session, ChannelUserQueries channelUserQueries, MessageQueries messages)
     {
         _session = session;
         _table = new Table<Message>(_session);
         _attachmentTable = new Table<Attachment>(_session);
         _channelUsers = channelUserQueries;
+        _messages = messages;
     }
 
     public Task AddAsync(Message message)
     {
-        var insert = _table.Insert(message);
         var batch = new BatchStatement()
-            .Add(insert);
+            .Add(_messages.Insert(message));
 
         var attachmentStatements = message.Attachments.Select(a => _attachmentTable.Insert(a)).ToList();
 
@@ -40,33 +40,33 @@ internal class MessageRepository : IMessageRepository
 
     public async Task<Message?> GetMessageByIdOrNullAsync(long channelId, long messageId)
     {
-        var result = await _table
-            .FirstOrDefault(m => m.ChannelId == channelId && m.Id == messageId)
-            .ExecuteAsync();
-
+        var query = _messages.SelectById(channelId, messageId);
+        var result = (await _session.ExecuteAsync(query)).FirstOrDefault();
         if (result is null)
         {
             return default;
         }
 
-        var query = _channelUsers.SelectByChannelIdAndUserIds(result.ChannelId, new[] { result.AuthorId });
+        var message = MessageMapper.Map(result);
+
+        query = _channelUsers.SelectByChannelIdAndUserIds(message.ChannelId, new[] { message.AuthorId });
 
         var authorInfoResult = (await _session.ExecuteAsync(query)).FirstOrDefault();
 
         if (authorInfoResult is null)
         {
-            throw new Exception($"Message author not found in the channel {result.ChannelId}.");
+            throw new Exception($"Message author not found in the channel {message.ChannelId}.");
         }
 
         var author = MessageMapper.MapMessageSenderInfo(authorInfoResult);
-        result.SetAuthor(author);
-        return result;
+        message.SetAuthor(author);
+        return message;
     }
 
     public Task RewriteAsync(Message message)
     {
         var batch = new BatchStatement()
-            .Add(_table.Insert(message));
+            .Add(_messages.Insert(message));
 
         var attachmentStatements = message.Attachments.Select(a => _attachmentTable.Insert(a)).ToList();
 
@@ -80,28 +80,26 @@ internal class MessageRepository : IMessageRepository
 
     public async Task<IEnumerable<Message>> GetMessagesAsync(long channelId, long before, int limit)
     {
-        var result = (await _table
-            .Where(m => m.ChannelId == channelId)
-            .Where(m => m.Id < before)
-            .OrderByDescending(m => m.Id)
-            .Take(limit)
-            .ExecuteAsync()).ToList();
+        var query = _messages.SelectByChannelId(channelId, before, limit);
+        var result = await _session.ExecuteAsync(query);
 
-        var userIdsToFind = result.Select(m => m.AuthorId);
+        var messages = result.Select(MessageMapper.Map).ToList();
 
-        var query = _channelUsers.SelectByChannelIdAndUserIds(channelId, userIdsToFind);
+        var userIdsToFind = messages.Select(m => m.AuthorId);
+
+        query = _channelUsers.SelectByChannelIdAndUserIds(channelId, userIdsToFind);
         var channelUsersResult = await _session.ExecuteAsync(query);
 
         var channelUsers = channelUsersResult.Select(r => MessageMapper.MapMessageSenderInfo(r));
 
         var channelUsersDictionary = channelUsers.ToDictionary(c => c.Id);
 
-        foreach (var message in result)
+        foreach (var message in messages)
         {
             message.SetAuthor(channelUsersDictionary[message.AuthorId]);
         }
 
-        return result;
+        return messages;
     }
 
     public Task UpdateAttachmentsPreSignedUrlsAsync(Message message)

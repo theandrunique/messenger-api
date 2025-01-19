@@ -73,20 +73,31 @@ public class FileStorageService : IFileStorageService
         return _s3Client.GetPreSignedURLAsync(response);
     }
 
-    public async Task<GetObjectMetadataResponseDTO> GetObjectMetadataAsync(string key, CancellationToken cancellationToken)
+    public async Task<GetObjectMetadataResponseDTO?> GetObjectMetadataAsync(string key, CancellationToken cancellationToken)
     {
-        var getObjectMetadataRequest = new GetObjectMetadataRequest
+        try
         {
-            BucketName = _settings.BucketName,
-            Key = key
-        };
-        var response = await _s3Client.GetObjectMetadataAsync(getObjectMetadataRequest, cancellationToken);
+            var getObjectMetadataRequest = new GetObjectMetadataRequest
+            {
+                BucketName = _settings.BucketName,
+                Key = key
+            };
+            var response = await _s3Client.GetObjectMetadataAsync(getObjectMetadataRequest, cancellationToken);
 
-        return new GetObjectMetadataResponseDTO
+            return new GetObjectMetadataResponseDTO
+            {
+                ContentType = response.Headers.ContentType,
+                ObjectSize = response.Headers.ContentLength,
+            };
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            ContentType = response.Headers.ContentType,
-            ObjectSize = response.Headers.ContentLength,
-        };
+            return null;
+        }
+        catch
+        {
+            throw;
+        }
     }
 
     public Task DeleteObjectAsync(string key, CancellationToken cancellationToken)

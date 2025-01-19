@@ -54,21 +54,22 @@ public class Message
     public Message(
         long channelId,
         long id,
+        long authorId,
         string content,
-        DateTime timestamp,
-        DateTime? editedTimestamp,
+        DateTimeOffset timestamp,
+        DateTimeOffset? editedTimestamp,
         long? replyTo,
-        MessageSenderInfo author,
+        bool pinned,
+        MessageType type,
         List<Attachment>? attachments = null)
     {
         ChannelId = channelId;
         Id = id;
+        AuthorId = authorId;
         Content = content;
         Timestamp = timestamp;
         EditedTimestamp = editedTimestamp;
         ReplyTo = replyTo;
-        Author = author;
-        AuthorId = author.Id;
         _attachments = attachments ?? new List<Attachment>();
     }
 

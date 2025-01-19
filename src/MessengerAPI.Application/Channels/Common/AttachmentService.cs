@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using MessengerAPI.Application.Common.Interfaces.Files;
 using MessengerAPI.Core;
 using MessengerAPI.Domain.Models.Entities;
@@ -18,7 +19,7 @@ public class AttachmentService
 
     public async Task<UploadUrlDto> GenerateUploadUrlAsync(long size, long channelId, string filename)
     {
-        var uploadFilename = GenerateUploadFilename(filename, channelId);
+        var uploadFilename = GenerateUploadFilename(filename, channelId, _idGenerator.CreateId());
 
         var preSignedUrl = await _fileStorage.GeneratePreSignedUrlForUploadAsync(
             uploadFilename,
@@ -31,10 +32,16 @@ public class AttachmentService
     public async Task<ErrorOr<Attachment>> ValidateAndCreateAttachmentsAsync(
         string uploadedFilename,
         string filename,
-        long channelId,
         CancellationToken cancellationToken)
     {
+        var parsedFilename = ParseUploadedFilename(uploadedFilename);
+        if (parsedFilename == null)
+        {
+            return ApiErrors.File.InvalidUploadFilename(uploadedFilename);
+        }
+
         var objectMetadata = await _fileStorage.GetObjectMetadataAsync(uploadedFilename, cancellationToken);
+
         if (objectMetadata is null)
         {
             return ApiErrors.File.NotFound(uploadedFilename);
@@ -47,8 +54,8 @@ public class AttachmentService
             preSignedUrlExpiresAt);
 
         return new Attachment(
-            _idGenerator.CreateId(),
-            channelId,
+            parsedFilename.Value.AttachmentId,
+            parsedFilename.Value.ChannelId,
             filename,
             uploadedFilename,
             objectMetadata.ContentType,
@@ -68,9 +75,26 @@ public class AttachmentService
         return true;
     }
 
-    private string GenerateUploadFilename(string filename, long channelId)
+    private string GenerateUploadFilename(string filename, long channelId, long attachmentId)
     {
-        return $"attachment/{channelId}/{Guid.NewGuid()}/{filename}";
+        return $"attachments/{channelId}/{attachmentId}/{filename}";
     }
+
+    public (long ChannelId, long AttachmentId, string Filename)? ParseUploadedFilename(string uploadedFilename)
+    {
+        var regex = new Regex(@"attachments\/(?<channelId>\d+)\/(?<attachmentId>\d+)\/(?<filename>.+)");
+        var match = regex.Match(uploadedFilename);
+        if (!match.Success)
+        {
+            return null;
+        }
+
+        var channelId = long.Parse(match.Groups["channelId"].Value);
+        var attachmentId = long.Parse(match.Groups["attachmentId"].Value);
+        var filename = match.Groups["filename"].Value;
+
+        return (channelId, attachmentId, filename);
+    }
+
 }
 

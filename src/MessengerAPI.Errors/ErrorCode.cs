@@ -11,6 +11,7 @@ public enum ErrorCode
     // Files error codes,
     FileTooBig = 20001,
     FileNotFound = 20002,
+    InvalidUploadFilename = 20003,
 
     // Channels error codes
     ChannelNotFound = 30002,
