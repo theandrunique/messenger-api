@@ -1,6 +1,8 @@
 using Cassandra;
 using MessengerAPI.Domain.Entities.ValueObjects;
 using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Models.ValueObjects;
+using Newtonsoft.Json;
 
 namespace MessengerAPI.Data.Queries;
 
@@ -11,6 +13,7 @@ internal class ChannelByIdQueries
     private readonly PreparedStatement _selectByIds;
     private readonly PreparedStatement _updateChannelInfo;
     private readonly PreparedStatement _updateOwnerId;
+    private readonly PreparedStatement _updateLastMessageInfo;
 
     public ChannelByIdQueries(ISession session)
     {
@@ -23,6 +26,8 @@ internal class ChannelByIdQueries
         _updateChannelInfo = session.Prepare("UPDATE channels_by_id SET title = ?, image = ? WHERE channelid = ?");
 
         _updateOwnerId = session.Prepare("UPDATE channels_by_id SET ownerid = ? WHERE channelid = ?");
+
+        _updateLastMessageInfo = session.Prepare("UPDATE channels_by_id SET lastmessagetimestamp = ?, lastmessage = ? WHERE channelid = ?");
     }
 
     public BoundStatement Insert(Channel channel)
@@ -48,5 +53,11 @@ internal class ChannelByIdQueries
     public BoundStatement UpdateOwnerId(long channelId, long ownerId)
     {
         return _updateOwnerId.Bind(ownerId, channelId);
+    }
+
+    public BoundStatement UpdateLastMessageInfo(Message message)
+    {
+        var messageInfo = new MessageInfo(message);
+        return _updateLastMessageInfo.Bind(messageInfo.Timestamp, messageInfo, message.ChannelId);
     }
 }

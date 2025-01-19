@@ -34,6 +34,11 @@ internal class AttachmentQueries
 
     public BoundStatement Insert(Attachment attachment)
     {
+        if (attachment.MessageId == null)
+        {
+            throw new ArgumentException("MessageId of attachment has to set before inserting.");
+        }
+
         return _insert.Bind(
             attachment.ChannelId,
             attachment.MessageId,

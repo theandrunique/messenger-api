@@ -1,3 +1,4 @@
+using System.Resources;
 using Cassandra;
 using Cassandra.Data.Linq;
 using MessengerAPI.Data.Mappers;
@@ -10,17 +11,20 @@ internal class MessageRepository : IMessageRepository
 {
     private readonly ISession _session;
     private readonly ChannelUserQueries _channelUsers;
+    private readonly ChannelByIdQueries _channelsById;
     private readonly MessageQueries _messages;
     private readonly AttachmentQueries _attachments;
 
     public MessageRepository(
         ISession session,
         ChannelUserQueries channelUserQueries,
+        ChannelByIdQueries channelsById,
         MessageQueries messages,
         AttachmentQueries attachments)
     {
         _session = session;
         _channelUsers = channelUserQueries;
+        _channelsById = channelsById;
         _messages = messages;
         _attachments = attachments;
     }
@@ -28,7 +32,8 @@ internal class MessageRepository : IMessageRepository
     public Task AddAsync(Message message)
     {
         var batch = new BatchStatement()
-            .Add(_messages.Insert(message));
+            .Add(_messages.Insert(message))
+            .Add(_channelsById.UpdateLastMessageInfo(message));
 
         foreach (var attachment in message.Attachments)
         {
