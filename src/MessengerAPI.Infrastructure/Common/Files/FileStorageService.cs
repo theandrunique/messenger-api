@@ -47,13 +47,13 @@ public class FileStorageService : IFileStorageService
         return fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
     }
 
-    public Task<string> GeneratePreSignedUrlForUploadAsync(string key, DateTime expires, long size)
+    public Task<string> GeneratePreSignedUrlForUploadAsync(string key, DateTimeOffset expires, long size)
     {
         var getPreSignedUrlRequest = new GetPreSignedUrlRequest
         {
             BucketName = _settings.BucketName,
             Key = key,
-            Expires = expires,
+            Expires = expires.UtcDateTime,
             Verb = HttpVerb.PUT,
         };
         getPreSignedUrlRequest.Headers.ContentLength = size;
@@ -61,13 +61,13 @@ public class FileStorageService : IFileStorageService
         return _s3Client.GetPreSignedURLAsync(getPreSignedUrlRequest);
     }
 
-    public Task<string> GeneratePreSignedUrlForDownloadAsync(string key, DateTime expires)
+    public Task<string> GeneratePreSignedUrlForDownloadAsync(string key, DateTimeOffset expires)
     {
         var response = new GetPreSignedUrlRequest
         {
             BucketName = _settings.BucketName,
             Key = key,
-            Expires = expires,
+            Expires = expires.UtcDateTime,
             Verb = HttpVerb.GET
         };
         return _s3Client.GetPreSignedURLAsync(response);

@@ -1,8 +1,10 @@
 using Cassandra;
 using Cassandra.Mapping;
 using MessengerAPI.Data.Channels;
+using MessengerAPI.Data.Queries;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Entities.ValueObjects;
+using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Domain.Models.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,9 +30,9 @@ public static class DependencyInjection
         var session = cluster.Connect();
 
         session.UserDefinedTypes.Define(
+            UdtMap.For<Attachment>("attachment"),
             UdtMap.For<Image>("image"),
-            UdtMap.For<MessageInfo>("messageinfo"),
-            UdtMap.For<MessageSenderInfo>("messagesenderinfo")
+            UdtMap.For<MessageInfo>("messageinfo")
         );
 
         services.AddSingleton<ISession>(s => session);
@@ -43,6 +45,12 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ISessionRepository, SessionRepository>();
         services.AddScoped<IChannelRepository, ChannelRepository>();
+
+        services.AddSingleton<UserQueries>();
+        services.AddSingleton<ChannelByIdQueries>();
+        services.AddSingleton<ChannelUserQueries>();
+        services.AddSingleton<PrivateChannelQueries>();
+        services.AddSingleton<SavedMessagesChannelQueries>();
 
         return services;
     }

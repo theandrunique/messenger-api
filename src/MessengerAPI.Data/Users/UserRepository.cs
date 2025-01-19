@@ -60,9 +60,9 @@ internal class UserRepository : IUserRepository
 
     public Task UpdateKeyAsync(User user)
     {
-        var statement = $"UPDATE users SET {nameof(User.Key)} = ? WHERE {nameof(User.Id)} = ?";
+        var statement = $"UPDATE users SET {nameof(User.TOTPKey)} = ? WHERE {nameof(User.Id)} = ?";
 
-        return _session.ExecuteAsync(new SimpleStatement(statement, user.Key, user.Id));
+        return _session.ExecuteAsync(new SimpleStatement(statement, user.TOTPKey, user.Id));
     }
 
     public Task UpdatePasswordAsync(User user)
@@ -72,12 +72,12 @@ internal class UserRepository : IUserRepository
                 users
             SET
                 {nameof(User.PasswordHash)} = ?,
-                {nameof(User.PasswordUpdatedAt)} = ?
+                {nameof(User.PasswordUpdatedTimestamp)} = ?
             WHERE
                 {nameof(User.Id)} = ?
         """;
 
-        return _session.ExecuteAsync(new SimpleStatement(statement, user.PasswordHash, user.PasswordUpdatedAt, user.Id));
+        return _session.ExecuteAsync(new SimpleStatement(statement, user.PasswordHash, user.PasswordUpdatedTimestamp, user.Id));
     }
 }
 

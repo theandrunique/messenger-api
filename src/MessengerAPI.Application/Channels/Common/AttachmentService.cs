@@ -22,7 +22,7 @@ public class AttachmentService
 
         var preSignedUrl = await _fileStorage.GeneratePreSignedUrlForUploadAsync(
             uploadFilename,
-            DateTime.UtcNow.AddDays(1),
+            DateTimeOffset.UtcNow.AddDays(1),
             size
         );
         return new UploadUrlDto(uploadFilename, preSignedUrl);
@@ -40,7 +40,7 @@ public class AttachmentService
             return ApiErrors.File.NotFound(uploadedFilename);
         }
 
-        var preSignedUrlExpiresAt = DateTime.UtcNow.AddDays(7);
+        var preSignedUrlExpiresAt = DateTimeOffset.UtcNow.AddDays(7);
 
         var preSignedUrl = await _fileStorage.GeneratePreSignedUrlForDownloadAsync(
             uploadedFilename,

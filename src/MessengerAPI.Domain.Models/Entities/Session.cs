@@ -8,18 +8,18 @@ public class Session
     public string DeviceName { get; private set; }
     public string ClientName { get; private set; }
     public string Location { get; private set; }
-    public DateTime LastUsedAt { get; private set; }
-    public DateTime CreatedAt { get; private set; }
+    public DateTimeOffset LastUsedTimestamp { get; private set; }
+    public DateTimeOffset Timestamp { get; private set; }
 
     public void UpdateTokenId()
     {
-        LastUsedAt = DateTime.UtcNow;
+        LastUsedTimestamp = DateTimeOffset.UtcNow;
         TokenId = Guid.NewGuid();
     }
 
     public static Session Create(long id, long userId, string deviceName, string clientName, string location)
     {
-        var createdAt = DateTime.UtcNow;
+        var timestamp = DateTimeOffset.UtcNow;
         var session = new Session
         {
             Id = id,
@@ -28,8 +28,8 @@ public class Session
             DeviceName = deviceName,
             ClientName = clientName,
             Location = location,
-            LastUsedAt = createdAt,
-            CreatedAt = createdAt,
+            LastUsedTimestamp = timestamp,
+            Timestamp = timestamp,
         };
         return session;
     }

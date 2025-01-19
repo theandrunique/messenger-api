@@ -28,7 +28,7 @@ public class RequestVerifyEmailCommandHandler : IRequestHandler<RequestVerifyEma
             return Errors.ApiErrors.User.NotFound;
         }
 
-        var totp = _totpHelper.GenerateTotp(user.Key, 500, 6);
+        var totp = _totpHelper.GenerateTotp(user.TOTPKey, 500, 6);
 
         await _smtpClient.SendEmailAsync(user.Email, "Verify email", $"Your code to verify email: {totp}");
 

@@ -51,7 +51,7 @@ public class LoginWithTotpCommandHandler : IRequestHandler<LoginWithTotpCommand,
         }
         if (user is null) return ApiErrors.Auth.InvalidCredentials;
 
-        if (!_totpHelper.Verify(request.Totp, user.Key, 30, 6))
+        if (!_totpHelper.Verify(request.Totp, user.TOTPKey, 30, 6))
         {
             return ApiErrors.Auth.InvalidCredentials;
         }

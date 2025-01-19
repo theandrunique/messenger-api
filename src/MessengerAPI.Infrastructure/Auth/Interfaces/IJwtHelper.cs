@@ -15,5 +15,5 @@ public interface IJwtHelper
     /// <param name="audience">Audience</param>
     /// <param name="expiryTime">Expiration time</param>
     /// <returns>JSON Web Token</returns>
-    string Generate(Claim[] payload, RSA key, string keyId, string issuer, string audience, DateTime expiryTime);
+    string Generate(Claim[] payload, RSA key, string keyId, string issuer, string audience, DateTimeOffset expiryTime);
 }

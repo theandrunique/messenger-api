@@ -37,7 +37,7 @@ public class PasswordRecoveryCompleteCommandHandler : IRequestHandler<PasswordRe
             return Errors.ApiErrors.User.NotFound;
         }
 
-        var result = _totpHelper.Verify(request.Totp, user.Key, 500, 6);
+        var result = _totpHelper.Verify(request.Totp, user.TOTPKey, 500, 6);
         if (!result)
         {
             return Errors.ApiErrors.User.InvalidEmailValidationCode;

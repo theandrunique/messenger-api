@@ -79,7 +79,7 @@ public class AuthService : IAuthService
             keyId,
             _options.Issuer,
             _options.Audience,
-            DateTime.UtcNow.AddMinutes(_options.AccessTokenExpiryMinutes));
+            DateTimeOffset.UtcNow.AddMinutes(_options.AccessTokenExpiryMinutes));
     }
 
     public TokenPairResponse GenerateTokenPairResponse(User user, Session session)

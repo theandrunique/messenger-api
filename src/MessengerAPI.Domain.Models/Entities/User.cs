@@ -1,4 +1,5 @@
 using MessengerAPI.Domain.Entities.ValueObjects;
+using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Domain.Models.Entities;
 
@@ -6,22 +7,20 @@ public class User
 {
     public long Id { get; private set; }
     public string Username { get; private set; }
-    public DateTime UsernameUpdatedAt { get; private set; }
+    public DateTimeOffset UsernameUpdatedTimestamp { get; private set; }
     public string PasswordHash { get; private set; }
-    public DateTime PasswordUpdatedAt { get; private set; }
-    public string TerminateSessions { get; private set; } = "";
+    public DateTimeOffset PasswordUpdatedTimestamp { get; private set; }
+    public TimeIntervals TerminateSessions { get; private set; }
     public string? Bio { get; private set; }
     public string GlobalName { get; private set; }
     public bool IsActive { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public byte[] Key { get; private set; }
+    public DateTimeOffset Timestamp { get; private set; }
+    public byte[] TOTPKey { get; private set; }
     public bool TwoFactorAuthentication { get; private set; }
     public string Email { get; private set; }
     public bool IsEmailVerified { get; private set; }
-    public DateTime EmailUpdatedAt { get; private set; }
-
-    public IEnumerable<Image> Images => _images.ToList();
-    private readonly List<Image> _images = new();
+    public DateTimeOffset EmailUpdatedTimestamp { get; private set; }
+    public Image? Image { get; set; }
 
     public static User Create(
         long id,
@@ -29,31 +28,31 @@ public class User
         string email,
         string passwordHash,
         string globalName,
-        byte[] key)
+        byte[] totpkey)
     {
-        var dateOfCreation = DateTime.UtcNow;
+        var timestamp = DateTimeOffset.UtcNow;
 
         User user = new User
         {
             Id = id,
             Username = username.ToLower(),
-            UsernameUpdatedAt = dateOfCreation,
+            UsernameUpdatedTimestamp = timestamp,
             PasswordHash = passwordHash,
-            PasswordUpdatedAt = dateOfCreation,
-            // TerminateSessions = TimeIntervals.Month6,
+            PasswordUpdatedTimestamp = timestamp,
+            TerminateSessions = TimeIntervals.Month6,
             GlobalName = globalName,
             IsActive = true,
-            CreatedAt = dateOfCreation,
+            Timestamp = timestamp,
             TwoFactorAuthentication = false,
             Email = email.ToLower(),
-            EmailUpdatedAt = dateOfCreation,
-            Key = key,
+            EmailUpdatedTimestamp = timestamp,
+            TOTPKey = totpkey,
         };
 
         return user;
     }
 
-    public void SetKey(byte[] key) => Key = key;
+    public void SetTOTPKey(byte[] totpkey) => TOTPKey = totpkey;
     public void SetNewPassword(string passwordHash) => PasswordHash = passwordHash;
 }
 

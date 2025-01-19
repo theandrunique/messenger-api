@@ -5,16 +5,16 @@ namespace MessengerAPI.Domain.Models.Entities;
 
 public class Channel
 {
+    private readonly List<ChannelMemberInfo> _members = new();
+
     public long Id { get; private set; }
     public long? OwnerId { get; private set; }
     public string? Title { get; private set; }
     public Image? Image { get; private set; }
     public ChannelType Type { get; private set; }
-    public DateTime? LastMessageAt { get; private set; }
+    public DateTimeOffset? LastMessageTimestamp { get; private set; }
     public MessageInfo? LastMessage { get; private set; }
-
-    public IReadOnlyList<ChannelMemberInfo> Members => _members.ToList();
-    private readonly List<ChannelMemberInfo> _members = new();
+    public List<ChannelMemberInfo> Members => _members.ToList();
 
     public static Channel CreateSavedMessages(long id, User user)
     {
@@ -62,7 +62,7 @@ public class Channel
         string? title,
         Image? image,
         ChannelType type,
-        DateTime? lastMessageAt,
+        DateTimeOffset? lastMessageAt,
         MessageInfo? lastMessage)
     {
         Id = id;
@@ -70,7 +70,7 @@ public class Channel
         Title = title;
         Image = image;
         Type = type;
-        LastMessageAt = lastMessageAt;
+        LastMessageTimestamp = lastMessageAt;
         LastMessage = lastMessage;
     }
 
@@ -87,12 +87,12 @@ public class Channel
 
     public bool IsUserInTheChannel(long userId)
     {
-        return _members.Any(m => m.Id == userId);
+        return _members.Any(m => m.UserId == userId);
     }
 
     public void SetLastMessage(Message message)
     {
-        LastMessageAt = message.SentAt;
+        LastMessageTimestamp = message.Timestamp;
         LastMessage = new MessageInfo(message);
     }
 }

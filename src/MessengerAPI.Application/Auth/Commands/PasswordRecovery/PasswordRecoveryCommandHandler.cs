@@ -37,7 +37,7 @@ public class PasswordRecoveryCommandHandler : IRequestHandler<PasswordRecoveryCo
             return ApiErrors.User.NotFound;
         }
 
-        var totp = _totpHelper.GenerateTotp(user.Key, 500, 6);
+        var totp = _totpHelper.GenerateTotp(user.TOTPKey, 500, 6);
 
         await _smtpClient.SendEmailAsync(user.Email, "Passowrd recovery", $"Your code to recovery password: {totp}");
 

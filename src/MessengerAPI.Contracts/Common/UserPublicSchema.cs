@@ -5,11 +5,11 @@ namespace MessengerAPI.Contracts.Common;
 /// </summary>
 public record UserPublicSchema
 {
-    public ICollection<string> Images { get; init; }
+    public string Image { get; init; }
     public string Id { get; init; }
     public string Username { get; init; }
-    public DateTime UsernameUpdatedAt { get; init; }
+    public DateTimeOffset UsernameUpdatedTimestamp { get; init; }
     public string? Bio { get; init; }
     public string GlobalName { get; init; }
-    public DateTime CreatedAt { get; init; }
+    public DateTimeOffset Timestamp { get; init; }
 }

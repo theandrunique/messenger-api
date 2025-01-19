@@ -10,7 +10,7 @@ public class Attachment
     public string ContentType { get; private set; }
     public long Size { get; private set; }
     public string PreSignedUrl { get; private set; }
-    public DateTime PreSignedUrlExpiresAt { get; private set; }
+    public DateTimeOffset PreSignedUrlExpiresAt { get; private set; }
     public string? Placeholder { get; private set; }
     public float? DurationSecs { get; private set; }
     public string? Waveform { get; private set; }
@@ -24,7 +24,7 @@ public class Attachment
         string contentType,
         long size,
         string preSignedUrl,
-        DateTime preSignedUrlExpiresAt)
+        DateTimeOffset preSignedUrlExpiresAt)
     {
         Id = id;
         ChannelId = channelId;
@@ -36,7 +36,9 @@ public class Attachment
         PreSignedUrlExpiresAt = preSignedUrlExpiresAt;
     }
 
-    public void UpdatePreSignedUrl(string preSignedUrl, DateTime preSignedUrlExpiresAt)
+    public Attachment() { }
+
+    public void UpdatePreSignedUrl(string preSignedUrl, DateTimeOffset preSignedUrlExpiresAt)
     {
         PreSignedUrl = preSignedUrl;
         PreSignedUrlExpiresAt = preSignedUrlExpiresAt;

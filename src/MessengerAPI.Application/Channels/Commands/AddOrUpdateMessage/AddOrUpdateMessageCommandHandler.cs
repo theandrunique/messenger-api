@@ -79,7 +79,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
 
         if (request.ReplyTo.HasValue)
         {
-            var replyToMessage = await _messageRepository.GetMessageByIdAsync(request.ChannelId, request.ReplyTo.Value);
+            var replyToMessage = await _messageRepository.GetMessageByIdOrNullAsync(request.ChannelId, request.ReplyTo.Value);
             if (replyToMessage is null)
             {
                 return ApiErrors.Channel.MessageNotFound;
@@ -90,13 +90,13 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
 
         if (request.MessageId.HasValue)
         {
-            message = await _messageRepository.GetMessageByIdAsync(request.ChannelId, request.MessageId.Value);
+            message = await _messageRepository.GetMessageByIdOrNullAsync(request.ChannelId, request.MessageId.Value);
             if (message is null)
             {
                 return ApiErrors.Channel.MessageNotFound;
             }
 
-            message.Update(request.ReplyTo, request.Content, attachments);
+            message.Edit(request.ReplyTo, request.Content, attachments);
             await _messageRepository.RewriteAsync(message);
         }
         else

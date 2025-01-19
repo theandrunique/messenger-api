@@ -8,7 +8,7 @@ namespace MessengerAPI.Infrastructure.Auth;
 
 public class JwtHelper : IJwtHelper
 {
-    public string Generate(Claim[] payload, RSA key, string keyId, string issuer, string audience, DateTime expiryTime)
+    public string Generate(Claim[] payload, RSA key, string keyId, string issuer, string audience, DateTimeOffset expiryTime)
     {
         var signingCredentials = new SigningCredentials(new RsaSecurityKey(key), SecurityAlgorithms.RsaSha256);
 
@@ -16,7 +16,7 @@ public class JwtHelper : IJwtHelper
             claims: payload,
             issuer: issuer,
             audience: audience,
-            expires: expiryTime,
+            expires: expiryTime.UtcDateTime,
             notBefore: DateTime.UtcNow,
             signingCredentials: signingCredentials
         );

@@ -25,10 +25,10 @@ public class SetUpTotpCommandHandler : IRequestHandler<SetUpTotpCommand, ErrorOr
             return Errors.ApiErrors.User.NotFound;
         }
 
-        user.SetKey(_totpHelper.GenerateSecretKey(20));
+        user.SetTOTPKey(_totpHelper.GenerateSecretKey(20));
 
         await _userRepository.UpdateKeyAsync(user);
 
-        return new SetUpTotpCommandResponse(_totpHelper.CreateOtpAuthUrl(user.Key, "MessengerAPI", user.Email));
+        return new SetUpTotpCommandResponse(_totpHelper.CreateOtpAuthUrl(user.TOTPKey, "MessengerAPI", user.Email));
     }
 }

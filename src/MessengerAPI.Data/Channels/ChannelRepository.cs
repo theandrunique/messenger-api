@@ -1,52 +1,54 @@
 using Cassandra;
 using Cassandra.Data.Linq;
-using Cassandra.Mapping;
-using MessengerAPI.Data.Tables;
+using MessengerAPI.Data.Mappers;
+using MessengerAPI.Data.Queries;
 using MessengerAPI.Domain.Entities.ValueObjects;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Data.Channels;
 
-public class ChannelRepository : IChannelRepository
+internal class ChannelRepository : IChannelRepository
 {
     private readonly ISession _session;
-    private readonly Table<ChannelById> _tableChannelsById;
-    private readonly Table<ChannelUsers> _tableChannelUsers;
-    private readonly Table<PrivateChannel> _tablePrivateChannels;
-    private readonly Table<SavedMessagesChannel> _tableSavedMessagesChannels;
-    private readonly IMapper _mapper;
+    private readonly ChannelByIdQueries _channelsById;
+    private readonly ChannelUserQueries _channelUsers;
+    private readonly PrivateChannelQueries _privateChannels;
+    private readonly SavedMessagesChannelQueries _savedMessagesChannels;
 
-    public ChannelRepository(ISession session)
+    public ChannelRepository(
+        ISession session,
+        ChannelByIdQueries channelsById,
+        ChannelUserQueries channelUsers,
+        PrivateChannelQueries privateChannels,
+        SavedMessagesChannelQueries savedMessagesChannels)
     {
         _session = session;
-        _tableChannelsById = new Table<ChannelById>(_session);
-        _tableChannelUsers = new Table<ChannelUsers>(_session);
-        _tablePrivateChannels = new Table<PrivateChannel>(_session);
-        _tableSavedMessagesChannels = new Table<SavedMessagesChannel>(_session);
-
-        _mapper = new Mapper(_session);
+        _channelsById = channelsById;
+        _channelUsers = channelUsers;
+        _privateChannels = privateChannels;
+        _savedMessagesChannels = savedMessagesChannels;
     }
 
     public Task AddAsync(Channel channel)
     {
         var batch = new BatchStatement();
 
-        batch.Add(_tableChannelsById.Insert(ChannelById.FromChannel(channel)));
+        batch.Add(_channelsById.Insert(channel));
 
-        foreach (var member in ChannelUsers.FromChannel(channel))
+        foreach (var member in channel.Members)
         {
-            batch.Add(_tableChannelUsers.Insert(member));
+            batch.Add(_channelUsers.Insert(channel.Id, member));
         }
 
         if (channel.Type == ChannelType.Private)
         {
-            batch.Add(_tablePrivateChannels.Insert(PrivateChannel.FromChannel(channel)));
+            batch.Add(_privateChannels.Insert(channel));
         }
 
         if (channel.Type == ChannelType.SavedMessages)
         {
-            batch.Add(_tableSavedMessagesChannels.Insert(SavedMessagesChannel.FromChannel(channel)));
+            batch.Add(_savedMessagesChannels.Insert(channel));
         }
 
         return _session.ExecuteAsync(batch);
@@ -54,132 +56,125 @@ public class ChannelRepository : IChannelRepository
 
     public Task AddMemberToChannel(long channelId, ChannelMemberInfo member)
     {
-        return _tableChannelUsers
-            .Insert(ChannelUsers.FromMember(member, channelId))
-            .ExecuteAsync();
+        return _session.ExecuteAsync(_channelUsers.Insert(channelId, member));
     }
 
-    public async Task<Channel> GetByIdOrNullAsync(long channelId)
+    public async Task<Channel?> GetByIdOrNullAsync(long channelId)
     {
-        var channel = await _tableChannelsById
-            .FirstOrDefault(c => c.ChannelId == channelId)
-            .ExecuteAsync();
-
-        if (channel is null)
+        var query = _channelsById.SelectById(channelId);
+        var channelResult = (await _session.ExecuteAsync(query)).FirstOrDefault();
+        if (channelResult is null)
         {
             return default;
         }
-        
-        var members = await _mapper.FetchAsync<ChannelUsers>(
-            "SELECT * FROM channel_users_by_channel_id WHERE channelid = ?",
-            channelId);
 
-        var response = channel.ToChannel();
-        response.SetMembers(members.Select(m => m.ToChannelMemberInfo()));
-        return response;
+        var channel = ChannelMapper.Map(channelResult);
+
+        var channelUsersQuery = _channelUsers.SelectByChannelId(channelId);
+        var result = await _session.ExecuteAsync(channelUsersQuery);
+
+        channel.SetMembers(result.Select(r => ChannelMapper.MapChannelUser(r)));
+
+        return channel;
     }
 
     public async Task<IEnumerable<long>> GetMemberIdsFromChannelByIdAsync(long channelId)
     {
-        var query = """
-            SELECT userid FROM channel_users_by_channel_id
-            WHERE channelid = ?
-        """;
+        var query = _channelUsers.SelectByChannelId(channelId);
 
-        var statement = new SimpleStatement(query, channelId);
+        var result = await _session.ExecuteAsync(query);
 
-        var resultSet = await _session.ExecuteAsync(statement);
-
-        return resultSet.Select(row => row.GetValue<long>("userid"));
+        return result.Select(row => row.GetValue<long>("userid"));
     }
 
-    public async Task<Channel> GetPrivateChannelOrNullByIdsAsync(long userId1, long userId2)
+    public async Task<Channel?> GetPrivateChannelOrNullByIdsAsync(long userId1, long userId2)
     {
-        if (userId1.CompareTo(userId2) > 0)
-        {
-            (userId1, userId2) = (userId2, userId1);
-        }
-
-        var privateChannel = await _tablePrivateChannels
-            .FirstOrDefault(c => c.UserId1 == userId1 && c.UserId2 == userId2)
-            .ExecuteAsync();
-
-        if (privateChannel is null)
+        var query = _privateChannels.SelectByUserIds(userId1, userId2);
+        var result = await _session.ExecuteAsync(query);
+        var channelId = result.FirstOrDefault()?.GetValue<long>("channelid");
+        if (channelId is null)
         {
             return default;
         }
 
-        var response = await _tableChannelsById
-            .FirstOrDefault(c => c.ChannelId == privateChannel.ChannelId)
-            .ExecuteAsync();
-
-        if (response is null)
+        query = _channelsById.SelectById(channelId.Value);
+        var channelResult = (await _session.ExecuteAsync(query)).FirstOrDefault();
+        if (channelResult is null)
         {
-            return default;
+            throw new Exception("Channel was found in private_channels table but not found in channels_by_id table.");
         }
 
+        var channel = ChannelMapper.Map(channelResult);
 
-        var members = await _mapper.FetchAsync<ChannelUsers>(
-            "SELECT * FROM channel_users_by_channel_id WHERE channelid = ?",
-            privateChannel.ChannelId);
+        query = _channelUsers.SelectByChannelId(channelId.Value);
+        result = await _session.ExecuteAsync(query);
 
-        var result = response.ToChannel();
+        if (result.Count() != 2)
+        {
+            throw new Exception($"Expected to found two users in private channel but found {result.Count()}.");
+        }
 
-        result.SetMembers(members.Select(m => m.ToChannelMemberInfo()));
-
-        return result;
+        channel.SetMembers(result.Select(r => ChannelMapper.MapChannelUser(r)));
+        return channel;
     }
 
-    public async Task<Channel> GetSavedMessagesChannelOrNullAsync(long userId)
+    public async Task<Channel?> GetSavedMessagesChannelOrNullAsync(long userId)
     {
-        var savedMessagesChannel = _tableSavedMessagesChannels
-            .FirstOrDefault(c => c.UserId == userId)
-            .Execute();
-
-        if (savedMessagesChannel is null)
+        var query = _savedMessagesChannels.SelectByUserId(userId);
+        var result = await _session.ExecuteAsync(query);
+        var channelId = result.FirstOrDefault()?.GetValue<long>("channelid");
+        if (channelId is null)
         {
             return default;
         }
 
-        var channelInfo = await _tableChannelsById
-            .FirstOrDefault(c => c.ChannelId == savedMessagesChannel.ChannelId)
-            .ExecuteAsync();
+        query = _channelsById.SelectById(channelId.Value);
+        var channelResult = (await _session.ExecuteAsync(query)).FirstOrDefault();
+        if (channelResult is null)
+        {
+            throw new Exception("Channel was found in saved_messages_channels table but not found in channels_by_id table.");
+        }
 
-        var channel = channelInfo.ToChannel();
+        var channel = ChannelMapper.Map(channelResult);
 
-        var member = await _mapper.FirstAsync<ChannelUsers>(
-            "SELECT * FROM channel_users_by_channel_id WHERE channelid = ?",
-            savedMessagesChannel.ChannelId);
+        query = _channelUsers.SelectByChannelId(channelId.Value);
+        result = await _session.ExecuteAsync(query);
 
-        channel.SetMembers(new List<ChannelMemberInfo> { member.ToChannelMemberInfo() });
+        if (result.Count() != 1)
+        {
+            throw new Exception($"Expected to found one user in saved messages channel but found {result.Count()}.");
+        }
 
+        channel.SetMembers(result.Select(r => ChannelMapper.MapChannelUser(r)));
         return channel;
     }
 
     public async Task<List<Channel>> GetUserChannelsAsync(long userId)
     {
-        var userChannels = await _tableChannelUsers
-            .Where(c => c.UserId == userId)
-            .ExecuteAsync();
+        var query = _channelUsers.SelectByUserId(userId);
+        var result = await _session.ExecuteAsync(query);
+        var channelIds = result.Select(c => c.GetValue<long>("channelid")).ToList();
 
-        var channelIds = userChannels.Select(c => c.ChannelId).ToList();
+        query = _channelsById.SelectByIds(channelIds);
+        result = await _session.ExecuteAsync(query);
 
-        var channels = await _tableChannelsById
-            .Where(c => channelIds.Contains(c.ChannelId))
-            .ExecuteAsync();
+        var channels = result.Select(ChannelMapper.Map);
 
-        var channelsMembers = await _mapper.FetchAsync<ChannelUsers>(
-            "SELECT * FROM channel_users_by_channel_id WHERE channelid IN ?",
-            channelIds
-        );
+        query = _channelUsers.SelectByChannelIds(channelIds);
+        result = await _session.ExecuteAsync(query);
+        var channelsMembers = result.Select(r =>
+            new
+            {
+                channelId = r.GetValue<long>("channelid"),
+                member = ChannelMapper.MapChannelUser(r)
+            });
 
         var response = new List<Channel>();
 
         foreach (var channel in channels)
         {
-            var c = channel.ToChannel();
-            c.SetMembers(channelsMembers.Where(m => m.ChannelId == channel.ChannelId).Select(m => m.ToChannelMemberInfo()));
-            response.Add(c);
+            channel.SetMembers(channelsMembers.Where(m => m.channelId == channel.Id).Select(m => m.member));
+            response.Add(channel);
         }
 
         return response;
@@ -187,27 +182,13 @@ public class ChannelRepository : IChannelRepository
 
     public Task UpdateChannelInfo(long channelId, string title, Image? image)
     {
-        var query = """
-            UPDATE channels_by_id
-            SET title = ?, image = ?
-            WHERE channel_id = ?
-        """;
-
-        var statement = new SimpleStatement(query, title, image, channelId);
-
-        return _session.ExecuteAsync(statement);
+        var query = _channelsById.UpdateChannelInfo(channelId, title, image);
+        return _session.ExecuteAsync(query);
     }
 
     public Task UpdateOwnerId(long channelId, long ownerId)
     {
-        var query = """
-            UPDATE channels_by_id
-            SET ownerid = ?
-            WHERE channel_id = ?
-        """;
-
-        var statement = new SimpleStatement(query, ownerId, channelId);
-
-        return _session.ExecuteAsync(statement);
+        var query = _channelsById.UpdateOwnerId(channelId, ownerId);
+        return _session.ExecuteAsync(query);
     }
 }

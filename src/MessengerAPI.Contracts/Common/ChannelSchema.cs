@@ -13,7 +13,7 @@ public record ChannelSchema
     public string? Title { get; init; }
     public string? Image { get; init; }
     public ChannelType Type { get; init; }
-    public DateTime? LastMessageAt { get; init; }
+    public DateTimeOffset? LastMessageTimestamp { get; init; }
     public MessageInfo? LastMessage { get; init; }
     public List<ChannelMemberInfo> Members { get; init; }
 }

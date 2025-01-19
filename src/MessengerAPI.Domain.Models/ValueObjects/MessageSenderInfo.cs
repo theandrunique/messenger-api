@@ -8,13 +8,21 @@ public class MessageSenderInfo
     public long Id { get; init; }
     public string Username { get; init; }
     public string GlobalName { get; init; }
-    public List<Image> Images { get; init; }
+    public Image? Image { get; init; }
     public MessageSenderInfo(User author)
     {
         Id = author.Id;
         Username = author.Username;
         GlobalName = author.GlobalName;
-        Images = author.Images.ToList();
+        Image = author.Image;
+    }
+
+    public MessageSenderInfo(long id, string username, string globalName, Image? image)
+    {
+        Id = id;
+        Username = username;
+        GlobalName = globalName;
+        Image = image;
     }
 
     public MessageSenderInfo() { }

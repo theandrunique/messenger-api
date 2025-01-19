@@ -4,27 +4,30 @@ namespace MessengerAPI.Domain.Models.Entities;
 
 public class Message
 {
+    private readonly List<Attachment> _attachments = new();
+
     public long Id { get; private set; }
     public long ChannelId { get; private set; }
-    public long SenderId { get; private set; }
-    public string Content { get; private set; }
-    public DateTime SentAt { get; private set; }
-    public DateTime? UpdatedAt { get; private set; }
-    public long? ReplyTo { get; private set; }
+    public long AuthorId { get; private set; }
     public MessageSenderInfo Author { get; private set; }
-
-    private readonly List<Attachment> _attachments = new();
+    public string Content { get; private set; }
+    public DateTimeOffset Timestamp { get; private set; }
+    public DateTimeOffset? EditedTimestamp { get; private set; }
     public List<Attachment> Attachments => _attachments.ToList();
+    public bool Pinned { get; private set; }
+    public MessageType Type { get; private set; }
+    public long? ReplyTo { get; private set; }
+
 
     public static Message Create(
         long id,
         long channelId,
-        User sender,
+        User author,
         string content,
         long? replyTo = null,
         List<Attachment>? attachments = null)
     {
-        var message = new Message(id, channelId, sender, content, replyTo, attachments);
+        var message = new Message(id, channelId, author, content, replyTo, attachments);
         return message;
     }
 
@@ -37,11 +40,12 @@ public class Message
         List<Attachment>? attachments = null)
     {
         Id = id;
+        Type = MessageType.Default;
         ChannelId = channelId;
-        SenderId = sender.Id;
         Author = new MessageSenderInfo(sender);
+        AuthorId = sender.Id;
         Content = content;
-        SentAt = DateTime.UtcNow;
+        Timestamp = DateTimeOffset.UtcNow;
         ReplyTo = replyTo;
 
         if (attachments is not null) _attachments = attachments;
@@ -51,35 +55,40 @@ public class Message
         long channelId,
         long id,
         string content,
-        DateTime sentAt,
-        DateTime? updatedAt,
+        DateTime timestamp,
+        DateTime? editedTimestamp,
         long? replyTo,
         MessageSenderInfo author,
         List<Attachment>? attachments = null)
     {
         ChannelId = channelId;
         Id = id;
-        SenderId = author.Id;
         Content = content;
-        SentAt = sentAt;
-        UpdatedAt = updatedAt;
+        Timestamp = timestamp;
+        EditedTimestamp = editedTimestamp;
         ReplyTo = replyTo;
         Author = author;
+        AuthorId = author.Id;
         _attachments = attachments ?? new List<Attachment>();
     }
 
     public Message() { }
 
-    public void Update(long? replyTo, string content, List<Attachment>? attachments = null)
+    public void Edit(long? replyTo, string content, List<Attachment>? attachments = null)
     {
         ReplyTo = replyTo;
         Content = content;
-        UpdatedAt = DateTime.UtcNow;
+        EditedTimestamp = DateTimeOffset.UtcNow;
 
         if (attachments is not null)
         {
             _attachments.Clear();
             _attachments.AddRange(attachments);
         }
+    }
+
+    public void SetAuthor(MessageSenderInfo author)
+    {
+        Author = author;
     }
 }

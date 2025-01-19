@@ -6,7 +6,7 @@ public class MessageInfo
 {
     public string AuthorGlobalName { get; init; }
     public string Content { get; init; }
-    public DateTime SentAt { get; init; }
+    public DateTimeOffset Timestamp { get; init; }
     public int AttachmentsCount { get; init; }
 
     public MessageInfo(Message message)
@@ -14,7 +14,7 @@ public class MessageInfo
         AuthorGlobalName = message.Author.GlobalName;
         AttachmentsCount = message.Attachments.Count;
         Content = message.Content;
-        SentAt = message.SentAt;
+        Timestamp = message.Timestamp;
     }
 
     public MessageInfo() { }
