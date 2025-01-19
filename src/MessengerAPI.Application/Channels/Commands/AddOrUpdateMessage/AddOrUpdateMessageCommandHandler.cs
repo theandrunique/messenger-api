@@ -96,7 +96,6 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
             }
 
             message.Edit(request.ReplyTo, request.Content, attachments);
-            await _messageRepository.RewriteAsync(message);
         }
         else
         {
@@ -107,9 +106,8 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
                 request.Content,
                 request.ReplyTo,
                 attachments);
-            await _messageRepository.AddAsync(message);
         }
-
+        await _messageRepository.AddAsync(message);
 
         return _mapper.Map<MessageSchema>(message);
     }

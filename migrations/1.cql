@@ -24,9 +24,9 @@ CREATE TYPE messenger.attachment (
     isspoiler boolean,
     placeholder text,
     presignedurl text,
-    presignedurlexpiresat timestamp,
+    presignedurlexpirestimestamp timestamp,
     size bigint,
-    uploadedfilename text,
+    uploadfilename text,
     waveform text,
 );
 
@@ -42,9 +42,9 @@ CREATE TABLE messenger.attachments (
     isspoiler boolean,
     placeholder text,
     presignedurl text,
-    presignedurlexpiresat timestamp,
+    presignedurlexpirestimestamp timestamp,
     size bigint,
-    uploadedfilename text,
+    uploadfilename text,
     waveform text,
 
     PRIMARY KEY (channelid, messageid, id)
@@ -93,7 +93,6 @@ CREATE TABLE messenger.messages (
     content text,
     timestamp timestamp,
     editedtimestamp timestamp,
-    attachments list<frozen<attachment>>,
     pinned boolean,
     type int,
     replyto bigint,

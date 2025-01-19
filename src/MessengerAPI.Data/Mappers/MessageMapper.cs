@@ -29,7 +29,7 @@ public static class MessageMapper
             row.GetValue<long?>("replyto"),
             row.GetValue<bool>("pinned"),
             (MessageType)row.GetValue<int>("type"),
-            row.GetValue<List<Attachment>?>("attachments")
+            null 
         );
     }
 }

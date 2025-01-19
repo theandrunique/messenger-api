@@ -55,6 +55,7 @@ public class AttachmentService
 
         return new Attachment(
             parsedFilename.Value.AttachmentId,
+            null,
             parsedFilename.Value.ChannelId,
             filename,
             uploadedFilename,

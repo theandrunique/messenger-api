@@ -18,7 +18,6 @@ public class Message
     public MessageType Type { get; private set; }
     public long? ReplyTo { get; private set; }
 
-
     public static Message Create(
         long id,
         long channelId,
@@ -49,6 +48,7 @@ public class Message
         ReplyTo = replyTo;
 
         if (attachments is not null) _attachments = attachments;
+        foreach (var attachment in _attachments) attachment.SetMessageId(id);
     }
 
     public Message(
@@ -70,10 +70,10 @@ public class Message
         Timestamp = timestamp;
         EditedTimestamp = editedTimestamp;
         ReplyTo = replyTo;
+        Pinned = pinned;
+        Type = type;
         _attachments = attachments ?? new List<Attachment>();
     }
-
-    public Message() { }
 
     public void Edit(long? replyTo, string content, List<Attachment>? attachments = null)
     {
@@ -91,5 +91,11 @@ public class Message
     public void SetAuthor(MessageSenderInfo author)
     {
         Author = author;
+    }
+
+    public void SetAttachments(IEnumerable<Attachment> attachments)
+    {
+        _attachments.Clear();
+        _attachments.AddRange(attachments);
     }
 }
