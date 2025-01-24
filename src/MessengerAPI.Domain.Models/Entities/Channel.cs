@@ -16,29 +16,22 @@ public class Channel
     public MessageInfo? LastMessage { get; private set; }
     public List<ChannelMemberInfo> Members => _members.ToList();
 
-    public static Channel CreateSavedMessages(long id, User user)
+    public static Channel CreatePrivate(long id, User[] users)
     {
-        var channel = new Channel(id, ChannelType.SavedMessages, null, null, null);
-        channel.AddMember(user);
-        return channel;
-    }
+        if (users.Length != 2 || users.Length != 1)
+        {
+            throw new ArgumentException("Private channel must have exactly two or one member.");
+        }
 
-    public static Channel CreatePrivate(long id, User user1, User user2)
-    {
         var channel = new Channel(id, ChannelType.Private, null, null, null);
-        channel.AddMember(user1);
-        channel.AddMember(user2);
+        channel._members.AddRange(users.Select(user => new ChannelMemberInfo(user)));
         return channel;
     }
 
-    public static Channel CreateGroup(long id, long ownerId, List<User> members, string title)
+    public static Channel CreateGroup(long id, long ownerId, string title, User[] members)
     {
         var channel = new Channel(id, ChannelType.Group, ownerId, title, null);
-
-        foreach (var member in members)
-        {
-            channel.AddMember(member);
-        }
+        channel._members.AddRange(members.Select(user => new ChannelMemberInfo(user)));
         return channel;
     }
 

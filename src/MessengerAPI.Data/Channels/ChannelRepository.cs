@@ -14,20 +14,17 @@ internal class ChannelRepository : IChannelRepository
     private readonly ChannelByIdQueries _channelsById;
     private readonly ChannelUserQueries _channelUsers;
     private readonly PrivateChannelQueries _privateChannels;
-    private readonly SavedMessagesChannelQueries _savedMessagesChannels;
 
     public ChannelRepository(
         ISession session,
         ChannelByIdQueries channelsById,
         ChannelUserQueries channelUsers,
-        PrivateChannelQueries privateChannels,
-        SavedMessagesChannelQueries savedMessagesChannels)
+        PrivateChannelQueries privateChannels)
     {
         _session = session;
         _channelsById = channelsById;
         _channelUsers = channelUsers;
         _privateChannels = privateChannels;
-        _savedMessagesChannels = savedMessagesChannels;
     }
 
     public Task AddAsync(Channel channel)
@@ -44,11 +41,6 @@ internal class ChannelRepository : IChannelRepository
         if (channel.Type == ChannelType.Private)
         {
             batch.Add(_privateChannels.Insert(channel));
-        }
-
-        if (channel.Type == ChannelType.SavedMessages)
-        {
-            batch.Add(_savedMessagesChannels.Insert(channel));
         }
 
         return _session.ExecuteAsync(batch);
@@ -109,40 +101,9 @@ internal class ChannelRepository : IChannelRepository
         query = _channelUsers.SelectByChannelId(channelId.Value);
         result = await _session.ExecuteAsync(query);
 
-        if (result.Count() != 2)
+        if (result.Count() != 2 || result.Count() != 1)
         {
-            throw new Exception($"Expected to found two users in private channel but found {result.Count()}.");
-        }
-
-        channel.SetMembers(result.Select(r => ChannelMapper.MapChannelUser(r)));
-        return channel;
-    }
-
-    public async Task<Channel?> GetSavedMessagesChannelOrNullAsync(long userId)
-    {
-        var query = _savedMessagesChannels.SelectByUserId(userId);
-        var result = await _session.ExecuteAsync(query);
-        var channelId = result.FirstOrDefault()?.GetValue<long>("channelid");
-        if (channelId is null)
-        {
-            return default;
-        }
-
-        query = _channelsById.SelectById(channelId.Value);
-        var channelResult = (await _session.ExecuteAsync(query)).FirstOrDefault();
-        if (channelResult is null)
-        {
-            throw new Exception("Channel was found in saved_messages_channels table but not found in channels_by_id table.");
-        }
-
-        var channel = ChannelMapper.Map(channelResult);
-
-        query = _channelUsers.SelectByChannelId(channelId.Value);
-        result = await _session.ExecuteAsync(query);
-
-        if (result.Count() != 1)
-        {
-            throw new Exception($"Expected to found one user in saved messages channel but found {result.Count()}.");
+            throw new Exception($"Expected to found two or one user in private channel but found {result.Count()}.");
         }
 
         channel.SetMembers(result.Select(r => ChannelMapper.MapChannelUser(r)));

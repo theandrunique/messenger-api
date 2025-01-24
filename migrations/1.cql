@@ -79,13 +79,6 @@ CREATE TABLE messenger.channels_by_id (
     PRIMARY KEY (channelid)
 );
 
-CREATE TABLE messenger.saved_messages_channel(
-    userid bigint,
-    channelid bigint,
-
-    PRIMARY KEY(userid)
-);
-
 CREATE TABLE messenger.messages (
     channelid bigint,
     id bigint,

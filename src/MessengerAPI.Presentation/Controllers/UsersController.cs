@@ -1,5 +1,4 @@
 using MediatR;
-using MessengerAPI.Application.Users.Commands.RecoveryPasswordComplete;
 using MessengerAPI.Application.Users.Commands.SetUpTotp;
 using MessengerAPI.Application.Users.Commands.VerifyEmail;
 using MessengerAPI.Application.Users.Queries.GetMeQuery;
@@ -57,25 +56,6 @@ public class UsersController : ApiController
             success => Ok(success),
             errors => Problem(errors)
         );
-    }
-
-    [HttpPut("me/password-recovery-complete")]
-    [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
-    [AllowAnonymous]
-    public async Task<IActionResult> PasswordRecoveryComplete(
-        [FromForm] PasswordRecoveryCompleteSchemaRequest schema,
-        CancellationToken cancellationToken)
-    {
-        var command = new PasswordRecoveryCompleteCommand(
-            schema.login,
-            schema.newPassword,
-            schema.code);
-
-        var result = await _mediator.Send(command, cancellationToken);
-
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors));
     }
 
     [HttpGet("verification-code")]
