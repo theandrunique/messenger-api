@@ -8,8 +8,6 @@ using MessengerAPI.Presentation.Common;
 using MessengerAPI.Application.Auth.Commands.RefreshToken;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Application.Auth.Commands.LoginWithTotp;
-using MessengerAPI.Application.Auth.Commands.PasswordRecovery;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -24,12 +22,6 @@ public class AuthController : ApiController
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Sign up
-    /// </summary>
-    /// <param name="schema"><see cref="SignUpRequestSchema"/></param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="UserPrivateSchema"/></returns>
     [HttpPost("sign-up")]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignUpAsync([FromForm] SignUpRequestSchema schema, CancellationToken cancellationToken)
@@ -47,12 +39,6 @@ public class AuthController : ApiController
             errors => Problem(errors));
     }
 
-    /// <summary>
-    /// Sign in
-    /// </summary>
-    /// <param name="schema"><see cref="SignInRequestSchema"/></param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="TokenPairResponse"/></returns>
     [HttpPost("sign-in")]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignInAsync([FromForm] SignInRequestSchema schema, CancellationToken cancellationToken)
@@ -68,45 +54,6 @@ public class AuthController : ApiController
             },
             errors => Problem(errors));
     }
-
-    [HttpPost("sign-in-totp")]
-    [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SignInWithTotpAsync([FromForm] SignInWithTotpRequestSchema schema, CancellationToken cancellationToken)
-    {
-        var command = new LoginWithTotpCommand(schema.login, schema.totp);
-
-        var result = await _mediator.Send(command, cancellationToken);
-
-        return result.Match(
-            success =>
-            {
-                AddRefreshTokenToCookies(success.RefreshToken);
-                return Ok(success);
-            },
-            errors => Problem(errors));
-    }
-
-    [HttpPost("password-recovery")]
-    [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> PasswordRecoveryAsync(
-        [FromBody] PasswordRecoveryRequestSchema schema,
-        CancellationToken cancellationToken)
-    {
-        var command = new PasswordRecoveryCommand(schema.login);
-
-        var result = await _mediator.Send(command, cancellationToken);
-
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors));
-    }
-
-    /// <summary>
-    /// Refresh token
-    /// </summary>
-    /// <param name="refreshToken">Refresh token</param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="TokenPairResponse"/></returns>
     [HttpPost("token")]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> RefreshTokenAsync([FromForm] string refreshToken, CancellationToken cancellationToken)
@@ -123,10 +70,6 @@ public class AuthController : ApiController
             errors => Problem(errors));
     }
 
-    /// <summary>
-    /// Get refresh token from cookies
-    /// </summary>
-    /// <returns>Refresh token</returns>
     [HttpGet("token")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public IActionResult Token()

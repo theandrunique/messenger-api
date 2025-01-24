@@ -5,6 +5,7 @@ using MessengerAPI.Data.Queries;
 using MessengerAPI.Domain.Entities.ValueObjects;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Domain.Models.ValueObjects;
+using Newtonsoft.Json;
 
 namespace MessengerAPI.Data.Channels;
 
@@ -79,7 +80,7 @@ internal class ChannelRepository : IChannelRepository
         return result.Select(row => row.GetValue<long>("userid"));
     }
 
-    public async Task<Channel?> GetPrivateChannelOrNullByIdsAsync(long userId1, long userId2)
+    public async Task<Channel?> GetPrivateChannelOrNullAsync(long userId1, long userId2)
     {
         var query = _privateChannels.SelectByUserIds(userId1, userId2);
         var result = await _session.ExecuteAsync(query);
@@ -101,12 +102,14 @@ internal class ChannelRepository : IChannelRepository
         query = _channelUsers.SelectByChannelId(channelId.Value);
         result = await _session.ExecuteAsync(query);
 
-        if (result.Count() != 2 || result.Count() != 1)
+        var channelMembers = result.Select(r => ChannelMapper.MapChannelUser(r)).ToList();
+
+        if (channelMembers.Count != 2 && channelMembers.Count != 1)
         {
-            throw new Exception($"Expected to found two or one user in private channel but found {result.Count()}.");
+            throw new Exception($"Expected to found two or one user in private channel but found {channelMembers.Count}.");
         }
 
-        channel.SetMembers(result.Select(r => ChannelMapper.MapChannelUser(r)));
+        channel.SetMembers(channelMembers);
         return channel;
     }
 
@@ -128,7 +131,7 @@ internal class ChannelRepository : IChannelRepository
             {
                 channelId = r.GetValue<long>("channelid"),
                 member = ChannelMapper.MapChannelUser(r)
-            });
+            }).ToList();
 
         var response = new List<Channel>();
 

@@ -1,10 +1,8 @@
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
 using MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
-using MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 using MessengerAPI.Application.Channels.Commands.PostAttachment;
 using MessengerAPI.Application.Channels.Common;
-using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Presentation.Common;
@@ -23,60 +21,6 @@ public class ChannelsController : ApiController
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Get user's channels
-    /// </summary>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="ChannelSchema"/></returns>
-    [HttpGet]
-    [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetChannelsAsync(CancellationToken cancellationToken)
-    {
-        var identity = User.GetIdentity();
-
-        var query = new GetChannelsQuery(identity.UserId);
-
-        var result = await _mediator.Send(query, cancellationToken);
-
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors)
-        );
-    }
-
-    /// <summary>
-    /// Create channel
-    /// </summary>
-    /// <param name="schema"><see cref="CreateChannelRequestSchema"/></param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="ChannelSchema"/></returns>
-    [HttpPost]
-    [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateChannelAsync(CreateChannelRequestSchema schema, CancellationToken cancellationToken)
-    {
-        var identity = User.GetIdentity();
-
-        var query = new CreateChannelCommand(
-            identity.UserId,
-            schema.members,
-            schema.type,
-            schema.title);
-
-        var result = await _mediator.Send(query, cancellationToken);
-
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors)
-        );
-    }
-
-    /// <summary>
-    /// Create message
-    /// </summary>
-    /// <param name="schema"><see cref="CreateMessageRequestSchema"/></param>
-    /// <param name="channelId">Id of channel</param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="MessageSchema"/></returns>
     [HttpPost("{channelId}/messages")]
     [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateMessageAsync(
@@ -101,14 +45,6 @@ public class ChannelsController : ApiController
         );
     }
 
-    /// <summary>
-    /// Get messages from channel
-    /// </summary>
-    /// <param name="channelId">Channel id</param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <param name="offset">Offset</param>
-    /// <param name="limit">Limit</param>
-    /// <returns><see cref="MessageSchema"/></returns>
     [HttpGet("{channelId}/messages")]
     [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMessagesAsync(
@@ -131,14 +67,6 @@ public class ChannelsController : ApiController
         );
     }
 
-    /// <summary>
-    /// Edit message
-    /// </summary>
-    /// <param name="schema"><see cref="CreateMessageRequestSchema"/></param>
-    /// <param name="channelId">Channel id</param>
-    /// <param name="messageId">Message id</param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns></returns>
     [HttpPut("{channelId}/messages/{messageId}")]
     [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> EditMessageAsync(

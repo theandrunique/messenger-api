@@ -17,14 +17,20 @@ internal class PrivateChannelQueries
 
     public BoundStatement Insert(Channel channel)
     {
-        if (channel.Members.Count != 2)
-        {
-            throw new ArgumentException("Private channel must have exactly two members.");
-        }
-
         var sortedMembers = channel.Members.OrderBy(member => member.UserId).ToList();
 
-        return _insert.Bind(sortedMembers[0].UserId, sortedMembers[1].UserId, channel.Id);
+        if (sortedMembers.Count == 2)
+        {
+            return _insert.Bind(sortedMembers[0].UserId, sortedMembers[1].UserId, channel.Id);
+        }
+        else if (sortedMembers.Count == 1)
+        {
+            return _insert.Bind(sortedMembers[0].UserId, sortedMembers[0].UserId, channel.Id);
+        }
+        else
+        {
+            throw new ArgumentException("Private channel must have exactly 1 or 2 members.");
+        }
     }
 
     public BoundStatement SelectByUserIds(long userId1, long userId2)

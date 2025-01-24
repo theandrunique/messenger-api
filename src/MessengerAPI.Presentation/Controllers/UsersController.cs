@@ -1,12 +1,14 @@
 using MediatR;
+using MessengerAPI.Application.Channels.Commands;
+using MessengerAPI.Application.Channels.Commands.GetOrCreatePrivateChannel;
+using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Users.Commands.SetUpTotp;
 using MessengerAPI.Application.Users.Commands.VerifyEmail;
 using MessengerAPI.Application.Users.Queries.GetMeQuery;
 using MessengerAPI.Application.Users.Queries.RequestVerifyEmail;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Presentation.Common;
-using MessengerAPI.Presentation.Schemas.Users;
-using Microsoft.AspNetCore.Authorization;
+using MessengerAPI.Presentation.Schemas.Channels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessengerAPI.Presentation.Controllers;
@@ -21,11 +23,22 @@ public class UsersController : ApiController
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Get current user private data
-    /// </summary>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="UserPrivateSchema"/></returns>
+    [HttpGet("me/channels")]
+    [ProducesResponseType(typeof(List<ChannelSchema>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMyChannelsAsync(CancellationToken cancellationToken)
+    {
+        var identity = User.GetIdentity();
+
+        var query = new GetChannelsQuery(identity.UserId);
+
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return result.Match(
+            success => Ok(success),
+            errors => Problem(errors)
+        );
+    }
+
     [HttpGet("me")]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMeAsync(CancellationToken cancellationToken)
@@ -42,48 +55,54 @@ public class UsersController : ApiController
         );
     }
 
-    [HttpPut("me/otp")]
-    [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateMyTotpAsync(CancellationToken cancellationToken)
+    [HttpGet("me/private-channel/{userId}")]
+    [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPrivateChannelAsync(long userId, CancellationToken cancellationToken)
     {
         var identity = User.GetIdentity();
 
-        var query = new SetUpTotpCommand(identity.UserId);
-
-        var result = await _mediator.Send(query, cancellationToken);
-
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors)
-        );
-    }
-
-    [HttpGet("verification-code")]
-    public async Task<IActionResult> RequestEmailVerificationCodeAsync(CancellationToken cancellationToken)
-    {
-        var identity = User.GetIdentity();
-
-        var query = new RequestVerifyEmailCommand(identity.UserId);
-
-        var result = await _mediator.Send(query, cancellationToken);
-
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors)
-        );
-    }
-
-    [HttpGet("verify-email")]
-    public async Task<IActionResult> VerifyEmailAsync([FromQuery] string code, CancellationToken cancellationToken)
-    {
-        var identity = User.GetIdentity();
-
-        var command = new VerifyEmailCommand(identity.UserId, code);
+        var command = new GetOrCreatePrivateChannelCommand(identity.UserId, userId);
 
         var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors));
+            errors => Problem(errors)
+        );
+    }
+
+    [HttpGet("me/private-channel/me")]
+    [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetSavedMessagesChannelAsync(CancellationToken cancellationToken)
+    {
+        var identity = User.GetIdentity();
+
+        var command = new GetOrCreatePrivateChannelCommand(identity.UserId, identity.UserId);
+
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return result.Match(
+            success => Ok(success),
+            errors => Problem(errors)
+        );
+    }
+
+    [HttpPost("me/channels")]
+    [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateChannelAsync(CreateChannelRequestSchema schema, CancellationToken cancellationToken)
+    {
+        var identity = User.GetIdentity();
+
+        var query = new CreateChannelCommand(
+            identity.UserId,
+            schema.members,
+            schema.title);
+
+        var result = await _mediator.Send(query, cancellationToken);
+
+        return result.Match(
+            success => Ok(success),
+            errors => Problem(errors)
+        );
     }
 }

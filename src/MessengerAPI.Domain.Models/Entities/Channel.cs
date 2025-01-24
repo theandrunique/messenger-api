@@ -18,9 +18,9 @@ public class Channel
 
     public static Channel CreatePrivate(long id, User[] users)
     {
-        if (users.Length != 2 || users.Length != 1)
+        if (users.Length != 2 && users.Length != 1)
         {
-            throw new ArgumentException("Private channel must have exactly two or one member.");
+            throw new ArgumentException($"Private channel must have exactly two or one member but was given {users.Length}.");
         }
 
         var channel = new Channel(id, ChannelType.Private, null, null, null);
@@ -28,8 +28,13 @@ public class Channel
         return channel;
     }
 
-    public static Channel CreateGroup(long id, long ownerId, string title, User[] members)
+    public static Channel CreateGroup(long id, long ownerId, string? title, User[] members)
     {
+        if (string.IsNullOrEmpty(title))
+        {
+            title = null;
+        }
+
         var channel = new Channel(id, ChannelType.Group, ownerId, title, null);
         channel._members.AddRange(members.Select(user => new ChannelMemberInfo(user)));
         return channel;

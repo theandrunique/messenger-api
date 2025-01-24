@@ -58,7 +58,7 @@ CREATE TABLE messenger.channel_users_by_user_id (
     globalname text,
     image frozen<image>,
 
-    PRIMARY KEY (userid)
+    PRIMARY KEY (userid, channelid)
 );
 
 CREATE MATERIALIZED VIEW messenger.channel_users_by_channel_id AS
