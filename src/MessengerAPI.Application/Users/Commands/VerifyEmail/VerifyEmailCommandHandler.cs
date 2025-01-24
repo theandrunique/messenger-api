@@ -22,13 +22,13 @@ public class VerifyEmailCommandHandler : IRequestHandler<VerifyEmailCommand, Err
 
         if (user == null)
         {
-            return Errors.ApiErrors.User.NotFound;
+            throw new Exception("User was expected to be found here.");
         }
 
         var result = _totpHelper.Verify(request.Code, user.TOTPKey, 500, 6);
         if (!result)
         {
-            return Errors.ApiErrors.User.InvalidEmailValidationCode;
+            return ApiErrors.User.InvalidEmailValidationCode;
         }
 
         await _userRepository.SetEmailVerifiedAsync(user.Id);

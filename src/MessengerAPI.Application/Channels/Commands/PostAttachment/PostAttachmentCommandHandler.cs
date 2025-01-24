@@ -28,7 +28,7 @@ class PostAttachmentCommandHandler : IRequestHandler<PostAttachmentCommand, Erro
             attachments.Add(new CloudAttachmentSchema
             {
                 UploadFilename = uploadUrlDto.UploadFilename,
-                UploadUrl = uploadUrlDto.PreSignedUrl,
+                UploadUrl = uploadUrlDto.UploadUrl,
             });
         }
 

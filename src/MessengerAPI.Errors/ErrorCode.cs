@@ -8,15 +8,18 @@ public enum ErrorCode
     InvalidToken = 10003,
     InvalidCaptcha = 10004,
 
-    // Files error codes,
-    FileTooBig = 20001,
-    FileNotFound = 20002,
+    // Attachment error codes,
+    AttachmentNotFound = 20001,
+    AttachmentTooBig = 20002,
     InvalidUploadFilename = 20003,
+    AttachmentNotFoundInObjectStorage = 20004,
 
     // Channels error codes
     ChannelNotFound = 30002,
     MessageNotFound = 30003,
-    ChannelNotAllowed = 30004,
+    MessageToEditNotFound = 30004,
+    NotAllowedToSendMessageToChannel = 30005,
+    MessageWasSentByAnotherUser = 30006,
 
     // Users error codes
     UserNotFound = 40001,

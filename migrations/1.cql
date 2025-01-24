@@ -95,7 +95,6 @@ CREATE TABLE messenger.messages (
     editedtimestamp timestamp,
     pinned boolean,
     type int,
-    replyto bigint,
 
     PRIMARY KEY (channelid, id)
 );

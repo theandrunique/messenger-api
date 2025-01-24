@@ -26,10 +26,9 @@ public static class MessageMapper
             row.GetValue<string>("content"),
             row.GetValue<DateTimeOffset>("timestamp"),
             row.GetValue<DateTimeOffset?>("editedtimestamp"),
-            row.GetValue<long?>("replyto"),
             row.GetValue<bool>("pinned"),
             (MessageType)row.GetValue<int>("type"),
-            null 
+            null
         );
     }
 }

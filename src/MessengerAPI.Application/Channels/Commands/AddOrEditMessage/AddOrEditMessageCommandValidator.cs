@@ -1,8 +1,9 @@
 using FluentValidation;
+using MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 
-public class AddOrUpdateMessageCommandValidator : AbstractValidator<AddOrUpdateMessageCommand>
+public class AddOrUpdateMessageCommandValidator : AbstractValidator<AddOrEditMessageCommand>
 {
     public AddOrUpdateMessageCommandValidator()
     {

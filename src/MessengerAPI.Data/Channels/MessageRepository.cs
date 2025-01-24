@@ -1,4 +1,3 @@
-using System.Resources;
 using Cassandra;
 using Cassandra.Data.Linq;
 using MessengerAPI.Data.Mappers;
@@ -33,6 +32,7 @@ internal class MessageRepository : IMessageRepository
     {
         var batch = new BatchStatement()
             .Add(_messages.Insert(message))
+            .Add(_attachments.RemoveByChannelIdAndMessageId(message.ChannelId, message.Id))
             .Add(_channelsById.UpdateLastMessageInfo(message));
 
         foreach (var attachment in message.Attachments)

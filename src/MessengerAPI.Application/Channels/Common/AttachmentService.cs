@@ -37,14 +37,14 @@ public class AttachmentService
         var parsedFilename = ParseUploadedFilename(uploadedFilename);
         if (parsedFilename == null)
         {
-            return ApiErrors.File.InvalidUploadFilename(uploadedFilename);
+            return ApiErrors.Attachment.InvalidUploadFilename(uploadedFilename);
         }
 
         var objectMetadata = await _fileStorage.GetObjectMetadataAsync(uploadedFilename, cancellationToken);
 
         if (objectMetadata is null)
         {
-            return ApiErrors.File.NotFound(uploadedFilename);
+            return ApiErrors.Attachment.NotFoundInObjectStorage(uploadedFilename);
         }
 
         var preSignedUrlExpiresAt = DateTimeOffset.UtcNow.AddDays(7);
@@ -70,7 +70,7 @@ public class AttachmentService
     {
         if (!await _fileStorage.IsObjectExistsAsync(uploadedFilename, cancellationToken))
         {
-            return ApiErrors.File.NotFound(uploadedFilename);
+            return ApiErrors.Attachment.NotFoundInObjectStorage(uploadedFilename);
         }
         await _fileStorage.DeleteObjectAsync(uploadedFilename, cancellationToken);
         return true;
@@ -81,7 +81,7 @@ public class AttachmentService
         return $"attachments/{channelId}/{attachmentId}/{filename}";
     }
 
-    public (long ChannelId, long AttachmentId, string Filename)? ParseUploadedFilename(string uploadedFilename)
+    private (long ChannelId, long AttachmentId, string Filename)? ParseUploadedFilename(string uploadedFilename)
     {
         var regex = new Regex(@"attachments\/(?<channelId>\d+)\/(?<attachmentId>\d+)\/(?<filename>.+)");
         var match = regex.Match(uploadedFilename);

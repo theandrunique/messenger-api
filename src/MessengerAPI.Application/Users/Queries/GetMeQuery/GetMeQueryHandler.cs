@@ -23,7 +23,7 @@ public class GetMeQueryHandler : IRequestHandler<GetMeQuery, ErrorOr<UserPrivate
 
         if (user == null)
         {
-            return Errors.ApiErrors.User.NotFound;
+            throw new Exception("User was expected to be found here.");
         }
 
         return _mapper.Map<UserPrivateSchema>(user);

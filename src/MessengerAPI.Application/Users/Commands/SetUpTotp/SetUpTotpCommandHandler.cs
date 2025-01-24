@@ -22,7 +22,7 @@ public class SetUpTotpCommandHandler : IRequestHandler<SetUpTotpCommand, ErrorOr
 
         if (user == null)
         {
-            return Errors.ApiErrors.User.NotFound;
+            throw new Exception("User was expected to be found here.");
         }
 
         user.SetTOTPKey(_totpHelper.GenerateSecretKey(20));

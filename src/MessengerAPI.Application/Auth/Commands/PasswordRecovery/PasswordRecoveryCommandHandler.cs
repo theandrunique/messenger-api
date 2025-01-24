@@ -34,7 +34,7 @@ public class PasswordRecoveryCommandHandler : IRequestHandler<PasswordRecoveryCo
 
         if (user == null)
         {
-            return ApiErrors.User.NotFound;
+            throw new Exception("User was expected to be found here.");
         }
 
         var totp = _totpHelper.GenerateTotp(user.TOTPKey, 500, 6);

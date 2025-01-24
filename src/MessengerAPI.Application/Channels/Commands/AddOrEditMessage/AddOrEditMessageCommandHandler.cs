@@ -8,9 +8,9 @@ using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Errors;
 
-namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
+namespace MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 
-public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessageCommand, ErrorOr<MessageSchema>>
+public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCommand, ErrorOr<MessageSchema>>
 {
     private readonly IChannelRepository _channelRepository;
     private readonly IMapper _mapper;
@@ -35,17 +35,17 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
         _idGenerator = idGenerator;
     }
 
-    public async Task<ErrorOr<MessageSchema>> Handle(AddOrUpdateMessageCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<MessageSchema>> Handle(AddOrEditMessageCommand request, CancellationToken cancellationToken)
     {
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null)
         {
-            return ApiErrors.Channel.ChannelNotFound;
+            return ApiErrors.Channel.NotFound(request.ChannelId);
         }
 
         if (!channel.IsUserInTheChannel(request.Sub))
         {
-            return ApiErrors.Channel.NotAllowed;
+            return ApiErrors.Channel.NotAllowedToSendMessage(channel.Id);
         }
 
         var user = await _userRepository.GetByIdOrDefaultAsync(request.Sub);
@@ -76,15 +76,6 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
             }
         }
 
-        if (request.ReplyTo.HasValue)
-        {
-            var replyToMessage = await _messageRepository.GetMessageByIdOrNullAsync(request.ChannelId, request.ReplyTo.Value);
-            if (replyToMessage is null)
-            {
-                return ApiErrors.Channel.MessageNotFound;
-            }
-        }
-
         Message? message;
 
         if (request.MessageId.HasValue)
@@ -92,19 +83,23 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
             message = await _messageRepository.GetMessageByIdOrNullAsync(request.ChannelId, request.MessageId.Value);
             if (message is null)
             {
-                return ApiErrors.Channel.MessageNotFound;
+                return ApiErrors.Channel.MessageToEditNotFound(request.MessageId.Value);
             }
 
-            message.Edit(request.ReplyTo, request.Content, attachments);
+            if (message.AuthorId != user.Id)
+            {
+                return ApiErrors.Channel.MessageWasSentByAnotherUser(request.MessageId.Value);
+            }
+
+            message.Edit(request.Content, attachments);
         }
         else
         {
-            message = Message.Create(
+            message = new Message(
                 _idGenerator.CreateId(),
                 request.ChannelId,
                 user,
                 request.Content,
-                request.ReplyTo,
                 attachments);
         }
         await _messageRepository.AddAsync(message);
@@ -112,4 +107,3 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrUpdateMessage
         return _mapper.Map<MessageSchema>(message);
     }
 }
-

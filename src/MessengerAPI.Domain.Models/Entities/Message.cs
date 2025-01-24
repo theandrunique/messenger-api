@@ -16,36 +16,21 @@ public class Message
     public List<Attachment> Attachments => _attachments.ToList();
     public bool Pinned { get; private set; }
     public MessageType Type { get; private set; }
-    public long? ReplyTo { get; private set; }
 
-    public static Message Create(
+    public Message(
         long id,
         long channelId,
         User author,
         string content,
-        long? replyTo = null,
-        List<Attachment>? attachments = null)
-    {
-        var message = new Message(id, channelId, author, content, replyTo, attachments);
-        return message;
-    }
-
-    private Message(
-        long id,
-        long channelId,
-        User sender,
-        string content,
-        long? replyTo = null,
         List<Attachment>? attachments = null)
     {
         Id = id;
         Type = MessageType.Default;
         ChannelId = channelId;
-        Author = new MessageSenderInfo(sender);
-        AuthorId = sender.Id;
+        Author = new MessageSenderInfo(author);
+        AuthorId = author.Id;
         Content = content;
         Timestamp = DateTimeOffset.UtcNow;
-        ReplyTo = replyTo;
 
         if (attachments is not null) _attachments = attachments;
         foreach (var attachment in _attachments) attachment.SetMessageId(id);
@@ -58,7 +43,6 @@ public class Message
         string content,
         DateTimeOffset timestamp,
         DateTimeOffset? editedTimestamp,
-        long? replyTo,
         bool pinned,
         MessageType type,
         List<Attachment>? attachments = null)
@@ -69,21 +53,19 @@ public class Message
         Content = content;
         Timestamp = timestamp;
         EditedTimestamp = editedTimestamp;
-        ReplyTo = replyTo;
         Pinned = pinned;
         Type = type;
         _attachments = attachments ?? new List<Attachment>();
     }
 
-    public void Edit(long? replyTo, string content, List<Attachment>? attachments = null)
+    public void Edit(string content, List<Attachment>? attachments = null)
     {
-        ReplyTo = replyTo;
         Content = content;
         EditedTimestamp = DateTimeOffset.UtcNow;
 
+        _attachments.Clear();
         if (attachments is not null)
         {
-            _attachments.Clear();
             _attachments.AddRange(attachments);
         }
     }

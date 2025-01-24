@@ -25,7 +25,7 @@ public class RequestVerifyEmailCommandHandler : IRequestHandler<RequestVerifyEma
 
         if (user == null)
         {
-            return Errors.ApiErrors.User.NotFound;
+            throw new Exception("User was expected to be found here.");
         }
 
         var totp = _totpHelper.GenerateTotp(user.TOTPKey, 500, 6);

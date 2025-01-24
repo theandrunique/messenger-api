@@ -7,6 +7,7 @@ internal class AttachmentQueries
 {
     private readonly PreparedStatement _insert;
     private readonly PreparedStatement _selectByChannelIdAndMessageIds;
+    private readonly PreparedStatement _removeByChannelIdAndMessageId;
 
     public AttachmentQueries(ISession session)
     {
@@ -27,9 +28,9 @@ internal class AttachmentQueries
                 waveform
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """);
-        _selectByChannelIdAndMessageIds = session.Prepare(
-            "SELECT * FROM attachments WHERE channelid = ? AND messageid IN ?"
-        );
+        _selectByChannelIdAndMessageIds = session.Prepare("SELECT * FROM attachments WHERE channelid = ? AND messageid IN ?");
+
+        _removeByChannelIdAndMessageId = session.Prepare("DELETE FROM attachments WHERE channelid = ? AND messageid = ?");
     }
 
     public BoundStatement Insert(Attachment attachment)
@@ -59,5 +60,10 @@ internal class AttachmentQueries
     public BoundStatement SelectByChannelIdInMessageIds(long channelId, IEnumerable<long> messageIds)
     {
         return _selectByChannelIdAndMessageIds.Bind(channelId, messageIds);
+    }
+
+    public BoundStatement RemoveByChannelIdAndMessageId(long channelId, long messageId)
+    {
+        return _removeByChannelIdAndMessageId.Bind(channelId, messageId);
     }
 }

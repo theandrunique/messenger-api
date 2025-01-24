@@ -1,5 +1,6 @@
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
+using MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 using MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 using MessengerAPI.Application.Channels.Commands.PostAttachment;
 using MessengerAPI.Application.Channels.Common;
@@ -85,12 +86,11 @@ public class ChannelsController : ApiController
     {
         var identity = User.GetIdentity();
 
-        var command = new AddOrUpdateMessageCommand(
+        var command = new AddOrEditMessageCommand(
             null,
             identity.UserId,
             channelId,
-            schema.text,
-            schema.replyTo,
+            schema.content,
             schema.attachments);
 
         var result = await _mediator.Send(command, cancellationToken);
@@ -149,12 +149,11 @@ public class ChannelsController : ApiController
     {
         var identity = User.GetIdentity();
 
-        var command = new AddOrUpdateMessageCommand(
+        var command = new AddOrEditMessageCommand(
             messageId,
             identity.UserId,
             channelId,
-            schema.text,
-            schema.replyTo,
+            schema.content,
             schema.attachments);
 
         var result = await _mediator.Send(command, cancellationToken);
@@ -173,7 +172,7 @@ public class ChannelsController : ApiController
     {
         var command = new PostAttachmentCommand(
             channelId,
-            schema.files.ConvertAll(f => new UploadFileData
+            schema.files.ConvertAll(f => new CreateAttachmentData
             {
                 Filename = f.filename,
                 Size = f.size,

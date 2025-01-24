@@ -40,7 +40,8 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
 
         if (members.Count() != request.Members.Count)
         {
-            return ApiErrors.User.NotFound;
+            var membersWasNotFound = request.Members.Except(members.Select(x => x.Id)).ToList();
+            return ApiErrors.User.NotFoundLotOfUsers(membersWasNotFound);
         }
 
         Channel? channel = null;
