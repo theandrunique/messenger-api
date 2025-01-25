@@ -18,7 +18,7 @@ public enum ErrorCode
     ChannelNotFound = 30002,
     MessageNotFound = 30003,
     MessageToEditNotFound = 30004,
-    NotAllowedToSendMessageToChannel = 30005,
+    NotAllowedToInteract = 30005,
     MessageWasSentByAnotherUser = 30006,
 
     // Users error codes

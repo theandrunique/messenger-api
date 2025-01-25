@@ -3,6 +3,7 @@ using MessengerAPI.Application.Channels.Commands;
 using MessengerAPI.Application.Channels.Commands.AddOrEditMessagePrivateChannel;
 using MessengerAPI.Application.Channels.Commands.GetOrCreatePrivateChannel;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
+using MessengerAPI.Application.Channels.Queries.GetMessagesPrivateChannel;
 using MessengerAPI.Application.Users.Queries.GetMeQuery;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Presentation.Common;
@@ -148,6 +149,29 @@ public class UsersController : ApiController
             schema.attachments);
 
         var result = await _mediator.Send(command, cancellationToken);
+
+        return result.Match(
+            success => Ok(success),
+            errors => Problem(errors)
+        );
+    }
+
+
+    [HttpGet("{userId}/messages")]
+    [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMessagesPrivateChannelAsync(
+        long userId,
+        CancellationToken cancellationToken,
+        long? before = null,
+        int limit = 50)
+    {
+        var identity = User.GetIdentity();
+
+        var actualBefore = before ?? long.MaxValue;
+
+        var query = new GetMessagesPrivateChannelQuery(identity.UserId, userId, actualBefore, limit);
+
+        var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),

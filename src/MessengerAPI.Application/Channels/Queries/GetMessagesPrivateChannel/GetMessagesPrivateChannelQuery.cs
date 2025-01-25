@@ -2,11 +2,11 @@ using MediatR;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Errors;
 
-namespace MessengerAPI.Application.Channels.Queries.GetMessages;
+namespace MessengerAPI.Application.Channels.Queries.GetMessagesPrivateChannel;
 
-public record GetMessagesQuery(
+public record GetMessagesPrivateChannelQuery(
     long Sub,
-    long ChannelId,
+    long UserId,
     long Before,
     int Limit
 ) : IRequest<ErrorOr<List<MessageSchema>>>;
