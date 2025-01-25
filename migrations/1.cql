@@ -6,28 +6,20 @@ USE messenger;
 -- TYPES
 
 CREATE TYPE messenger.messageinfo (
+    id bigint,
+    authorid bigint,
+    authorusername text,
     authorglobalname text,
     content text,
     timestamp timestamp,
-    attachmentscount int
+    editedtimestamp timestamp,
+    attachmentscount int,
+    type int,
+
 );
 
 CREATE TYPE messenger.image (
     key text
-);
-
-CREATE TYPE messenger.attachment (
-    id bigint,
-    contenttype text,
-    durationsecs float,
-    filename text,
-    isspoiler boolean,
-    placeholder text,
-    presignedurl text,
-    presignedurlexpirestimestamp timestamp,
-    size bigint,
-    uploadfilename text,
-    waveform text,
 );
 
 -- TABLES

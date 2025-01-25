@@ -38,8 +38,6 @@ public class Attachment
         PreSignedUrlExpiresTimestamp = preSignedUrlExpiresTimestamp;
     }
 
-    public Attachment() { }
-
     public void UpdatePreSignedUrl(string preSignedUrl, DateTimeOffset preSignedUrlExpiresTimestamp)
     {
         PreSignedUrl = preSignedUrl;
