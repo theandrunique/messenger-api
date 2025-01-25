@@ -3,13 +3,13 @@ using MessengerAPI.Domain.Models.Entities;
 
 namespace MessengerAPI.Domain.Models.ValueObjects;
 
-public class MessageSenderInfo
+public struct MessageAuthorInfo
 {
     public long Id { get; init; }
     public string Username { get; init; }
     public string GlobalName { get; init; }
     public Image? Image { get; init; }
-    public MessageSenderInfo(User author)
+    public MessageAuthorInfo(User author)
     {
         Id = author.Id;
         Username = author.Username;
@@ -17,7 +17,7 @@ public class MessageSenderInfo
         Image = author.Image;
     }
 
-    public MessageSenderInfo(long id, string username, string globalName, Image? image)
+    public MessageAuthorInfo(long id, string username, string globalName, Image? image)
     {
         Id = id;
         Username = username;
@@ -25,5 +25,5 @@ public class MessageSenderInfo
         Image = image;
     }
 
-    public MessageSenderInfo() { }
+    public MessageAuthorInfo() { }
 }

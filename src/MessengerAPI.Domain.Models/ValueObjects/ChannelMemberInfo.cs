@@ -3,7 +3,7 @@ using MessengerAPI.Domain.Models.Entities;
 
 namespace MessengerAPI.Domain.Models.ValueObjects;
 
-public class ChannelMemberInfo
+public struct ChannelMemberInfo
 {
     public long UserId { get; init; }
     public long ReadAt { get; init; }

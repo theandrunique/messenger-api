@@ -17,7 +17,7 @@ public class Mappings : Profile
         // CreateMap<Reaction, ReactionSchema>();
         CreateMap<User, UserPublicSchema>();
         CreateMap<User, UserPrivateSchema>();
-        CreateMap<MessageSenderInfo, MessageAuthorInfoSchema>();
+        CreateMap<MessageAuthorInfo, MessageAuthorInfoSchema>();
         CreateMap<ChannelMemberInfo, ChannelMemberInfoSchema>();
         CreateMap<MessageInfo, MessageInfoSchema>();
 

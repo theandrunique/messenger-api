@@ -7,9 +7,9 @@ namespace MessengerAPI.Data.Mappers;
 
 public static class MessageMapper
 {
-    public static MessageSenderInfo MapMessageSenderInfo(Row row)
+    public static MessageAuthorInfo MapMessageSenderInfo(Row row)
     {
-        return new MessageSenderInfo(
+        return new MessageAuthorInfo(
             row.GetValue<long>("userid"),
             row.GetValue<string>("username"),
             row.GetValue<string>("globalname"),

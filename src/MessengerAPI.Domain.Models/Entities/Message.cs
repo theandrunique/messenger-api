@@ -9,7 +9,7 @@ public class Message
     public long Id { get; private set; }
     public long ChannelId { get; private set; }
     public long AuthorId { get; private set; }
-    public MessageSenderInfo Author { get; private set; }
+    public MessageAuthorInfo Author { get; private set; }
     public string Content { get; private set; }
     public DateTimeOffset Timestamp { get; private set; }
     public DateTimeOffset? EditedTimestamp { get; private set; }
@@ -27,7 +27,7 @@ public class Message
         Id = id;
         Type = MessageType.Default;
         ChannelId = channelId;
-        Author = new MessageSenderInfo(author);
+        Author = new MessageAuthorInfo(author);
         AuthorId = author.Id;
         Content = content;
         Timestamp = DateTimeOffset.UtcNow;
@@ -70,7 +70,7 @@ public class Message
         }
     }
 
-    public void SetAuthor(MessageSenderInfo author)
+    public void SetAuthor(MessageAuthorInfo author)
     {
         Author = author;
     }

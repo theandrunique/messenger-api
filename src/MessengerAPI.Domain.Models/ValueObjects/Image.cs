@@ -1,6 +1,6 @@
 namespace MessengerAPI.Domain.Entities.ValueObjects;
 
-public class Image
+public struct Image
 {
     public string Key { get; private set; }
 
