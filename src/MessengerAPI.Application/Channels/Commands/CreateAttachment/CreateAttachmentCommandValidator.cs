@@ -1,20 +1,20 @@
 using FluentValidation;
 using MessengerAPI.Application.Common.Interfaces.Files;
 
-namespace MessengerAPI.Application.Channels.Commands.PostAttachment;
+namespace MessengerAPI.Application.Channels.Commands.CreateAttachment;
 
-public class PostAttachmentCommandValidator : AbstractValidator<PostAttachmentCommand>
+public class CreateAttachmentCommandValidator : AbstractValidator<CreateAttachmentCommand>
 {
-    public PostAttachmentCommandValidator(IStorageOptions options)
+    public CreateAttachmentCommandValidator(IStorageOptions options)
     {
         RuleFor(x => x.Files)
             .NotEmpty();
 
         RuleForEach(x => x.Files)
             .NotEmpty()
-            .Must(file => file.Size > 0)
+            .Must(file => file.FileSize > 0)
             .WithMessage("File size must be greater than 0")
-            .Must(file => file.Size < options.MaxFileSize)
+            .Must(file => file.FileSize < options.MaxFileSize)
             .WithMessage($"Max file size is {options.MaxFileSize} bytes");
     }
 }

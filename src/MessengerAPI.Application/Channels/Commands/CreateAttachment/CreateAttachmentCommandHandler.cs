@@ -3,30 +3,31 @@ using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Errors;
 
-namespace MessengerAPI.Application.Channels.Commands.PostAttachment;
+namespace MessengerAPI.Application.Channels.Commands.CreateAttachment;
 
-class PostAttachmentCommandHandler : IRequestHandler<PostAttachmentCommand, ErrorOr<List<CloudAttachmentSchema>>>
+class CreateAttachmentCommandHandler : IRequestHandler<CreateAttachmentCommand, ErrorOr<List<CloudAttachmentSchema>>>
 {
     private AttachmentService _attachmentService;
 
-    public PostAttachmentCommandHandler(AttachmentService attachmentService)
+    public CreateAttachmentCommandHandler(AttachmentService attachmentService)
     {
         _attachmentService = attachmentService;
     }
 
-    public async Task<ErrorOr<List<CloudAttachmentSchema>>> Handle(PostAttachmentCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<List<CloudAttachmentSchema>>> Handle(CreateAttachmentCommand request, CancellationToken cancellationToken)
     {
         List<CloudAttachmentSchema> attachments = new();
 
         foreach (var file in request.Files)
         {
             var uploadUrlDto = await _attachmentService.GenerateUploadUrlAsync(
-                    file.Size,
+                    file.FileSize,
                     request.ChannelId,
                     file.Filename);
 
             attachments.Add(new CloudAttachmentSchema
             {
+                Id = file.Id,
                 UploadFilename = uploadUrlDto.UploadFilename,
                 UploadUrl = uploadUrlDto.UploadUrl,
             });

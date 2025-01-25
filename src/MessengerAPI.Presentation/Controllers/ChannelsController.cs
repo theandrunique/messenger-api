@@ -1,7 +1,6 @@
 using MediatR;
-using MessengerAPI.Application.Channels.Commands;
 using MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
-using MessengerAPI.Application.Channels.Commands.PostAttachment;
+using MessengerAPI.Application.Channels.Commands.CreateAttachment;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Contracts.Common;
@@ -98,12 +97,13 @@ public class ChannelsController : ApiController
         CreateChannelAttachmentSchema schema,
         CancellationToken cancellationToken)
     {
-        var command = new PostAttachmentCommand(
+        var command = new CreateAttachmentCommand(
             channelId,
-            schema.files.ConvertAll(f => new CreateAttachmentData
+            schema.files.ConvertAll(f => new UploadAttachmentDto
             {
+                Id = f.id,
                 Filename = f.filename,
-                Size = f.size,
+                FileSize = f.fileSize,
             }));
 
         var result = await _mediator.Send(command, cancellationToken);
