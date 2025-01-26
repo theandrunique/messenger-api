@@ -32,15 +32,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
         _idGenerator = idGenerator;
     }
 
-    /// <summary>
-    /// Register a new user
-    /// </summary>
-    /// <param name="request"><see cref="RegisterCommand"/></param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    /// <returns><see cref="UserPrivateSchema"/></returns>
     public async Task<ErrorOr<UserPrivateSchema>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var newUser = User.Create(
+        var newUser = new User(
             _idGenerator.CreateId(),
             request.Username,
             request.Email,

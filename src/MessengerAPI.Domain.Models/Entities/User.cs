@@ -20,9 +20,9 @@ public class User
     public string Email { get; private set; }
     public bool IsEmailVerified { get; private set; }
     public DateTimeOffset EmailUpdatedTimestamp { get; private set; }
-    public Image? Image { get; set; }
+    public Image? Image { get; private set; }
 
-    public static User Create(
+    public User(
         long id,
         string username,
         string email,
@@ -32,27 +32,21 @@ public class User
     {
         var timestamp = DateTimeOffset.UtcNow;
 
-        User user = new User
-        {
-            Id = id,
-            Username = username.ToLower(),
-            UsernameUpdatedTimestamp = timestamp,
-            PasswordHash = passwordHash,
-            PasswordUpdatedTimestamp = timestamp,
-            TerminateSessions = TimeIntervals.Month6,
-            GlobalName = globalName,
-            IsActive = true,
-            Timestamp = timestamp,
-            TwoFactorAuthentication = false,
-            Email = email.ToLower(),
-            EmailUpdatedTimestamp = timestamp,
-            TOTPKey = totpkey,
-        };
-
-        return user;
+        Id = id;
+        Username = username.ToLower();
+        UsernameUpdatedTimestamp = timestamp;
+        PasswordHash = passwordHash;
+        PasswordUpdatedTimestamp = timestamp;
+        TerminateSessions = TimeIntervals.Month6;
+        GlobalName = globalName;
+        IsActive = true;
+        Timestamp = timestamp;
+        TwoFactorAuthentication = false;
+        Email = email.ToLower();
+        EmailUpdatedTimestamp = timestamp;
+        TOTPKey = totpkey;
     }
 
     public void SetTOTPKey(byte[] totpkey) => TOTPKey = totpkey;
     public void SetNewPassword(string passwordHash) => PasswordHash = passwordHash;
 }
-

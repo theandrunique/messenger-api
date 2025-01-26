@@ -51,7 +51,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
             return ApiErrors.Auth.InvalidCredentials;
         }
 
-        var session = Session.Create(
+        var session = new Session(
             _idGenerator.CreateId(),
             user.Id,
             _userAgentParser.GetDeviceName(),
