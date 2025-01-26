@@ -47,6 +47,44 @@ public class User
         TOTPKey = totpkey;
     }
 
+    public User(
+        long id,
+        string username,
+        DateTimeOffset usernameUpdatedTimestamp,
+        string passwordHash,
+        DateTimeOffset passwordUpdatedTimestamp,
+        TimeIntervals terminateSessions,
+        string? bio,
+        string globalName,
+        bool isActive,
+        DateTimeOffset timestamp,
+        byte[] totpkey,
+        bool twoFactorAuthentication,
+        string email,
+        bool isEmailVerified,
+        DateTimeOffset emailUpdatedTimestamp,
+        Image? image)
+    {
+        Id = id;
+        Username = username;
+        UsernameUpdatedTimestamp = usernameUpdatedTimestamp;
+        PasswordHash = passwordHash;
+        PasswordUpdatedTimestamp = passwordUpdatedTimestamp;
+        TerminateSessions = terminateSessions;
+        Bio = bio;
+        GlobalName = globalName;
+        IsActive = isActive;
+        Timestamp = timestamp;
+        TOTPKey = totpkey;
+        TwoFactorAuthentication = twoFactorAuthentication;
+        Email = email;
+        IsEmailVerified = isEmailVerified;
+        EmailUpdatedTimestamp = emailUpdatedTimestamp;
+        Image = image;
+    }
+
+    public User() { }
+
     public void SetTOTPKey(byte[] totpkey) => TOTPKey = totpkey;
     public void SetNewPassword(string passwordHash) => PasswordHash = passwordHash;
 }

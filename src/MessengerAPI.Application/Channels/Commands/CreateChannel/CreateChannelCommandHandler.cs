@@ -46,7 +46,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
 
         Channel channel = Channel.CreateGroup(_idGenerator.CreateId(), request.Sub, request.Title, members.ToArray());
 
-        await _channelRepository.AddAsync(channel);
+        await _channelRepository.UpsertAsync(channel);
 
         return _mapper.Map<ChannelSchema>(channel);
     }

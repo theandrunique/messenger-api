@@ -16,15 +16,14 @@ public class Channel
     public MessageInfo? LastMessage { get; private set; }
     public List<ChannelMemberInfo> Members => _members.ToList();
 
-    public static Channel CreatePrivate(long id, User[] users)
+    public static Channel CreatePrivate(long id, User[] members)
     {
-        if (users.Length != 2 && users.Length != 1)
+        if (members.Length != 2 && members.Length != 1)
         {
-            throw new ArgumentException($"Private channel must have exactly two or one member but was given {users.Length}.");
+            throw new ArgumentException($"Private channel must have exactly two or one member but was given {members.Length}.");
         }
-
-        var channel = new Channel(id, ChannelType.Private, null, null, null);
-        channel._members.AddRange(users.Select(user => new ChannelMemberInfo(user)));
+        var membersInfo = members.Select(user => new ChannelMemberInfo(user)).ToList();
+        var channel = new Channel(id, null, null, null, ChannelType.Private, null, null, membersInfo);
         return channel;
     }
 
@@ -34,24 +33,9 @@ public class Channel
         {
             title = null;
         }
-
-        var channel = new Channel(id, ChannelType.Group, ownerId, title, null);
-        channel._members.AddRange(members.Select(user => new ChannelMemberInfo(user)));
+        var membersInfo = members.Select(user => new ChannelMemberInfo(user)).ToList();
+        var channel = new Channel(id, ownerId, title, null, ChannelType.Group, null, null, membersInfo);
         return channel;
-    }
-
-    private Channel(
-        long id,
-        ChannelType type,
-        long? ownerId = null,
-        string? title = null,
-        Image? image = null)
-    {
-        Id = id;
-        OwnerId = ownerId;
-        Title = title;
-        Image = image;
-        Type = type;
     }
 
     public Channel(
@@ -60,37 +44,32 @@ public class Channel
         string? title,
         Image? image,
         ChannelType type,
-        DateTimeOffset? lastMessageAt,
-        MessageInfo? lastMessage)
+        DateTimeOffset? lastMessageTimestamp,
+        MessageInfo? lastMessage,
+        List<ChannelMemberInfo> members)
     {
         Id = id;
         OwnerId = ownerId;
         Title = title;
         Image = image;
         Type = type;
-        LastMessageTimestamp = lastMessageAt;
+        LastMessageTimestamp = lastMessageTimestamp;
         LastMessage = lastMessage;
+        _members = members;
     }
 
-    public void AddMember(User user)
+    public void AddNewMember(User user)
     {
+        if (IsUserInTheChannel(user.Id))
+        {
+            throw new Exception($"User {user.Id} already in the channel");
+        }
+
         _members.Add(new ChannelMemberInfo(user));
-    }
-
-    public void SetMembers(IEnumerable<ChannelMemberInfo> members)
-    {
-        _members.Clear();
-        _members.AddRange(members);
     }
 
     public bool IsUserInTheChannel(long userId)
     {
         return _members.Any(m => m.UserId == userId);
-    }
-
-    public void SetLastMessage(Message message)
-    {
-        LastMessageTimestamp = message.Timestamp;
-        LastMessage = new MessageInfo(message);
     }
 }

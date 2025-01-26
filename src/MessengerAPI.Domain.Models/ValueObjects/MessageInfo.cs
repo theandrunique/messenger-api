@@ -4,14 +4,14 @@ namespace MessengerAPI.Domain.Models.ValueObjects;
 
 public struct MessageInfo
 {
-    public long Id { get; private set; }
-    public long AuthorId { get; private set; }
-    public string AuthorUsername { get; private set; }
-    public string AuthorGlobalName { get; private set; }
-    public string Content { get; private set; }
-    public DateTimeOffset Timestamp { get; private set; }
-    public DateTimeOffset? EditedTimestamp { get; private set; }
-    public int AttachmentsCount { get; private set; }
+    public long Id { get; init; }
+    public long AuthorId { get; init; }
+    public string AuthorUsername { get; init; }
+    public string AuthorGlobalName { get; init; }
+    public string Content { get; init; }
+    public DateTimeOffset Timestamp { get; init; }
+    public DateTimeOffset? EditedTimestamp { get; init; }
+    public int AttachmentsCount { get; init; }
 
     public MessageInfo(Message message)
     {

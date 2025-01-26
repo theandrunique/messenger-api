@@ -5,7 +5,6 @@ using MessengerAPI.Data.Queries;
 using MessengerAPI.Domain.Entities.ValueObjects;
 using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Domain.Models.ValueObjects;
-using Newtonsoft.Json;
 
 namespace MessengerAPI.Data.Channels;
 
@@ -28,11 +27,10 @@ internal class ChannelRepository : IChannelRepository
         _privateChannels = privateChannels;
     }
 
-    public Task AddAsync(Channel channel)
+    public Task UpsertAsync(Channel channel)
     {
-        var batch = new BatchStatement();
-
-        batch.Add(_channelsById.Insert(channel));
+        var batch = new BatchStatement()
+            .Add(_channelsById.Insert(channel));
 
         foreach (var member in channel.Members)
         {
@@ -60,23 +58,19 @@ internal class ChannelRepository : IChannelRepository
         {
             return default;
         }
-
-        var channel = ChannelMapper.Map(channelResult);
+        var channelData = ChannelMapper.Map(channelResult);
 
         var channelUsersQuery = _channelUsers.SelectByChannelId(channelId);
         var result = await _session.ExecuteAsync(channelUsersQuery);
+        channelData.Members = result.Select(ChannelMapper.MapChannelUser).ToList();
 
-        channel.SetMembers(result.Select(r => ChannelMapper.MapChannelUser(r)));
-
-        return channel;
+        return channelData.ToEntity();
     }
 
     public async Task<IEnumerable<long>> GetMemberIdsFromChannelByIdAsync(long channelId)
     {
         var query = _channelUsers.SelectByChannelId(channelId);
-
         var result = await _session.ExecuteAsync(query);
-
         return result.Select(row => row.GetValue<long>("userid"));
     }
 
@@ -97,51 +91,52 @@ internal class ChannelRepository : IChannelRepository
             throw new Exception("Channel was found in private_channels table but not found in channels_by_id table.");
         }
 
-        var channel = ChannelMapper.Map(channelResult);
+        var channelData = ChannelMapper.Map(channelResult);
 
         query = _channelUsers.SelectByChannelId(channelId.Value);
         result = await _session.ExecuteAsync(query);
 
-        var channelMembers = result.Select(r => ChannelMapper.MapChannelUser(r)).ToList();
+        channelData.Members = result.Select(ChannelMapper.MapChannelUser).ToList();
 
-        if (channelMembers.Count != 2 && channelMembers.Count != 1)
+        if (channelData.Members.Count != 2 && channelData.Members.Count != 1)
         {
-            throw new Exception($"Expected to found two or one user in private channel but found {channelMembers.Count}.");
+            throw new Exception($"Expected to find 1 or 2 users in private channel but found {channelData.Members.Count}.");
         }
 
-        channel.SetMembers(channelMembers);
-        return channel;
+        return channelData.ToEntity();
     }
 
     public async Task<List<Channel>> GetUserChannelsAsync(long userId)
     {
-        var query = _channelUsers.SelectByUserId(userId);
-        var result = await _session.ExecuteAsync(query);
-        var channelIds = result.Select(c => c.GetValue<long>("channelid")).ToList();
+        var channelIds = (await _session.ExecuteAsync(_channelUsers.SelectByUserId(userId)))
+            .Select(c => c.GetValue<long>("channelid"))
+            .ToList();
 
-        query = _channelsById.SelectByIds(channelIds);
-        result = await _session.ExecuteAsync(query);
+        var channelsDataTask = _session.ExecuteAsync(_channelsById.SelectByIds(channelIds));
+        var channelsMembersTask = _session.ExecuteAsync(_channelUsers.SelectByChannelIds(channelIds));
 
-        var channels = result.Select(ChannelMapper.Map);
+        await Task.WhenAll(channelsDataTask, channelsMembersTask);
 
-        query = _channelUsers.SelectByChannelIds(channelIds);
-        result = await _session.ExecuteAsync(query);
-        var channelsMembers = result.Select(r =>
-            new
-            {
-                channelId = r.GetValue<long>("channelid"),
-                member = ChannelMapper.MapChannelUser(r)
-            }).ToList();
+        var channelsData = (await channelsDataTask)
+            .Select(ChannelMapper.Map)
+            .ToArray();
+        
+        var channelsMembers = (await channelsMembersTask)
+            .Select(r => new
+                {
+                    channelId = r.GetValue<long>("channelid"),
+                    member = ChannelMapper.MapChannelUser(r)
+                }).ToList();
 
-        var response = new List<Channel>();
-
-        foreach (var channel in channels)
+        for (int i = 0; i < channelsData.Length; i++)
         {
-            channel.SetMembers(channelsMembers.Where(m => m.channelId == channel.Id).Select(m => m.member));
-            response.Add(channel);
+            channelsData[i].Members = channelsMembers
+                .Where(m => m.channelId == channelsData[i].Id)
+                .Select(m => m.member)
+                .ToList();
         }
 
-        return response;
+        return channelsData.Select(c => c.ToEntity()).ToList();
     }
 
     public Task UpdateChannelInfo(long channelId, string title, Image? image)

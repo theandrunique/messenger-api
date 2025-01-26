@@ -51,7 +51,7 @@ public class GetOrCreatePrivateChannelCommandHandler : IRequestHandler<GetOrCrea
 
         var newChannel = Channel.CreatePrivate(_idGenerator.CreateId(), members.ToArray());
 
-        await _channelRepository.AddAsync(newChannel);
+        await _channelRepository.UpsertAsync(newChannel);
 
         return _mapper.Map<ChannelSchema>(newChannel);
     }

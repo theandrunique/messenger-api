@@ -24,10 +24,31 @@ public class Session
         Timestamp = timestamp;
     }
 
+    public Session(
+        long id,
+        long userId,
+        Guid tokenId,
+        string deviceName,
+        string clientName,
+        string location,
+        DateTimeOffset lastUsedTimestamp,
+        DateTimeOffset timestamp)
+    {
+        Id = id;
+        UserId = userId;
+        TokenId = tokenId;
+        DeviceName = deviceName;
+        ClientName = clientName;
+        Location = location;
+        LastUsedTimestamp = lastUsedTimestamp;
+        Timestamp = timestamp;
+    }
+
+    public Session() { }
+
     public void UpdateTokenId()
     {
         LastUsedTimestamp = DateTimeOffset.UtcNow;
         TokenId = Guid.NewGuid();
     }
-    
 }

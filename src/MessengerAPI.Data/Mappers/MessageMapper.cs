@@ -1,34 +1,34 @@
 using Cassandra;
+using MessengerAPI.Data.DataDto;
 using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Data.Mappers;
 
-public static class MessageMapper
+internal static class MessageMapper
 {
-    public static MessageAuthorInfo MapMessageSenderInfo(Row row)
+    public static MessageAuthorInfo MapMessageAuthorInfo(Row row)
     {
         return new MessageAuthorInfo(
-            row.GetValue<long>("userid"),
-            row.GetValue<string>("username"),
-            row.GetValue<string>("globalname"),
-            row.GetValue<Image?>("image")
+            id: row.GetValue<long>("userid"),
+            username: row.GetValue<string>("username"),
+            globalName: row.GetValue<string>("globalname"),
+            image: row.GetValue<Image?>("image")
         );
     }
 
-    public static Message Map(Row row)
+    public static MessageData Map(Row row)
     {
-        return new Message(
-            row.GetValue<long>("channelid"),
-            row.GetValue<long>("id"),
-            row.GetValue<long>("authorid"),
-            row.GetValue<string>("content"),
-            row.GetValue<DateTimeOffset>("timestamp"),
-            row.GetValue<DateTimeOffset?>("editedtimestamp"),
-            row.GetValue<bool>("pinned"),
-            (MessageType)row.GetValue<int>("type"),
-            null
-        );
+        return new MessageData()
+        {
+            Id = row.GetValue<long>("id"),
+            ChannelId = row.GetValue<long>("channelid"),
+            AuthorId = row.GetValue<long>("authorid"),
+            Content = row.GetValue<string>("content"),
+            Timestamp = row.GetValue<DateTimeOffset>("timestamp"),
+            EditedTimestamp = row.GetValue<DateTimeOffset?>("editedtimestamp"),
+            Pinned = row.GetValue<bool>("pinned"),
+            Type = (MessageType)row.GetValue<int>("type"),
+        };
     }
 }

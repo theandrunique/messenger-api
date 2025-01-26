@@ -6,7 +6,7 @@ namespace MessengerAPI.Data.Channels;
 
 public interface IChannelRepository
 {
-    Task AddAsync(Channel channel);
+    Task UpsertAsync(Channel channel);
     Task<List<Channel>> GetUserChannelsAsync(long userId);
     Task<Channel?> GetByIdOrNullAsync(long channelId);
     Task<IEnumerable<long>> GetMemberIdsFromChannelByIdAsync(long channelId);

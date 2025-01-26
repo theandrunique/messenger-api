@@ -37,9 +37,9 @@ public class Message
     }
 
     public Message(
-        long channelId,
         long id,
-        long authorId,
+        long channelId,
+        MessageAuthorInfo author,
         string content,
         DateTimeOffset timestamp,
         DateTimeOffset? editedTimestamp,
@@ -49,7 +49,8 @@ public class Message
     {
         ChannelId = channelId;
         Id = id;
-        AuthorId = authorId;
+        AuthorId = author.Id;
+        Author = author;
         Content = content;
         Timestamp = timestamp;
         EditedTimestamp = editedTimestamp;
@@ -68,16 +69,5 @@ public class Message
         {
             _attachments.AddRange(attachments);
         }
-    }
-
-    public void SetAuthor(MessageAuthorInfo author)
-    {
-        Author = author;
-    }
-
-    public void SetAttachments(IEnumerable<Attachment> attachments)
-    {
-        _attachments.Clear();
-        _attachments.AddRange(attachments);
     }
 }

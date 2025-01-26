@@ -1,32 +1,33 @@
 using Cassandra;
+using MessengerAPI.Data.DataDto;
 using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.Entities;
 using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Data.Mappers;
 
 internal static class ChannelMapper
 {
-    public static Channel Map(Row row)
+    public static ChannelData Map(Row row)
     {
-        return new Channel(
-            row.GetValue<long>("channelid"),
-            row.GetValue<long?>("ownerid"),
-            row.GetValue<string?>("title"),
-            row.GetValue<Image?>("image"),
-            (ChannelType)row.GetValue<int>("channeltype"),
-            row.GetValue<DateTimeOffset?>("lastmessagetimestamp"),
-            row.GetValue<MessageInfo?>("lastmessage")
-        );
+        return new ChannelData()
+        {
+            Id = row.GetValue<long>("channelid"),
+            OwnerId = row.GetValue<long?>("ownerid"),
+            Title = row.GetValue<string?>("title"),
+            Image = row.GetValue<Image?>("image"),
+            Type = (ChannelType)row.GetValue<int>("channeltype"),
+            LastMessageTimestamp = row.GetValue<DateTimeOffset?>("lastmessagetimestamp"),
+            LastMessage = row.GetValue<MessageInfo?>("lastmessage")
+        };
     }
 
     public static ChannelMemberInfo MapChannelUser(Row row)
     {
         return new ChannelMemberInfo(
-            row.GetValue<long>("userid"),
-            row.GetValue<string>("username"),
-            row.GetValue<string>("globalname"),
-            row.GetValue<Image?>("image"),
-            row.GetValue<long>("readat"));
+            userId: row.GetValue<long>("userid"),
+            username: row.GetValue<string>("username"),
+            globalName: row.GetValue<string>("globalname"),
+            image: row.GetValue<Image?>("image"),
+            readAt: row.GetValue<long>("readat"));
     }
 }

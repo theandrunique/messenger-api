@@ -28,7 +28,7 @@ internal class MessageRepository : IMessageRepository
         _attachments = attachments;
     }
 
-    public Task AddAsync(Message message)
+    public Task UpsertAsync(Message message)
     {
         var batch = new BatchStatement()
             .Add(_messages.Insert(message))
@@ -51,99 +51,61 @@ internal class MessageRepository : IMessageRepository
         {
             return default;
         }
+        var messageData = MessageMapper.Map(result);
 
-        var message = MessageMapper.Map(result);
+        query = _channelUsers.SelectByChannelIdAndUserIds(messageData.ChannelId, [messageData.AuthorId]);
+        var authorInfoTask = _session.ExecuteAsync(query);
+        query = _attachments.SelectByChannelIdInMessageIds(messageData.ChannelId, [messageData.Id]);
+        var attachmentsTask = _session.ExecuteAsync(query);
+        await Task.WhenAll(authorInfoTask, attachmentsTask);
 
-        query = _channelUsers.SelectByChannelIdAndUserIds(message.ChannelId, new[] { message.AuthorId });
-
-        var authorInfoResult = (await _session.ExecuteAsync(query)).FirstOrDefault();
-
+        var authorInfoResult = (await authorInfoTask).FirstOrDefault();
         if (authorInfoResult is null)
         {
-            throw new Exception($"Message author not found in the channel {message.ChannelId}.");
+            throw new Exception($"Message author not found in the channel {messageData.ChannelId}.");
         }
+        messageData.Author = MessageMapper.MapMessageAuthorInfo(authorInfoResult);
 
-        var author = MessageMapper.MapMessageSenderInfo(authorInfoResult);
-        message.SetAuthor(author);
+        messageData.Attachments = (await attachmentsTask).Select(AttachmentMapper.Map).ToList();
 
-        query = _attachments.SelectByChannelIdInMessageIds(message.ChannelId, new[] { message.Id });
-
-        var attachmentsResult = await _session.ExecuteAsync(query);
-
-        message.SetAttachments(attachmentsResult.Select(AttachmentMapper.Map));
-
-        return message;
+        return messageData.ToEntity();
     }
 
     public async Task<IEnumerable<Message>> GetMessagesAsync(long channelId, long before, int limit)
     {
         var query = _messages.SelectByChannelId(channelId, before, limit);
-        var result = await _session.ExecuteAsync(query);
+        var messagesData = (await _session.ExecuteAsync(query))
+            .Select(MessageMapper.Map)
+            .ToArray();
 
-        var messages = result.Select(MessageMapper.Map).ToList();
+        query = _channelUsers.SelectByChannelIdAndUserIds(channelId, messagesData.Select(m => m.AuthorId));
+        var channelUsersTask = _session.ExecuteAsync(query);
+        query = _attachments.SelectByChannelIdInMessageIds(channelId, messagesData.Select(m => m.Id));
+        var attachmentsTask = _session.ExecuteAsync(query);
+        await Task.WhenAll(channelUsersTask, attachmentsTask);
 
-        var userIdsToFind = messages.Select(m => m.AuthorId);
+        var channelUsersDictionary = (await channelUsersTask)
+            .Select(MessageMapper.MapMessageAuthorInfo)
+            .ToDictionary(c => c.Id);
 
-        query = _channelUsers.SelectByChannelIdAndUserIds(channelId, userIdsToFind);
-        var channelUsersResult = await _session.ExecuteAsync(query);
-
-        var channelUsers = channelUsersResult.Select(r => MessageMapper.MapMessageSenderInfo(r));
-
-        var channelUsersDictionary = channelUsers.ToDictionary(c => c.Id);
-
-        foreach (var message in messages)
+        for (int i = 0; i < messagesData.Length; i++)
         {
-            message.SetAuthor(channelUsersDictionary[message.AuthorId]);
-        }
-
-        query = _attachments.SelectByChannelIdInMessageIds(channelId, messages.Select(m => m.Id));
-        result = await _session.ExecuteAsync(query);
-
-        var attachments = result.Select(AttachmentMapper.Map);
-
-        var attachmentsByMessageId = attachments
-            .GroupBy(a => a.MessageId)
-            .ToDictionary(group => group.Key, group => group.ToList());
-
-        foreach (var message in messages)
-        {
-            if (attachmentsByMessageId.TryGetValue(message.Id, out var attachmentsForMessageId))
+            if (!channelUsersDictionary.TryGetValue(messagesData[i].AuthorId, out var author))
             {
-                message.SetAttachments(attachmentsForMessageId);
+                throw new Exception($"Author with ID {messagesData[i].AuthorId} not found in channel {channelId} for message {messagesData[i].Id}.");
             }
+            messagesData[i].Author = author;
         }
 
-        return messages;
-    }
+        var attachmentsByMessageId = (await attachmentsTask)
+            .Select(AttachmentMapper.Map)
+            .ToLookup(a => a.MessageId);
 
-    public Task UpdateAttachmentsPreSignedUrlsAsync(Message message)
-    {
-        var query = $"UPDATE messages SET {nameof(Message.Attachments)} = ? WHERE {nameof(Message.ChannelId)} = ? AND {nameof(Message.Id)} = ?";
-
-        var attachmentsQuery = $"""
-            UPDATE attachments
-            SET {nameof(Attachment.PreSignedUrl)} = ?,
-                {nameof(Attachment.PreSignedUrlExpiresTimestamp)} = ?
-
-            WHERE {nameof(Attachment.ChannelId)} = ? AND
-                {nameof(Attachment.MessageId)} = ? AND
-                {nameof(Attachment.Id)} = ?
-        """;
-
-        var batch = new BatchStatement()
-            .Add(new SimpleStatement(query, message.Attachments, message.ChannelId, message.Id));
-
-        foreach (var attachment in message.Attachments)
+        for (int i = 0; i < messagesData.Length; i++)
         {
-            batch.Add(new SimpleStatement(
-                attachmentsQuery,
-                attachment.PreSignedUrl,
-                attachment.PreSignedUrlExpiresTimestamp,
-                attachment.ChannelId,
-                attachment.MessageId,
-                attachment.Id));
+            messagesData[i].Attachments = attachmentsByMessageId[messagesData[i].Id].ToList();
         }
 
-        return _session.ExecuteAsync(batch);
+        return messagesData.Select(m => m.ToEntity());
     }
 }

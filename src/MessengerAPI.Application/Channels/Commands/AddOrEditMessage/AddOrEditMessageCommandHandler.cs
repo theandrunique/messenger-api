@@ -102,7 +102,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
                 request.Content,
                 attachments);
         }
-        await _messageRepository.AddAsync(message);
+        await _messageRepository.UpsertAsync(message);
 
         return _mapper.Map<MessageSchema>(message);
     }
