@@ -51,6 +51,7 @@ public static class DependencyInjection
         services.AddSingleton<PrivateChannelQueries>();
         services.AddSingleton<MessageQueries>();
         services.AddSingleton<AttachmentQueries>();
+        services.AddSingleton<SessionQueries>();
 
         return services;
     }

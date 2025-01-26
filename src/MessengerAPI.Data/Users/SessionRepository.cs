@@ -1,5 +1,7 @@
 using Cassandra;
 using Cassandra.Data.Linq;
+using MessengerAPI.Data.Mappers;
+using MessengerAPI.Data.Queries;
 using Session = MessengerAPI.Domain.Models.Entities.Session;
 
 namespace MessengerAPI.Data.Users;
@@ -7,47 +9,38 @@ namespace MessengerAPI.Data.Users;
 internal class SessionRepository : ISessionRepository
 {
     private readonly ISession _session;
-    private readonly Table<Session> _table;
+    private readonly SessionQueries _sessions;
 
-    public SessionRepository(ISession session)
+    public SessionRepository(ISession session, SessionQueries sessions)
     {
         _session = session;
-        _table = new Table<Session>(_session);
+        _sessions = sessions;
     }
 
     public Task AddAsync(Session session)
     {
-        return _table.Insert(session).ExecuteAsync();
+        return _session.ExecuteAsync(_sessions.Insert(session));
     }
 
-    public Task<Session> GetByIdOrDefaultAsync(long userId, long sessionId)
+    public async Task<Session?> GetByIdOrNullAsync(long userId, long sessionId)
     {
-        return _table
-            .Where(s => s.UserId == userId && s.Id == sessionId)
-            .FirstOrDefault()
-            .ExecuteAsync();
+        var result = (await _session.ExecuteAsync(_sessions.SelectByUserIdAndId(userId, sessionId))).FirstOrDefault();
+        return MapOrDefault(result);
     }
 
-    public Task<Session> GetByTokenIdOrDefaultAsync(Guid tokenId)
+    public async Task<Session?> GetByTokenIdOrNullAsync(Guid tokenId)
     {
-        return _table
-            .Where(s => s.TokenId == tokenId)
-            .FirstOrDefault()
-            .ExecuteAsync();
+        var result = (await _session.ExecuteAsync(_sessions.SelectByTokenId(tokenId))).FirstOrDefault();
+        return MapOrDefault(result);
     }
 
-    public Task RemoveByIdAsync(long userId, long sessionId)
+    private Session? MapOrDefault(Row? row)
     {
-        return _table
-            .Where(s => s.UserId == userId && s.Id == sessionId)
-            .Delete()
-            .ExecuteAsync();
+        return row is null ? null : SessionMapper.Map(row);
     }
 
-    public Task UpdateTokenIdAsync(long userId, long sessionId, Guid tokenId)
+    public Task UpdateTokenIdAsync(Session session)
     {
-        var query = $"UPDATE sessions SET {nameof(Session.TokenId)} = ? WHERE {nameof(Session.UserId)} = ? AND {nameof(Session.Id)} = ?";
-
-        return _session.ExecuteAsync(new SimpleStatement(query, tokenId, userId, sessionId));
+        return _session.ExecuteAsync(_sessions.UpdateTokenId(session));
     }
 }

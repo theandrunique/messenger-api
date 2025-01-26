@@ -44,8 +44,6 @@ public class Session
         Timestamp = timestamp;
     }
 
-    public Session() { }
-
     public void UpdateTokenId()
     {
         LastUsedTimestamp = DateTimeOffset.UtcNow;

@@ -32,7 +32,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
             return ApiErrors.Auth.InvalidToken;
         }
 
-        var session = await _sessionRepository.GetByTokenIdOrDefaultAsync(payload.TokenId);
+        var session = await _sessionRepository.GetByTokenIdOrNullAsync(payload.TokenId);
         if (session == null)
         {
             return ApiErrors.Auth.InvalidToken;
@@ -46,7 +46,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
 
         session.UpdateTokenId();
 
-        await _sessionRepository.UpdateTokenIdAsync(user.Id, session.Id, session.TokenId);
+        await _sessionRepository.UpdateTokenIdAsync(session);
 
         return _authService.GenerateTokenPairResponse(user, session);
     }
