@@ -48,7 +48,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
             return ApiErrors.Channel.NotAllowedToInteractWith(channel.Id);
         }
 
-        var user = await _userRepository.GetByIdOrDefaultAsync(request.Sub);
+        var user = await _userRepository.GetByIdOrNullAsync(request.Sub);
         if (user is null)
         {
             throw new ArgumentException("User was expected to be found.");

@@ -38,7 +38,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
             return ApiErrors.Auth.InvalidToken;
         }
 
-        var user = await _userRepository.GetByIdOrDefaultAsync(session.UserId);
+        var user = await _userRepository.GetByIdOrNullAsync(session.UserId);
         if (user == null)
         {
             return ApiErrors.Auth.InvalidToken;

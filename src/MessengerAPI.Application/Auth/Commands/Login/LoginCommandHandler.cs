@@ -38,11 +38,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         User? user;
         if (request.Login.Contains("@"))
         {
-            user = await _userRepository.GetByEmailOrDefaultAsync(request.Login);
+            user = await _userRepository.GetByEmailOrNullAsync(request.Login);
         }
         else
         {
-            user = await _userRepository.GetByUsernameOrDefaultAsync(request.Login);
+            user = await _userRepository.GetByUsernameOrNullAsync(request.Login);
         }
         if (user is null) return ApiErrors.Auth.InvalidCredentials;
 

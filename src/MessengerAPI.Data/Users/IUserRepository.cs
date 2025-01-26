@@ -5,11 +5,10 @@ namespace MessengerAPI.Data.Users;
 public interface IUserRepository
 {
     Task AddAsync(User user);
-    Task<User> GetByIdOrDefaultAsync(long userId);
-    Task<User> GetByEmailOrDefaultAsync(string email);
-    Task<User> GetByUsernameOrDefaultAsync(string username);
-    Task<IEnumerable<User>> GetByIdsAsync(List<long> members);
-    Task SetEmailVerifiedAsync(long userId);
-    Task UpdateKeyAsync(User user);
-    Task UpdatePasswordAsync(User user);
+    Task<User?> GetByIdOrNullAsync(long userId);
+    Task<User?> GetByEmailOrNullAsync(string email);
+    Task<User?> GetByUsernameOrNullAsync(string username);
+    Task<IEnumerable<User>> GetByIdsAsync(List<long> userIds);
+    Task UpdateEmailInfoAsync(User user);
+    Task UpdateTOTPKeyAsync(User user);
 }

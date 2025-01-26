@@ -83,8 +83,6 @@ public class User
         Image = image;
     }
 
-    public User() { }
-
     public void SetTOTPKey(byte[] totpkey) => TOTPKey = totpkey;
     public void SetNewPassword(string passwordHash) => PasswordHash = passwordHash;
 }

@@ -1,5 +1,7 @@
 using Cassandra;
 using Cassandra.Data.Linq;
+using MessengerAPI.Data.Mappers;
+using MessengerAPI.Data.Queries;
 using MessengerAPI.Domain.Models.Entities;
 
 namespace MessengerAPI.Data.Users;
@@ -7,77 +9,58 @@ namespace MessengerAPI.Data.Users;
 internal class UserRepository : IUserRepository
 {
     private readonly ISession _session;
-    private readonly Table<User> _table;
+    private readonly UserQueries _users;
 
-    public UserRepository(ISession session)
+    public UserRepository(ISession session, UserQueries users)
     {
         _session = session;
-        _table = new Table<User>(_session);
+        _users = users;
     }
 
     public Task AddAsync(User user)
     {
-        return _table.Insert(user).ExecuteAsync();
+        return _session.ExecuteAsync(_users.Insert(user));
     }
 
-    public Task<User> GetByEmailOrDefaultAsync(string email)
+    public async Task<User?> GetByEmailOrNullAsync(string email)
     {
-        return _table
-            .Where(u => u.Email == email)
-            .FirstOrDefault()
-            .ExecuteAsync();
+        var result = (await _session.ExecuteAsync(_users.SelectByEmail(email)))
+            .FirstOrDefault();
+        return MapOrDefault(result);
     }
 
-    public Task<User> GetByIdOrDefaultAsync(long id)
+    public async Task<User?> GetByIdOrNullAsync(long id)
     {
-        return _table
-            .Where(u => u.Id == id)
-            .FirstOrDefault()
-            .ExecuteAsync();
+        var result = (await _session.ExecuteAsync(_users.SelectById(id)))
+            .FirstOrDefault();
+        return MapOrDefault(result);
     }
 
-    public Task<IEnumerable<User>> GetByIdsAsync(List<long> members)
+    public async Task<User?> GetByUsernameOrNullAsync(string username)
     {
-        return _table
-            .Where(u => members.Contains(u.Id))
-            .ExecuteAsync();
+        var result = (await _session.ExecuteAsync(_users.SelectByUsername(username)))
+            .FirstOrDefault();
+        return MapOrDefault(result);
     }
 
-    public Task<User> GetByUsernameOrDefaultAsync(string username)
+    public async Task<IEnumerable<User>> GetByIdsAsync(List<long> userIds)
     {
-        return _table
-            .Where(u => u.Username == username)
-            .FirstOrDefault()
-            .ExecuteAsync();
+        var result = await _session.ExecuteAsync(_users.SelectByIds(userIds));
+        return result.Select(UserMapper.Map);
     }
 
-    public Task SetEmailVerifiedAsync(long userId)
+    public Task UpdateEmailInfoAsync(User user)
     {
-        var statement = $"UPDATE users SET {nameof(User.IsEmailVerified)} = true WHERE {nameof(User.Id)} = ?";
-
-        return _session.ExecuteAsync(new SimpleStatement(statement, userId));
+        return _session.ExecuteAsync(_users.UpdateEmailInfo(user));
     }
 
-    public Task UpdateKeyAsync(User user)
+    public Task UpdateTOTPKeyAsync(User user)
     {
-        var statement = $"UPDATE users SET {nameof(User.TOTPKey)} = ? WHERE {nameof(User.Id)} = ?";
-
-        return _session.ExecuteAsync(new SimpleStatement(statement, user.TOTPKey, user.Id));
+        return _session.ExecuteAsync(_users.UpdateTOTPKey(user));
     }
 
-    public Task UpdatePasswordAsync(User user)
+    private User? MapOrDefault(Row? row)
     {
-        var statement = $"""
-            UPDATE
-                users
-            SET
-                {nameof(User.PasswordHash)} = ?,
-                {nameof(User.PasswordUpdatedTimestamp)} = ?
-            WHERE
-                {nameof(User.Id)} = ?
-        """;
-
-        return _session.ExecuteAsync(new SimpleStatement(statement, user.PasswordHash, user.PasswordUpdatedTimestamp, user.Id));
+        return row is null ? null : UserMapper.Map(row);
     }
 }
-

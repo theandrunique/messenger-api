@@ -19,7 +19,7 @@ public class GetMeQueryHandler : IRequestHandler<GetMeQuery, ErrorOr<UserPrivate
 
     public async Task<ErrorOr<UserPrivateSchema>> Handle(GetMeQuery request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdOrDefaultAsync(request.Sub);
+        var user = await _userRepository.GetByIdOrNullAsync(request.Sub);
 
         if (user == null)
         {

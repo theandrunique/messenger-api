@@ -18,7 +18,7 @@ public class SetUpTotpCommandHandler : IRequestHandler<SetUpTotpCommand, ErrorOr
 
     public async Task<ErrorOr<SetUpTotpCommandResponse>> Handle(SetUpTotpCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdOrDefaultAsync(request.Sub);
+        var user = await _userRepository.GetByIdOrNullAsync(request.Sub);
 
         if (user == null)
         {
@@ -27,7 +27,7 @@ public class SetUpTotpCommandHandler : IRequestHandler<SetUpTotpCommand, ErrorOr
 
         user.SetTOTPKey(_totpHelper.GenerateSecretKey(20));
 
-        await _userRepository.UpdateKeyAsync(user);
+        await _userRepository.UpdateTOTPKeyAsync(user);
 
         return new SetUpTotpCommandResponse(_totpHelper.CreateOtpAuthUrl(user.TOTPKey, "MessengerAPI", user.Email));
     }
