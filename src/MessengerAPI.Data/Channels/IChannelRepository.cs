@@ -1,6 +1,5 @@
-using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.Entities;
-using MessengerAPI.Domain.Models.ValueObjects;
+using MessengerAPI.Domain.Entities;
+using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Data.Channels;
 

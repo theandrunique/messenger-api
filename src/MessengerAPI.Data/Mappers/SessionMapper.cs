@@ -1,12 +1,13 @@
 using Cassandra;
+using Session = MessengerAPI.Domain.Entities.Session;
 
 namespace MessengerAPI.Data.Mappers;
 
 internal static class SessionMapper
 {
-    internal static Domain.Models.Entities.Session Map(Row row)
+    internal static Session Map(Row row)
     {
-        return new Domain.Models.Entities.Session(
+        return new Session(
             id: row.GetValue<long>("id"),
             userId: row.GetValue<long>("userid"),
             tokenId: row.GetValue<Guid>("tokenid"),

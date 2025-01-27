@@ -5,7 +5,7 @@ using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
-using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrEditMessage;

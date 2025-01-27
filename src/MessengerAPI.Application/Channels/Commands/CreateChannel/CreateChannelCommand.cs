@@ -1,6 +1,5 @@
 using MediatR;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Domain.Models.ValueObjects;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands;

@@ -1,4 +1,4 @@
-namespace MessengerAPI.Domain.Models.Entities;
+namespace MessengerAPI.Domain.Entities;
 
 public class Session
 {

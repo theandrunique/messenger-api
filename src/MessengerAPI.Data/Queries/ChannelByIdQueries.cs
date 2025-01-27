@@ -1,8 +1,6 @@
 using Cassandra;
-using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.Entities;
-using MessengerAPI.Domain.Models.ValueObjects;
-using Newtonsoft.Json;
+using MessengerAPI.Domain.Entities;
+using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Data.Queries;
 

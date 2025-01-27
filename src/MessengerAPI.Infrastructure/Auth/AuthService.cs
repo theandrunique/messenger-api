@@ -3,7 +3,7 @@ using System.Security.Claims;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common;
-using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Entities;
 using MessengerAPI.Infrastructure.Auth.Interfaces;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

@@ -2,7 +2,7 @@ using MediatR;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Interfaces.Auth;
 using MessengerAPI.Data.Users;
-using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Auth.Commands.PasswordRecovery;

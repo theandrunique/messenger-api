@@ -1,7 +1,6 @@
-using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Entities;
 
-namespace MessengerAPI.Domain.Models.ValueObjects;
+namespace MessengerAPI.Domain.ValueObjects;
 
 public struct MessageAuthorInfo
 {
@@ -25,5 +24,7 @@ public struct MessageAuthorInfo
         Image = image;
     }
 
+#pragma warning disable CS8618
     public MessageAuthorInfo() { }
+#pragma warning restore CS8618
 }

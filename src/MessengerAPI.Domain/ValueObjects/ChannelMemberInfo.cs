@@ -1,7 +1,6 @@
-using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Entities;
 
-namespace MessengerAPI.Domain.Models.ValueObjects;
+namespace MessengerAPI.Domain.ValueObjects;
 
 public struct ChannelMemberInfo
 {

@@ -1,5 +1,5 @@
 using Cassandra;
-using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Entities;
 
 namespace MessengerAPI.Data.Queries;
 

@@ -2,7 +2,7 @@ using Cassandra;
 using Cassandra.Data.Linq;
 using MessengerAPI.Data.Mappers;
 using MessengerAPI.Data.Queries;
-using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Entities;
 
 namespace MessengerAPI.Data.Users;
 

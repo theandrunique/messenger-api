@@ -3,9 +3,7 @@ using Cassandra.Mapping;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Queries;
 using MessengerAPI.Data.Users;
-using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.Entities;
-using MessengerAPI.Domain.Models.ValueObjects;
+using MessengerAPI.Domain.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

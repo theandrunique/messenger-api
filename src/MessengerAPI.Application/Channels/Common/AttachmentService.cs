@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using MessengerAPI.Application.Common.Interfaces.Files;
 using MessengerAPI.Core;
-using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Common;

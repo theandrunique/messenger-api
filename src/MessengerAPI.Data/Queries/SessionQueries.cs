@@ -1,4 +1,5 @@
 using Cassandra;
+using Session = MessengerAPI.Domain.Entities.Session;
 
 namespace MessengerAPI.Data.Queries;
 
@@ -28,7 +29,7 @@ internal class SessionQueries
         _updateTokenId = session.Prepare("UPDATE sessions SET lastusedtimestamp = ?, tokenid = ? WHERE userid = ? AND id = ?");
     }
 
-    public BoundStatement Insert(Domain.Models.Entities.Session session)
+    public BoundStatement Insert(Session session)
     {
         return _insert.Bind(
             session.UserId,
@@ -51,7 +52,7 @@ internal class SessionQueries
         return _selectByTokenId.Bind(tokenId);
     }
 
-    public BoundStatement UpdateTokenId(Domain.Models.Entities.Session session)
+    public BoundStatement UpdateTokenId(Session session)
     {
         return _updateTokenId.Bind(session.LastUsedTimestamp, session.TokenId, session.UserId, session.Id);
     }

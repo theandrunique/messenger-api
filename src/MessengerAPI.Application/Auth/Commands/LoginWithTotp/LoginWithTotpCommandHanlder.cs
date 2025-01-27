@@ -5,7 +5,7 @@ using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Services;
 using MessengerAPI.Core;
 using MessengerAPI.Data.Users;
-using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Auth.Commands.LoginWithTotp;

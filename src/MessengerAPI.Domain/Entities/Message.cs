@@ -1,6 +1,6 @@
-using MessengerAPI.Domain.Models.ValueObjects;
+using MessengerAPI.Domain.ValueObjects;
 
-namespace MessengerAPI.Domain.Models.Entities;
+namespace MessengerAPI.Domain.Entities;
 
 public class Message
 {

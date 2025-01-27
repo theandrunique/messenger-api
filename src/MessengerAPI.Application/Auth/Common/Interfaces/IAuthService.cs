@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using MessengerAPI.Application.Common;
-using MessengerAPI.Domain.Models.Entities;
+using MessengerAPI.Domain.Entities;
 
 namespace MessengerAPI.Application.Auth.Common.Interfaces;
 

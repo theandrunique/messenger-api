@@ -1,7 +1,6 @@
 using Cassandra;
 using MessengerAPI.Data.DataDto;
-using MessengerAPI.Domain.Entities.ValueObjects;
-using MessengerAPI.Domain.Models.ValueObjects;
+using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Data.Mappers;
 

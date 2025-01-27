@@ -1,5 +1,4 @@
 using FluentValidation;
-using MessengerAPI.Domain.Models.ValueObjects;
 
 namespace MessengerAPI.Application.Channels.Commands.CreateChannel;
 

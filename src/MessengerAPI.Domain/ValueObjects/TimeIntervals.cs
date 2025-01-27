@@ -1,4 +1,4 @@
-namespace MessengerAPI.Domain.Models.ValueObjects;
+namespace MessengerAPI.Domain.ValueObjects;
 
 public enum TimeIntervals
 {

@@ -1,24 +1,20 @@
 using MassTransit;
 using MediatR;
-using MessengerAPI.Domain.Models.Events;
+using MessengerAPI.Domain.Events;
 
 namespace MessengerAPI.Application.Channels.Events;
 
-public class MessageUpdatedEventHandler : INotificationHandler<MessageUpdated>
+public class MessageUpdateEventHandler : INotificationHandler<MessageUpdate>
 {
     private readonly IPublishEndpoint _publisher;
 
-    public MessageUpdatedEventHandler(IPublishEndpoint publisher)
+    public MessageUpdateEventHandler(IPublishEndpoint publisher)
     {
         _publisher = publisher;
     }
-    /// <summary>
-    /// Send a notification about new message to all channel members
-    /// </summary>
-    /// <param name="notification"><see cref="MessageUpdated"/></param>
-    /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
-    public async Task Handle(MessageUpdated notification, CancellationToken cancellationToken)
+
+    public async Task Handle(MessageUpdate notification, CancellationToken cancellationToken)
     {
-        await _publisher.Publish(notification.NewMessage, cancellationToken);
+        await _publisher.Publish(notification.Message, cancellationToken);
     }
 }
