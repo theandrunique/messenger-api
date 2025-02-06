@@ -10,8 +10,6 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddExceptionHandler<GlobalErrorHandler>();
-
 builder.Services
     .AddCoreServices()
     .AddContractsMappings()

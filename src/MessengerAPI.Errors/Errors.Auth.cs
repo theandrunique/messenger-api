@@ -11,5 +11,8 @@ public static partial class ApiErrors
         public static BaseApiError InvalidToken => new BaseApiError(ErrorCode.InvalidToken, "Invalid token");
 
         public static BaseApiError InvalidCaptcha => new BaseApiError(ErrorCode.InvalidCaptcha, "Invalid captcha");
+
+        public static BaseApiError NoSessionInfoWasFound =>
+            new BaseApiError(ErrorCode.NoSessionInfo, "No session info was found");
     }
 }

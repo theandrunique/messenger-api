@@ -1,4 +1,4 @@
-using MessengerAPI.Contracts.Common;
+using System.Diagnostics;
 using MessengerAPI.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +9,26 @@ namespace MessengerAPI.Presentation.Controllers;
 [Authorize]
 public class ApiController : ControllerBase
 {
-    protected ActionResult Problem(BaseApiError error)
+    protected IActionResult Problem(BaseApiError error)
     {
-        return BadRequest(ApiErrorSchema.FromApiError(error));
+        Dictionary<string, object?> extensions = new()
+        {
+            ["code"] = (int)error.Code,
+            ["message"] = error.Message,
+            ["traceId"] = Activity.Current?.Id
+        };
+
+        if (error.Errors != null)
+        {
+            extensions["errors"] = error.Errors;
+        }
+
+        var problemDetails = new ProblemDetails
+        {
+            Extensions = extensions,
+        };
+        HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+        return new ObjectResult(problemDetails);
     }
 }
 

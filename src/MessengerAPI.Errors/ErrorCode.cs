@@ -7,6 +7,7 @@ public enum ErrorCode
     SessionExpired = 10002,
     InvalidToken = 10003,
     InvalidCaptcha = 10004,
+    NoSessionInfo = 10005,
 
     // Attachment error codes,
     AttachmentNotFound = 20001,
@@ -29,5 +30,6 @@ public enum ErrorCode
     InvalidRequestBody = 50001,
     InvalidJson = 50002,
     InternalServerError = 50003,
+    UnsupportedMediaType = 50004,
 }
 

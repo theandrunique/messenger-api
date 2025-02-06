@@ -8,6 +8,7 @@ using MessengerAPI.Presentation.Common;
 using MessengerAPI.Application.Auth.Commands.RefreshToken;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Contracts.Common;
+using MessengerAPI.Errors;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -54,6 +55,7 @@ public class AuthController : ApiController
             },
             errors => Problem(errors));
     }
+
     [HttpPost("token")]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> RefreshTokenAsync([FromForm] string refreshToken, CancellationToken cancellationToken)
@@ -77,7 +79,7 @@ public class AuthController : ApiController
         string? refreshToken = Request.Cookies[CookieConstants.RefreshToken];
         if (refreshToken == null)
         {
-            return NotFound();
+            return Problem(ApiErrors.Auth.NoSessionInfoWasFound);
         }
         return Ok(refreshToken);
     }
