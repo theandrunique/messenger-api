@@ -6,7 +6,9 @@ using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Entities;
+using MessengerAPI.Domain.Models.Events;
 using MessengerAPI.Errors;
+using MessengerAPI.Gateway;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 
@@ -18,6 +20,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
     private readonly IMessageRepository _messageRepository;
     private readonly IUserRepository _userRepository;
     private readonly IIdGenerator _idGenerator;
+    private readonly IGatewayService _gateway;
 
     public AddOrEditMessageCommandHandler(
         IChannelRepository channelRepository,
@@ -25,7 +28,8 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         IMessageRepository messageRepository,
         AttachmentService attachmentService,
         IUserRepository userRepository,
-        IIdGenerator idGenerator)
+        IIdGenerator idGenerator,
+        IGatewayService gateway)
     {
         _channelRepository = channelRepository;
         _mapper = mapper;
@@ -33,6 +37,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         _attachmentService = attachmentService;
         _userRepository = userRepository;
         _idGenerator = idGenerator;
+        _gateway = gateway;
     }
 
     public async Task<ErrorOr<MessageSchema>> Handle(AddOrEditMessageCommand request, CancellationToken cancellationToken)
@@ -103,6 +108,12 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
                 attachments);
         }
         await _messageRepository.UpsertAsync(message);
+
+        await _gateway.PublishAsync(new MessageCreated
+        {
+            Recipients = channel.Members.Select(m => m.UserId).ToList(),
+            Message = message
+        });
 
         return _mapper.Map<MessageSchema>(message);
     }
