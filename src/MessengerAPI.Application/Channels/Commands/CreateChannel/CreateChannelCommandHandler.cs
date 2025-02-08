@@ -53,11 +53,13 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
 
         await _channelRepository.UpsertAsync(channel);
 
-        await _gateway.PublishAsync(new ChannelCreated
+        var channelSchema = _mapper.Map<ChannelSchema>(channel);
+
+        await _gateway.PublishAsync(new ChannelCreatedGatewayEvent
         {
-            Channel = channel
+            Channel = channelSchema
         });
 
-        return _mapper.Map<ChannelSchema>(channel);
+        return channelSchema;
     }
 }

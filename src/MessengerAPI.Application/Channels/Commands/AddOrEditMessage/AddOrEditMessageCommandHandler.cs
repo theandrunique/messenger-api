@@ -109,12 +109,14 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         }
         await _messageRepository.UpsertAsync(message);
 
-        await _gateway.PublishAsync(new MessageCreated
+        var messageSchema = _mapper.Map<MessageSchema>(message);
+
+        await _gateway.PublishAsync(new MessageCreatedGatewayEvent
         {
-            Recipients = channel.Members.Select(m => m.UserId).ToList(),
-            Message = message
+            Recipients = channel.Members.Select(m => m.UserId.ToString()).ToList(),
+            Message = messageSchema
         });
 
-        return _mapper.Map<MessageSchema>(message);
+        return messageSchema;
     }
 }
