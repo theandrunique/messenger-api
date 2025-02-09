@@ -1,12 +1,12 @@
 using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Channels.Common;
+using MessengerAPI.Application.Channels.Events;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Entities;
-using MessengerAPI.Domain.Models.Events;
 using MessengerAPI.Errors;
 using MessengerAPI.Gateway;
 
@@ -111,11 +111,20 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
 
         var messageSchema = _mapper.Map<MessageSchema>(message);
 
-        await _gateway.PublishAsync(new MessageCreatedGatewayEvent
+        if (request.MessageId.HasValue)
         {
-            Recipients = channel.Members.Select(m => m.UserId.ToString()).ToList(),
-            Message = messageSchema
-        });
+            await _gateway.PublishAsync(new MessageUpdateGatewayEvent(
+                messageSchema,
+                channel.Members.Select(m => m.UserId.ToString()),
+                channel.Type));
+        }
+        else
+        {
+            await _gateway.PublishAsync(new MessageCreateGatewayEvent(
+                messageSchema,
+                channel.Members.Select(m => m.UserId.ToString()),
+                channel.Type));
+        }
 
         return messageSchema;
     }

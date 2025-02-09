@@ -1,5 +1,4 @@
 using AutoMapper;
-using MassTransit.Internals;
 using MediatR;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
@@ -55,10 +54,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
 
         var channelSchema = _mapper.Map<ChannelSchema>(channel);
 
-        await _gateway.PublishAsync(new ChannelCreatedGatewayEvent
-        {
-            Channel = channelSchema
-        });
+        await _gateway.PublishAsync(new ChannelCreateGatewayEvent(channelSchema));
 
         return channelSchema;
     }
