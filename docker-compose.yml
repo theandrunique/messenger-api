@@ -3,7 +3,7 @@ services:
     image: redis
     ports:
       - 6379:6379
-  
+
   mailhog:
     image: mailhog/mailhog
     ports:
@@ -54,3 +54,14 @@ services:
       - PostgresSettings__ConnectionString=${PostgresSettings__ConnectionString:?}
     volumes:
       - ./keys:/app/keys
+
+    depends_on:
+      - scylla
+
+  gateway:
+    image: theandru/messenger-api-gateway:latest
+    ports:
+      - 3000:3000
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - JWKS_URL=http://app:8000/.well-known/jwks.json
