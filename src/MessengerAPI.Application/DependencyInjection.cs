@@ -6,6 +6,7 @@ using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Behaviors;
 using MessengerAPI.Application.Common.Captcha;
 using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -55,6 +56,7 @@ public static class DependencyInjection
     private static IServiceCollection AddAuthServices(this IServiceCollection services, ConfigurationManager config)
     {
         services.Configure<AuthOptions>(config.GetSection(nameof(AuthOptions)));
+        services.AddValidatedOptions<AuthOptions>(config.GetSection(nameof(AuthOptions)));
         services.AddScoped<AuthService>();
 
         return services;
