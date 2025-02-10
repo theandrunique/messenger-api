@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MessengerAPI.Core;
 using MessengerAPI.Presentation.Common;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.OpenApi.Models;
@@ -35,7 +36,7 @@ public static class DependencyInjection
 
         services.AddCors(options =>
             {
-                options.AddPolicy(CorsConstants.CorsPolicyName, builder =>
+                options.AddPolicy(MessengerConstants.Cors.PolicyName, builder =>
                 {
                     builder.WithOrigins(corsOptions.AllowedOrigins.ToArray())
                         .WithHeaders(corsOptions.AllowedHeaders.ToArray())

@@ -1,5 +1,6 @@
 using DeviceDetectorNET;
-using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Infrastructure.Auth;
 using Microsoft.AspNetCore.Http;
 
 namespace MessengerAPI.Infrastructure.Common;
@@ -13,7 +14,7 @@ public class ClientInfoProvider : IClientInfoProvider
     {
         if (httpContextAccessor.HttpContext == null)
         {
-            throw new Exception("UserAgentParser was expected to be used in the context of an http request");
+            throw new Exception("ClientInfoProvider was expected to be used in the context of an http request");
         }
 
         _deviceDetector = new DeviceDetector();
@@ -23,23 +24,26 @@ public class ClientInfoProvider : IClientInfoProvider
         _deviceDetector.SetUserAgent(userAgent);
         _deviceDetector.Parse();
     }
-    public string GetIpAddress()
+    public string IpAddress
     {
-        string? ipAddress = _httpContext.Connection.RemoteIpAddress?.ToString();
-
-        if (ipAddress == null)
+        get
         {
-            throw new Exception("IP address expected to be not null");
+            string? ipAddress = _httpContext.Connection.RemoteIpAddress?.ToString();
+            return ipAddress ?? throw new Exception("IP address expected to be not null");
         }
-        return ipAddress;
     }
-    public string GetDeviceName()
+
+    public string DeviceName => _deviceDetector.GetDeviceName();
+
+    public string ClientName
     {
-        return _deviceDetector.GetDeviceName();
+        get
+        {
+            var client = _deviceDetector.GetClient();
+            return $"{client.Match.Name} {client.Match.Version}";
+        }
     }
-    public string GetClientName()
-    {
-        var client = _deviceDetector.GetClient();
-        return $"{client.Match.Name} {client.Match.Version}";
-    }
+
+    public long UserId => _httpContext.User.GetUserId();
+    public Guid TokenId => _httpContext.User.GetTokenId();
 }

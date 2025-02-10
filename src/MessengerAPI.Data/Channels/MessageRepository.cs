@@ -28,11 +28,12 @@ internal class MessageRepository : IMessageRepository
         _attachments = attachments;
     }
 
-    public Task UpsertAsync(Message message)
+    public async Task UpsertAsync(Message message)
     {
+        await _session.ExecuteAsync(_attachments.RemoveByChannelIdAndMessageId(message.ChannelId, message.Id));
+
         var batch = new BatchStatement()
             .Add(_messages.Insert(message))
-            .Add(_attachments.RemoveByChannelIdAndMessageId(message.ChannelId, message.Id))
             .Add(_channelsById.UpdateLastMessageInfo(message));
 
         foreach (var attachment in message.Attachments)
@@ -40,7 +41,7 @@ internal class MessageRepository : IMessageRepository
             batch.Add(_attachments.Insert(attachment));
         }
 
-        return _session.ExecuteAsync(batch);
+        await _session.ExecuteAsync(batch);
     }
 
     public async Task<Message?> GetMessageByIdOrNullAsync(long channelId, long messageId)

@@ -32,26 +32,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8000:8000
-    environment:
-      - AuthOptions__KeysDirectory=${AuthOptions__KeysDirectory:?}
-      - AuthOptions__AccessTokenExpiryMinutes=${AuthOptions__AccessTokenExpiryMinutes:?}
-      - AuthOptions__Issuer=${AuthOptions__Issuer:?}
-      - AuthOptions__Audience=${AuthOptions__Audience:?}
-      - AuthOptions__RevokedTokensCacheKeyPrefix=${AuthOptions__RevokedTokensCacheKeyPrefix:-"revoked-tokens"}
-
-      - CorsPolicy__AllowedOrigins=${CorsPolicy__AllowedOrigins:?}
-
-      - StorageOptions__AccessKey=${StorageOptions__AccessKey:?}
-      - StorageOptions__SecretKey=${StorageOptions__SecretKey:?}
-      - StorageOptions__BucketName=${StorageOptions__BucketName:?}
-      - StorageOptions__EndpointUrl=${StorageOptions__EndpointUrl:?}
-      - StorageOptions__BucketUrl=${StorageOptions__BucketUrl:?}
-      - StorageOptions__MaxFileSizeInMB=${StorageOptions__MaxFileSizeInMB:?}
-      - StorageOptions__UploadPartSize=${StorageOptions__UploadPartSize:-6291456}
-
-      - RedisSettings__ConnectionString=${RedisSettings__ConnectionString:-redis:6379}
-
-      - PostgresSettings__ConnectionString=${PostgresSettings__ConnectionString:?}
+    env_file:
+      - .env.docker
     volumes:
       - ./keys:/app/keys
 

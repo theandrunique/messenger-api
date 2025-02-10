@@ -3,7 +3,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Jose;
-using MessengerAPI.Infrastructure.Auth.Interfaces;
+using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Core;
 
 namespace MessengerAPI.Infrastructure.Auth;
 
@@ -26,7 +27,7 @@ public class JweHelper : IJweHelper
                 return false;
             }
 
-            if (!protectedHeader.TryGetValue(AuthConstants.KeyIdHeaderName, out var kidObject))
+            if (!protectedHeader.TryGetValue(MessengerConstants.Auth.KeyIdHeaderName, out var kidObject))
             {
                 return false;
             }
@@ -52,7 +53,7 @@ public class JweHelper : IJweHelper
         };
         var headers = new Dictionary<string, object>
         {
-            { AuthConstants.KeyIdHeaderName, keyId },
+            { MessengerConstants.Auth.KeyIdHeaderName, keyId },
         };
         // Encrypt the payload with given key
         var jwe = JWE.Encrypt(

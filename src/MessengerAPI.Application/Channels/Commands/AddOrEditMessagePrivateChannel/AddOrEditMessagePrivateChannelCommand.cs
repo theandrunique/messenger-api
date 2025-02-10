@@ -8,7 +8,6 @@ namespace MessengerAPI.Application.Channels.Commands.AddOrEditMessagePrivateChan
 public record AddOrEditMessagePrivateChannelCommand(
     long userId,
     long? MessageId,
-    long Sub,
     long ChannelId,
     string Content,
     List<MessageAttachmentDto>? Attachments

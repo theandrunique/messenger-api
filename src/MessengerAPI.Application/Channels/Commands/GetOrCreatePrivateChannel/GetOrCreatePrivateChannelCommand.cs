@@ -5,6 +5,5 @@ using MessengerAPI.Errors;
 namespace MessengerAPI.Application.Channels.Commands.GetOrCreatePrivateChannel;
 
 public record GetOrCreatePrivateChannelCommand(
-    long Sub,
     long userId
 ) : IRequest<ErrorOr<ChannelSchema>>;

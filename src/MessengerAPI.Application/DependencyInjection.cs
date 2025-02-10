@@ -1,9 +1,11 @@
 using System.Reflection;
 using FluentValidation;
+using MessengerAPI.Application.Auth.Common;
+using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Behaviors;
-using MessengerAPI.Application.Common.Interfaces.Auth;
-using MessengerAPI.Application.Common.Services;
+using MessengerAPI.Application.Common.Captcha;
+using MessengerAPI.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -25,6 +27,8 @@ public static class DependencyInjection
         ValidatorOptions.Global.LanguageManager.Culture = new System.Globalization.CultureInfo("en");
 
         services.AddCaptchaService(config);
+        services.AddAuthServices(config);
+        services.AddChannelServices();
 
         services.Configure<SmtpOptions>(config.GetSection(nameof(SmtpOptions)));
 
@@ -44,6 +48,21 @@ public static class DependencyInjection
             });
 
         services.AddScoped<CaptchaService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddAuthServices(this IServiceCollection services, ConfigurationManager config)
+    {
+        services.Configure<AuthOptions>(config.GetSection(nameof(AuthOptions)));
+        services.AddScoped<AuthService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddChannelServices(this IServiceCollection services)
+    {
+        services.AddScoped<AttachmentService>();
 
         return services;
     }

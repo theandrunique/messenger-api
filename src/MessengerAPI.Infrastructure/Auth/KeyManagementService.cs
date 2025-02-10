@@ -1,8 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
+using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Core;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace MessengerAPI.Infrastructure.Auth;
 

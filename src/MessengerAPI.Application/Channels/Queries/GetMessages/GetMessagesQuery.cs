@@ -5,7 +5,6 @@ using MessengerAPI.Errors;
 namespace MessengerAPI.Application.Channels.Queries.GetMessages;
 
 public record GetMessagesQuery(
-    long Sub,
     long ChannelId,
     long Before,
     int Limit

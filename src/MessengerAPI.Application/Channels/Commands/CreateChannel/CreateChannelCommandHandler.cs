@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
@@ -18,26 +19,29 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
     private readonly IMapper _mapper;
     private readonly IIdGenerator _idGenerator;
     private readonly IGatewayService _gateway;
+    private readonly IClientInfoProvider _clientInfo;
 
     public CreateChannelCommandHandler(
         IChannelRepository channelRepository,
         IUserRepository userRepository,
         IMapper mapper,
         IIdGenerator idGenerator,
-        IGatewayService gateway)
+        IGatewayService gateway,
+        IClientInfoProvider clientInfo)
     {
         _channelRepository = channelRepository;
         _userRepository = userRepository;
         _mapper = mapper;
         _idGenerator = idGenerator;
         _gateway = gateway;
+        _clientInfo = clientInfo;
     }
 
     public async Task<ErrorOr<ChannelSchema>> Handle(CreateChannelCommand request, CancellationToken cancellationToken)
     {
-        if (!request.Members.Contains(request.Sub))
+        if (!request.Members.Contains(_clientInfo.UserId))
         {
-            request.Members.Add(request.Sub);
+            request.Members.Add(_clientInfo.UserId);
         }
 
         var members = (await _userRepository.GetByIdsAsync(request.Members)).ToList();
@@ -48,7 +52,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             return ApiErrors.User.NotFoundLotOfUsers(membersWasNotFound);
         }
 
-        Channel channel = Channel.CreateGroup(_idGenerator.CreateId(), request.Sub, request.Title, members.ToArray());
+        Channel channel = Channel.CreateGroup(_idGenerator.CreateId(), _clientInfo.UserId, request.Title, members.ToArray());
 
         await _channelRepository.UpsertAsync(channel);
 

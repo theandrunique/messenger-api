@@ -20,7 +20,7 @@ public class AddOrEditMessagePrivateChannelCommandHandler
     public async Task<ErrorOr<MessageSchema>> Handle(AddOrEditMessagePrivateChannelCommand request, CancellationToken cancellationToken)
     {
         var channelRequestResult = await _mediator.Send(
-            new GetOrCreatePrivateChannelCommand(request.Sub, request.userId),
+            new GetOrCreatePrivateChannelCommand(request.userId),
             cancellationToken);
 
         if (channelRequestResult.IsError)
@@ -32,7 +32,7 @@ public class AddOrEditMessagePrivateChannelCommandHandler
         var channelId = long.Parse(channel.Id);
 
         return await _mediator.Send(
-            new AddOrEditMessageCommand(request.MessageId, request.Sub, channelId, request.Content, request.Attachments),
+            new AddOrEditMessageCommand(request.MessageId, channelId, request.Content, request.Attachments),
             cancellationToken);
     }
 }

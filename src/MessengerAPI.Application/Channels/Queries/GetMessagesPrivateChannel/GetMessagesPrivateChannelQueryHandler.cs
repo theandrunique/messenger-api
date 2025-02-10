@@ -24,7 +24,7 @@ public class GetMessagesPrivateChannelQueryHandler
     public async Task<ErrorOr<List<MessageSchema>>> Handle(GetMessagesPrivateChannelQuery request, CancellationToken cancellationToken)
     {
         var getPrivateChannelResult = await _mediator.Send(
-            new GetOrCreatePrivateChannelCommand(request.Sub, request.UserId),
+            new GetOrCreatePrivateChannelCommand(request.UserId),
             cancellationToken
         );
 

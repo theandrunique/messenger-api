@@ -4,6 +4,4 @@ using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Queries.GetChannels;
 
-public record GetChannelsQuery(
-    long Sub
-) : IRequest<ErrorOr<List<ChannelSchema>>>;
+public record GetChannelsQuery() : IRequest<ErrorOr<List<ChannelSchema>>>;

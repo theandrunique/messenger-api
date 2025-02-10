@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Channels.Events;
+using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
@@ -21,6 +22,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
     private readonly IUserRepository _userRepository;
     private readonly IIdGenerator _idGenerator;
     private readonly IGatewayService _gateway;
+    private readonly IClientInfoProvider _clientInfo;
 
     public AddOrEditMessageCommandHandler(
         IChannelRepository channelRepository,
@@ -29,7 +31,8 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         AttachmentService attachmentService,
         IUserRepository userRepository,
         IIdGenerator idGenerator,
-        IGatewayService gateway)
+        IGatewayService gateway,
+        IClientInfoProvider clientInfo)
     {
         _channelRepository = channelRepository;
         _mapper = mapper;
@@ -38,6 +41,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         _userRepository = userRepository;
         _idGenerator = idGenerator;
         _gateway = gateway;
+        _clientInfo = clientInfo;
     }
 
     public async Task<ErrorOr<MessageSchema>> Handle(AddOrEditMessageCommand request, CancellationToken cancellationToken)
@@ -48,12 +52,12 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
             return ApiErrors.Channel.NotFound(request.ChannelId);
         }
 
-        if (!channel.IsUserInTheChannel(request.Sub))
+        if (!channel.IsUserInTheChannel(_clientInfo.UserId))
         {
             return ApiErrors.Channel.NotAllowedToInteractWith(channel.Id);
         }
 
-        var user = await _userRepository.GetByIdOrNullAsync(request.Sub);
+        var user = await _userRepository.GetByIdOrNullAsync(_clientInfo.UserId);
         if (user is null)
         {
             throw new ArgumentException("User was expected to be found.");

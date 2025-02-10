@@ -17,7 +17,7 @@ public class MessengerProblemDetailsFactory : ProblemDetailsFactory
         string? detail = null,
         string? instance = null)
     {
-        if (statusCode == null)
+        if (statusCode == null || statusCode == StatusCodes.Status500InternalServerError)
         {
             httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
             var problemDetails = new ProblemDetails

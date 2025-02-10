@@ -4,11 +4,11 @@ using MediatR;
 using MessengerAPI.Application.Auth.Commands.Register;
 using MessengerAPI.Presentation.Schemas.Auth;
 using MessengerAPI.Application.Auth.Commands.Login;
-using MessengerAPI.Presentation.Common;
 using MessengerAPI.Application.Auth.Commands.RefreshToken;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Errors;
+using MessengerAPI.Core;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -76,7 +76,7 @@ public class AuthController : ApiController
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public IActionResult Token()
     {
-        string? refreshToken = Request.Cookies[CookieConstants.RefreshToken];
+        string? refreshToken = Request.Cookies[MessengerConstants.Auth.SessionCookieName];
         if (refreshToken == null)
         {
             return Problem(ApiErrors.Auth.NoSessionInfoWasFound);
@@ -91,6 +91,6 @@ public class AuthController : ApiController
             HttpOnly = true,
             // Secure = true,
         };
-        Response.Cookies.Append(CookieConstants.RefreshToken, refreshToken, cookieOptions);
+        Response.Cookies.Append(MessengerConstants.Auth.SessionCookieName, refreshToken, cookieOptions);
     }
 }

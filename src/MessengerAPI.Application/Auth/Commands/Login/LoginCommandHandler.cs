@@ -1,6 +1,7 @@
 using MediatR;
 using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Core;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Entities;
@@ -13,21 +14,21 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
     private readonly IHashHelper _hashHelper;
     private readonly IUserRepository _userRepository;
     private readonly ISessionRepository _sessionRepository;
-    private readonly IClientInfoProvider _userAgentParser;
-    private readonly IAuthService _authService;
+    private readonly IClientInfoProvider _clientInfo;
+    private readonly AuthService _authService;
     private readonly IIdGenerator _idGenerator;
 
     public LoginCommandHandler(
         IHashHelper hashHelper,
         IUserRepository userRepository,
         ISessionRepository sessionRepository,
-        IClientInfoProvider userAgentParser,
-        IAuthService authService,
+        IClientInfoProvider clientInfoProvider,
+        AuthService authService,
         IIdGenerator idGenerator)
     {
         _hashHelper = hashHelper;
         _userRepository = userRepository;
-        _userAgentParser = userAgentParser;
+        _clientInfo = clientInfoProvider;
         _authService = authService;
         _sessionRepository = sessionRepository;
         _idGenerator = idGenerator;
@@ -54,9 +55,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         var session = new Session(
             _idGenerator.CreateId(),
             user.Id,
-            _userAgentParser.GetDeviceName(),
-            _userAgentParser.GetClientName(),
-            _userAgentParser.GetIpAddress());
+            _clientInfo.DeviceName,
+            _clientInfo.ClientName,
+            _clientInfo.IpAddress);
 
         await _sessionRepository.AddAsync(session);
 

@@ -1,5 +1,6 @@
 using MediatR;
-using MessengerAPI.Application.Common;
+using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Errors;
 
@@ -9,16 +10,18 @@ public class SetUpTotpCommandHandler : IRequestHandler<SetUpTotpCommand, ErrorOr
 {
     private readonly ITotpHelper _totpHelper;
     private readonly IUserRepository _userRepository;
+    private readonly IClientInfoProvider _clientInfo;
 
-    public SetUpTotpCommandHandler(ITotpHelper totpHelper, IUserRepository userRepository)
+    public SetUpTotpCommandHandler(ITotpHelper totpHelper, IUserRepository userRepository, IClientInfoProvider clientInfo)
     {
         _totpHelper = totpHelper;
         _userRepository = userRepository;
+        _clientInfo = clientInfo;
     }
 
     public async Task<ErrorOr<SetUpTotpCommandResponse>> Handle(SetUpTotpCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdOrNullAsync(request.Sub);
+        var user = await _userRepository.GetByIdOrNullAsync(_clientInfo.UserId);
 
         if (user == null)
         {

@@ -69,5 +69,6 @@ public class Message
         {
             _attachments.AddRange(attachments);
         }
+        foreach (var attachment in _attachments) attachment.SetMessageId(Id);
     }
 }

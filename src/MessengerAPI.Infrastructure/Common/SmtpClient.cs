@@ -1,9 +1,8 @@
 using System.Net;
 using System.Net.Mail;
 using MessengerAPI.Application.Common;
-using MessengerAPI.Application.Common.Interfaces.Auth;
+using MessengerAPI.Application.Common.Interfaces;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace MessengerAPI.Infrastructure.Common;
 

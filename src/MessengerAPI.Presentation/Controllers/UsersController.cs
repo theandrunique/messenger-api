@@ -6,7 +6,7 @@ using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessagesPrivateChannel;
 using MessengerAPI.Application.Users.Queries.GetMeQuery;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Presentation.Common;
+using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Presentation.Schemas.Channels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,57 +26,46 @@ public class UsersController : ApiController
     [ProducesResponseType(typeof(List<ChannelSchema>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMyChannelsAsync(CancellationToken cancellationToken)
     {
-        var identity = User.GetIdentity();
-
-        var query = new GetChannelsQuery(identity.UserId);
+        var query = new GetChannelsQuery();
 
         var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors)
-        );
+            errors => Problem(errors));
     }
 
     [HttpGet("me")]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMeAsync(CancellationToken cancellationToken)
     {
-        var identity = User.GetIdentity();
-
-        var query = new GetMeQuery(identity.UserId);
+        var query = new GetMeQuery();
 
         var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors)
-        );
+            errors => Problem(errors));
     }
 
     [HttpGet("me/private-channel/{userId}")]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPrivateChannelAsync(long userId, CancellationToken cancellationToken)
     {
-        var identity = User.GetIdentity();
-
-        var command = new GetOrCreatePrivateChannelCommand(identity.UserId, userId);
+        var command = new GetOrCreatePrivateChannelCommand(userId);
 
         var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors)
-        );
+            errors => Problem(errors));
     }
 
     [HttpGet("me/private-channel/me")]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSavedMessagesChannelAsync(CancellationToken cancellationToken)
     {
-        var identity = User.GetIdentity();
-
-        var command = new GetOrCreatePrivateChannelCommand(identity.UserId, identity.UserId);
+        var command = new GetOrCreatePrivateChannelCommand(User.GetUserId());
 
         var result = await _mediator.Send(command, cancellationToken);
 
@@ -90,19 +79,13 @@ public class UsersController : ApiController
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateChannelAsync(CreateChannelRequestSchema schema, CancellationToken cancellationToken)
     {
-        var identity = User.GetIdentity();
-
-        var query = new CreateChannelCommand(
-            identity.UserId,
-            schema.members,
-            schema.title);
+        var query = new CreateChannelCommand(schema.members, schema.title);
 
         var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors)
-        );
+            errors => Problem(errors));
     }
 
     [HttpPost("{userId}/messages")]
@@ -112,12 +95,9 @@ public class UsersController : ApiController
         CreateMessageRequestSchema schema,
         CancellationToken cancellationToken)
     {
-        var identity = User.GetIdentity();
-
         var command = new AddOrEditMessagePrivateChannelCommand(
             userId,
             null,
-            identity.UserId,
             userId,
             schema.content,
             schema.attachments);
@@ -126,8 +106,7 @@ public class UsersController : ApiController
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors)
-        );
+            errors => Problem(errors));
     }
 
     [HttpPut("{userId}/messages/{messageId}")]
@@ -138,12 +117,9 @@ public class UsersController : ApiController
         CreateMessageRequestSchema schema,
         CancellationToken cancellationToken)
     {
-        var identity = User.GetIdentity();
-
         var command = new AddOrEditMessagePrivateChannelCommand(
             userId,
             messageId,
-            identity.UserId,
             userId,
             schema.content,
             schema.attachments);
@@ -152,8 +128,7 @@ public class UsersController : ApiController
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors)
-        );
+            errors => Problem(errors));
     }
 
 
@@ -165,17 +140,14 @@ public class UsersController : ApiController
         long? before = null,
         int limit = 50)
     {
-        var identity = User.GetIdentity();
-
         var actualBefore = before ?? long.MaxValue;
 
-        var query = new GetMessagesPrivateChannelQuery(identity.UserId, userId, actualBefore, limit);
+        var query = new GetMessagesPrivateChannelQuery(userId, actualBefore, limit);
 
         var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors)
-        );
+            errors => Problem(errors));
     }
 }

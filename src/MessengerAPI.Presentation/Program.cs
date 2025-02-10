@@ -5,8 +5,6 @@ using MessengerAPI.Data;
 using MessengerAPI.Gateway;
 using MessengerAPI.Infrastructure;
 using MessengerAPI.Infrastructure.Common.FileStorage;
-using MessengerAPI.Infrastructure.Common.WebSockets;
-using MessengerAPI.Presentation.Common;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,20 +23,16 @@ var app = builder.Build();
 
 app.UseSerilogRequestLogging();
 
-app.UseCors(CorsConstants.CorsPolicyName);
+app.UseCors(MessengerConstants.Cors.PolicyName);
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseExceptionHandler();
 
-app.UseWebSockets();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapHub<UpdatesHub>("/ws");
 
 app.Run();

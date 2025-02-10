@@ -1,7 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using MessengerAPI.Infrastructure.Auth.Interfaces;
+using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Core;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MessengerAPI.Infrastructure.Auth;
@@ -20,7 +21,7 @@ public class JwtHelper : IJwtHelper
             notBefore: DateTime.UtcNow,
             signingCredentials: signingCredentials
         );
-        securityToken.Header.Add(AuthConstants.KeyIdHeaderName, keyId);
+        securityToken.Header.Add(MessengerConstants.Auth.KeyIdHeaderName, keyId);
 
         return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }

@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using MessengerAPI.Application.Common.Interfaces.Files;
+using MessengerAPI.Application.Common.Interfaces.S3;
 using MessengerAPI.Core;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
@@ -8,12 +8,12 @@ namespace MessengerAPI.Application.Channels.Common;
 
 public class AttachmentService
 {
-    private readonly IFileStorageService _fileStorage;
+    private readonly IS3Service _s3Service;
     private readonly IIdGenerator _idGenerator;
 
-    public AttachmentService(IFileStorageService fileStorage, IIdGenerator idGenerator)
+    public AttachmentService(IS3Service s3Service, IIdGenerator idGenerator)
     {
-        _fileStorage = fileStorage;
+        _s3Service = s3Service;
         _idGenerator = idGenerator;
     }
 
@@ -21,7 +21,7 @@ public class AttachmentService
     {
         var uploadFilename = GenerateUploadFilename(filename, channelId, _idGenerator.CreateId());
 
-        var preSignedUrl = await _fileStorage.GeneratePreSignedUrlForUploadAsync(
+        var preSignedUrl = await _s3Service.GeneratePreSignedUrlForUploadAsync(
             uploadFilename,
             DateTimeOffset.UtcNow.AddDays(1),
             size
@@ -40,7 +40,7 @@ public class AttachmentService
             return ApiErrors.Attachment.InvalidUploadFilename(uploadedFilename);
         }
 
-        var objectMetadata = await _fileStorage.GetObjectMetadataAsync(uploadedFilename, cancellationToken);
+        var objectMetadata = await _s3Service.GetObjectMetadataAsync(uploadedFilename, cancellationToken);
 
         if (objectMetadata is null)
         {
@@ -49,7 +49,7 @@ public class AttachmentService
 
         var preSignedUrlExpiresAt = DateTimeOffset.UtcNow.AddDays(7);
 
-        var preSignedUrl = await _fileStorage.GeneratePreSignedUrlForDownloadAsync(
+        var preSignedUrl = await _s3Service.GeneratePreSignedUrlForDownloadAsync(
             uploadedFilename,
             preSignedUrlExpiresAt);
 
@@ -68,11 +68,11 @@ public class AttachmentService
 
     public async Task<ErrorOr<bool>> DeleteAttachmentAsync(string uploadedFilename, CancellationToken cancellationToken)
     {
-        if (!await _fileStorage.IsObjectExistsAsync(uploadedFilename, cancellationToken))
+        if (!await _s3Service.IsObjectExistsAsync(uploadedFilename, cancellationToken))
         {
             return ApiErrors.Attachment.NotFoundInObjectStorage(uploadedFilename);
         }
-        await _fileStorage.DeleteObjectAsync(uploadedFilename, cancellationToken);
+        await _s3Service.DeleteObjectAsync(uploadedFilename, cancellationToken);
         return true;
     }
 

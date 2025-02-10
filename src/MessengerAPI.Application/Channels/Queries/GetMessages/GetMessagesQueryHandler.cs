@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Errors;
@@ -11,12 +12,18 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
     private readonly IChannelRepository _channelRepository;
     private readonly IMessageRepository _messageRepository;
     private readonly IMapper _mapper;
+    private readonly IClientInfoProvider _clientInfo;
 
-    public GetMessagesQueryHandler(IChannelRepository channelRepository, IMapper mapper, IMessageRepository messageRepository)
+    public GetMessagesQueryHandler(
+        IChannelRepository channelRepository,
+        IMapper mapper,
+        IMessageRepository messageRepository,
+        IClientInfoProvider clientInfo)
     {
         _channelRepository = channelRepository;
         _messageRepository = messageRepository;
         _mapper = mapper;
+        _clientInfo = clientInfo;
     }
 
     public async Task<ErrorOr<List<MessageSchema>>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
@@ -26,7 +33,7 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
         {
             return ApiErrors.Channel.NotFound(request.ChannelId);
         }
-        if (!channel.IsUserInTheChannel(request.Sub))
+        if (!channel.IsUserInTheChannel(_clientInfo.UserId))
         {
             return ApiErrors.Channel.NotAllowedToInteractWith(channel.Id);
         }

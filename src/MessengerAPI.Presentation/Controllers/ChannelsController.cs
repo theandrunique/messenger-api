@@ -4,7 +4,6 @@ using MessengerAPI.Application.Channels.Commands.CreateAttachment;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Presentation.Common;
 using MessengerAPI.Presentation.Schemas.Channels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,11 +26,8 @@ public class ChannelsController : ApiController
         long channelId,
         CancellationToken cancellationToken)
     {
-        var identity = User.GetIdentity();
-
         var command = new AddOrEditMessageCommand(
             null,
-            identity.UserId,
             channelId,
             schema.content,
             schema.attachments);
@@ -40,8 +36,7 @@ public class ChannelsController : ApiController
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors)
-        );
+            errors => Problem(errors));
     }
 
     [HttpGet("{channelId}/messages")]
@@ -52,18 +47,15 @@ public class ChannelsController : ApiController
         long? before = null,
         int limit = 50)
     {
-        var identity = User.GetIdentity();
-
         var actualBefore = before ?? long.MaxValue;
 
-        var query = new GetMessagesQuery(identity.UserId, channelId, actualBefore, limit);
+        var query = new GetMessagesQuery(channelId, actualBefore, limit);
 
         var result = await _mediator.Send(query, cancellationToken);
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors)
-        );
+            errors => Problem(errors));
     }
 
     [HttpPut("{channelId}/messages/{messageId}")]
@@ -74,11 +66,8 @@ public class ChannelsController : ApiController
         long messageId,
         CancellationToken cancellationToken)
     {
-        var identity = User.GetIdentity();
-
         var command = new AddOrEditMessageCommand(
             messageId,
-            identity.UserId,
             channelId,
             schema.content,
             schema.attachments);
@@ -87,8 +76,7 @@ public class ChannelsController : ApiController
 
         return result.Match(
             success => Ok(success),
-            errors => Problem(errors)
-        );
+            errors => Problem(errors));
     }
 
     [HttpPost("{channelId}/attachments")]
@@ -112,5 +100,4 @@ public class ChannelsController : ApiController
             success => Ok(success),
             errors => Problem(errors));
     }
-
 }
