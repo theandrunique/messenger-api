@@ -88,7 +88,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
             message = await _messageRepository.GetMessageByIdOrNullAsync(request.ChannelId, request.MessageId.Value);
             if (message is null)
             {
-                return ApiErrors.Channel.MessageToEditNotFound(request.MessageId.Value);
+                return ApiErrors.Channel.MessageNotFound(request.MessageId.Value);
             }
 
             if (message.AuthorId != user.Id)

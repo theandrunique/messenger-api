@@ -5,20 +5,17 @@ public static partial class ApiErrors
     public static class Channel
     {
         public static BaseApiError NotFound(long channelId)
-            => new BaseApiError(ErrorCode.ChannelNotFound, $"Channel '{channelId}' not found");
+            => new BaseApiError(ErrorCode.CHANNEL_NOT_FOUND, $"Channel '{channelId}' not found");
 
         public static BaseApiError MessageNotFound(long messageId)
-            => new BaseApiError(ErrorCode.MessageNotFound, $"Message '{messageId}' not found");
-
-        public static BaseApiError MessageToEditNotFound(long messageId)
-            => new BaseApiError(ErrorCode.MessageToEditNotFound, $"Message to edit '{messageId}' not found");
+            => new BaseApiError(ErrorCode.MESSAGE_NOT_FOUND, $"Message '{messageId}' not found");
 
         public static BaseApiError MessageWasSentByAnotherUser(long messageId)
             => new BaseApiError(
-                ErrorCode.MessageWasSentByAnotherUser,
+                ErrorCode.MESSAGE_WAS_SEND_BY_ANOTHER_USER,
                 $"You are not author of message '{messageId}'");
 
         public static BaseApiError NotAllowedToInteractWith(long channelId)
-            => new BaseApiError(ErrorCode.NotAllowedToInteract, $"Not allowed to interact with channel '{channelId}'");
+            => new BaseApiError(ErrorCode.NOT_ALLOWED_TO_INTERACT, $"Not allowed to interact with channel '{channelId}'");
     }
 }

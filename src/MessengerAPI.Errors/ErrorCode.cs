@@ -3,33 +3,28 @@ namespace MessengerAPI.Errors;
 public enum ErrorCode
 {
     // Auth error codes
-    InvalidCredentials = 10001,
-    SessionExpired = 10002,
-    InvalidToken = 10003,
-    InvalidCaptcha = 10004,
-    NoSessionInfo = 10005,
+    INVALID_CREDENTIALS = 10001,
+    SESSION_EXPIRED = 10002,
+    INVALID_TOKEN = 10003,
+    INVALID_CAPTCHA = 10004,
+    NO_SESSION_INFO_FOUND = 10005,
 
     // Attachment error codes,
-    AttachmentNotFound = 20001,
-    AttachmentTooBig = 20002,
-    InvalidUploadFilename = 20003,
-    AttachmentNotFoundInObjectStorage = 20004,
+    ATTACHMENT_NOT_FOUND = 20001,
+    INVALID_UPLOAD_FILENAME = 20003,
+    ATTACHMENT_NOT_FOUND_IN_OBJECT_STORAGE = 20004,
 
     // Channels error codes
-    ChannelNotFound = 30002,
-    MessageNotFound = 30003,
-    MessageToEditNotFound = 30004,
-    NotAllowedToInteract = 30005,
-    MessageWasSentByAnotherUser = 30006,
+    CHANNEL_NOT_FOUND = 30002,
+    MESSAGE_NOT_FOUND = 30003,
+    NOT_ALLOWED_TO_INTERACT = 30005,
+    MESSAGE_WAS_SEND_BY_ANOTHER_USER = 30006,
 
     // Users error codes
-    UserNotFound = 40001,
-    InvalidEmailValidationCode = 40002,
+    USER_NOT_FOUND = 40001,
 
     // Common
-    InvalidRequestBody = 50001,
-    InvalidJson = 50002,
-    InternalServerError = 50003,
-    UnsupportedMediaType = 50004,
+    INVALID_REQUEST_BODY = 50001,
+    INTERNAL_SERVER_ERROR = 50003,
+    UNSUPPORTED_MEDIA_TYPE = 50004,
 }
-

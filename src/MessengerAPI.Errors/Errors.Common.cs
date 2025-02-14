@@ -5,13 +5,9 @@ public static partial class ApiErrors
     public static class Common
     {
         public static BaseApiError InvalidRequestBody(Dictionary<string, List<string>> errors)
-            => new BaseApiError(ErrorCode.InvalidRequestBody, "One or more validation errors occurred.", errors);
-
-        public static BaseApiError InvalidJson
-            => new BaseApiError(ErrorCode.InvalidJson, "The request body contains invalid JSON");
+            => new BaseApiError(ErrorCode.INVALID_REQUEST_BODY, "One or more validation errors occurred.", errors);
 
         public static BaseApiError InternalServerError
-            => new BaseApiError(ErrorCode.InternalServerError, "Internal server error");
-        
+            => new BaseApiError(ErrorCode.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 }

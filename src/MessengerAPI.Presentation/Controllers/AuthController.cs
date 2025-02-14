@@ -79,7 +79,7 @@ public class AuthController : ApiController
         string? refreshToken = Request.Cookies[MessengerConstants.Auth.SessionCookieName];
         if (refreshToken == null)
         {
-            return Problem(ApiErrors.Auth.NoSessionInfoWasFound);
+            return Problem(ApiErrors.Auth.NoSessionInfoFound);
         }
         return Ok(refreshToken);
     }

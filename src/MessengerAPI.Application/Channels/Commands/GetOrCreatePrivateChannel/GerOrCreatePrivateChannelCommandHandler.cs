@@ -45,7 +45,7 @@ public class GetOrCreatePrivateChannelCommandHandler : IRequestHandler<GetOrCrea
         if (members.Count != userIdsToFind.Count)
         {
             var membersWasNotFound = userIdsToFind.Except(members.Select(x => x.Id)).ToList();
-            return ApiErrors.User.NotFoundLotOfUsers(membersWasNotFound);
+            return ApiErrors.User.NotFound(membersWasNotFound);
         }
 
         var newChannel = Channel.CreatePrivate(_idGenerator.CreateId(), members.ToArray());

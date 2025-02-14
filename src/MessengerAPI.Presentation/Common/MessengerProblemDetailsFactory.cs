@@ -3,7 +3,6 @@ using MessengerAPI.Errors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Options;
 
 namespace MessengerAPI.Presentation.Common;
 
@@ -24,7 +23,7 @@ public class MessengerProblemDetailsFactory : ProblemDetailsFactory
             {
                 Extensions =
                 {
-                    ["code"] = (int)ErrorCode.InternalServerError,
+                    ["code"] = ErrorCode.INTERNAL_SERVER_ERROR,
                     ["message"] = "Internal Server Error",
                     ["traceId"] = Activity.Current?.Id ?? httpContext?.TraceIdentifier
                 }
@@ -37,7 +36,7 @@ public class MessengerProblemDetailsFactory : ProblemDetailsFactory
             {
                 Extensions =
                 {
-                    ["code"] = (int)ErrorCode.UnsupportedMediaType,
+                    ["code"] = ErrorCode.UNSUPPORTED_MEDIA_TYPE,
                     ["message"] = "Unsupported Media Type",
                     ["traceId"] = Activity.Current?.Id ?? httpContext?.TraceIdentifier
                 }
@@ -66,7 +65,7 @@ public class MessengerProblemDetailsFactory : ProblemDetailsFactory
             Title = null,
             Extensions =
             {
-                ["code"] = (int)ErrorCode.InvalidRequestBody,
+                ["code"] = ErrorCode.INVALID_REQUEST_BODY,
                 ["message"] = "One or more validation errors occurred.",
                 ["traceId"] = Activity.Current?.Id ?? httpContext?.TraceIdentifier,
             }

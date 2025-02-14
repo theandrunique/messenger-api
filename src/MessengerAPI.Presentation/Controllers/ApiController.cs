@@ -13,7 +13,7 @@ public class ApiController : ControllerBase
     {
         Dictionary<string, object?> extensions = new()
         {
-            ["code"] = (int)error.Code,
+            ["code"] = error.Code,
             ["message"] = error.Message,
             ["traceId"] = Activity.Current?.Id
         };

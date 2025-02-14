@@ -13,8 +13,8 @@ public class CreateAttachmentCommandValidator : AbstractValidator<CreateAttachme
         RuleForEach(x => x.Files)
             .NotEmpty()
             .Must(file => file.FileSize > 0)
-            .WithMessage("File size must be greater than 0")
+            .WithMessage("Attachment size must be greater than 0")
             .Must(file => file.FileSize < MessengerConstants.Attachment.MaxSize)
-            .WithMessage($"Max file size is {MessengerConstants.Attachment.MaxSize} bytes");
+            .WithMessage($"Maximum allowed upload size is {MessengerConstants.Attachment.MaxSize} bytes");
     }
 }

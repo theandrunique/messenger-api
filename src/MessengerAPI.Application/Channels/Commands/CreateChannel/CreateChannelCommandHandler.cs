@@ -45,7 +45,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
         if (members.Count != request.Members.Count)
         {
             var membersWasNotFound = request.Members.Except(members.Select(x => x.Id)).ToList();
-            return ApiErrors.User.NotFoundLotOfUsers(membersWasNotFound);
+            return ApiErrors.User.NotFound(membersWasNotFound);
         }
 
         Channel channel = Channel.CreateGroup(_idGenerator.CreateId(), _clientInfo.UserId, request.Title, members.ToArray());
