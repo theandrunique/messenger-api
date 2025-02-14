@@ -1,3 +1,5 @@
+using MessengerAPI.Domain.ValueObjects;
+
 namespace MessengerAPI.Contracts.Common;
 
 public record MessageInfoSchema
@@ -10,4 +12,18 @@ public record MessageInfoSchema
     public DateTimeOffset Timestamp { get; init; }
     public DateTimeOffset? EditedTimestamp { get; init; }
     public int AttachmentsCount { get; init; }
+
+    private MessageInfoSchema(MessageInfo messageInfo)
+    {
+        Id = messageInfo.Id.ToString();
+        AuthorId = messageInfo.AuthorId.ToString();
+        AuthorUsername = messageInfo.AuthorUsername;
+        AuthorGlobalName = messageInfo.AuthorGlobalName;
+        Content = messageInfo.Content;
+        Timestamp = messageInfo.Timestamp;
+        EditedTimestamp = messageInfo.EditedTimestamp;
+        AttachmentsCount = messageInfo.AttachmentsCount;
+    }
+
+    public static MessageInfoSchema From(MessageInfo messageInfo) => new(messageInfo);
 }

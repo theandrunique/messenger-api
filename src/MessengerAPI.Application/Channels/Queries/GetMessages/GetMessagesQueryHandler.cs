@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
@@ -11,18 +10,15 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
 {
     private readonly IChannelRepository _channelRepository;
     private readonly IMessageRepository _messageRepository;
-    private readonly IMapper _mapper;
     private readonly IClientInfoProvider _clientInfo;
 
     public GetMessagesQueryHandler(
         IChannelRepository channelRepository,
-        IMapper mapper,
         IMessageRepository messageRepository,
         IClientInfoProvider clientInfo)
     {
         _channelRepository = channelRepository;
         _messageRepository = messageRepository;
-        _mapper = mapper;
         _clientInfo = clientInfo;
     }
 
@@ -40,6 +36,6 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
 
         var messages = await _messageRepository.GetMessagesAsync(request.ChannelId, request.Before, request.Limit);
 
-        return _mapper.Map<List<MessageSchema>>(messages);
+        return MessageSchema.From(messages);
     }
 }

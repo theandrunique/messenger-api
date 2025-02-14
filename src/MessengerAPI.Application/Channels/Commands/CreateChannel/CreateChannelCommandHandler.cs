@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
@@ -16,7 +15,6 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
 {
     private readonly IChannelRepository _channelRepository;
     private readonly IUserRepository _userRepository;
-    private readonly IMapper _mapper;
     private readonly IIdGenerator _idGenerator;
     private readonly IGatewayService _gateway;
     private readonly IClientInfoProvider _clientInfo;
@@ -24,14 +22,12 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
     public CreateChannelCommandHandler(
         IChannelRepository channelRepository,
         IUserRepository userRepository,
-        IMapper mapper,
         IIdGenerator idGenerator,
         IGatewayService gateway,
         IClientInfoProvider clientInfo)
     {
         _channelRepository = channelRepository;
         _userRepository = userRepository;
-        _mapper = mapper;
         _idGenerator = idGenerator;
         _gateway = gateway;
         _clientInfo = clientInfo;
@@ -56,7 +52,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
 
         await _channelRepository.UpsertAsync(channel);
 
-        var channelSchema = _mapper.Map<ChannelSchema>(channel);
+        var channelSchema = ChannelSchema.From(channel);
 
         await _gateway.PublishAsync(new ChannelCreateGatewayEvent(channelSchema));
 

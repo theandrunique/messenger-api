@@ -3,17 +3,12 @@ namespace MessengerAPI.Contracts.Common;
 /// <summary>
 /// Json web key schema
 /// </summary>
-public class JsonWebKeySchema
+public record JsonWebKeySchema
 {
-    public string Kty { get; set; } = null;
-
-    public string Use { get; set; } = null;
-
-    public string Kid { get; set; } = null;
-
-    public string Alg { get; set; } = null;
-
-    public string N { get; set; } = null; // RSA Modulus
-
-    public string E { get; set; } = null; // RSA Exponent
+    public string Kty { get; init; } = null!;
+    public string Use { get; init; } = null!;
+    public string Kid { get; init; } = null!;
+    public string Alg { get; init; } = null!;
+    public string N { get; init; } = null!; // RSA Modulus
+    public string E { get; init; } = null!; // RSA Exponent
 }

@@ -1,3 +1,5 @@
+using MessengerAPI.Domain.Entities;
+
 namespace MessengerAPI.Contracts.Common;
 
 public record AttachmentSchema
@@ -7,8 +9,23 @@ public record AttachmentSchema
     public string ContentType { get; init; }
     public long Size { get; init; }
     public string Url { get; init; }
-    public string? Placeholder { get; private set; }
-    public float? DurationSecs { get; private set; }
-    public string? Waveform { get; private set; }
-    public bool IsSpoiler { get; private set; }
+    public string? Placeholder { get; init; }
+    public float? DurationSecs { get; init; }
+    public string? Waveform { get; init; }
+    public bool IsSpoiler { get; init; }
+
+    private AttachmentSchema(Attachment attachment)
+    {
+        Id = attachment.Id.ToString();
+        Filename = attachment.Filename;
+        ContentType = attachment.ContentType;
+        Size = attachment.Size;
+        Url = attachment.PreSignedUrl;
+        Placeholder = attachment.Placeholder;
+        DurationSecs = attachment.DurationSecs;
+        Waveform = attachment.Waveform;
+        IsSpoiler = attachment.IsSpoiler;
+    }
+
+    public static AttachmentSchema From(Attachment attachment) => new AttachmentSchema(attachment);
 }

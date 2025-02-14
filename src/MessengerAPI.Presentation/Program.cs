@@ -12,7 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddCoreServices()
     .AddGatewayServices()
-    .AddContractsMappings()
     .AddDataServices(builder.Configuration)
     .AddPresentation(builder.Configuration)
     .AddInfrastructure(builder.Configuration)

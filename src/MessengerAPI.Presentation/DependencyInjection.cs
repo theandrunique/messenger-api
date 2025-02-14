@@ -1,11 +1,9 @@
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MessengerAPI.Core;
 using MessengerAPI.Presentation.Common;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using Serilog;
 
 namespace MessengerAPI.Infrastructure.Common.FileStorage;
@@ -14,8 +12,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services, ConfigurationManager config)
     {
-        services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
         services.AddProblemDetails();
         services.AddSingleton<ProblemDetailsFactory, MessengerProblemDetailsFactory>();
         services.AddSerilog((services, options) =>

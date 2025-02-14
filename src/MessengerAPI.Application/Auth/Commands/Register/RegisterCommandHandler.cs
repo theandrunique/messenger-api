@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common;
@@ -14,20 +13,17 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
 {
     private readonly IUserRepository _userRepository;
     private readonly IHashHelper _hashHelper;
-    private readonly IMapper _mapper;
     private readonly ITotpHelper _totpHelper;
     private readonly IIdGenerator _idGenerator;
 
     public RegisterCommandHandler(
         IUserRepository userRepository,
         IHashHelper hashHelper,
-        IMapper mapper,
         ITotpHelper totpHelper,
         IIdGenerator idGenerator)
     {
         _userRepository = userRepository;
         _hashHelper = hashHelper;
-        _mapper = mapper;
         _totpHelper = totpHelper;
         _idGenerator = idGenerator;
     }
@@ -44,6 +40,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
 
         await _userRepository.AddAsync(newUser);
 
-        return _mapper.Map<UserPrivateSchema>(newUser);
+        return UserPrivateSchema.From(newUser);
     }
 }

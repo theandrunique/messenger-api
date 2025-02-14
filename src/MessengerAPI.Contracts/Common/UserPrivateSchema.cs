@@ -1,3 +1,5 @@
+using MessengerAPI.Domain.Entities;
+
 namespace MessengerAPI.Contracts.Common;
 
 /// <summary>
@@ -5,10 +7,18 @@ namespace MessengerAPI.Contracts.Common;
 /// </summary>
 public record UserPrivateSchema : UserPublicSchema
 {
-    public DateTimeOffset PasswordUpdatedTimestamp { get; init; }
-    public string TerminateSessions { get; init; }
+    public string TerminateSessions { get; init; } = null!;
     public bool TwoFactorAuthentication { get; init; }
-    public string Email { get; private set; }
-    public bool IsEmailVerified { get; private set; }
-    public DateTimeOffset EmailUpdatedTimestamp { get; private set; }
+    public string Email { get; init; } = null!;
+    public bool IsEmailVerified { get; init; }
+
+    private UserPrivateSchema(User user) : base(user)
+    {
+        TerminateSessions = user.TerminateSessions.ToString();
+        TwoFactorAuthentication = user.TwoFactorAuthentication;
+        Email = user.Email;
+        IsEmailVerified = user.IsEmailVerified;
+    }
+
+    public static UserPrivateSchema From(User user) => new(user);
 }

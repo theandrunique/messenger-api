@@ -25,12 +25,11 @@ class CreateAttachmentCommandHandler : IRequestHandler<CreateAttachmentCommand, 
                     request.ChannelId,
                     file.Filename);
 
-            attachments.Add(new CloudAttachmentSchema
-            {
-                Id = file.Id,
-                UploadFilename = uploadUrlDto.UploadFilename,
-                UploadUrl = uploadUrlDto.UploadUrl,
-            });
+            attachments.Add(new CloudAttachmentSchema(
+                id: file.Id,
+                uploadFilename: uploadUrlDto.UploadFilename,
+                uploadUrl: uploadUrlDto.UploadUrl
+            ));
         }
 
         return attachments;

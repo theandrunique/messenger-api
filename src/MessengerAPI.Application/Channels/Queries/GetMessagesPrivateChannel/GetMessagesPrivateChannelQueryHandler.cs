@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Channels.Commands.GetOrCreatePrivateChannel;
 using MessengerAPI.Contracts.Common;
@@ -12,13 +11,11 @@ public class GetMessagesPrivateChannelQueryHandler
 {
     private readonly IMediator _mediator;
     private readonly IMessageRepository _messageRepository;
-    private readonly IMapper _mapper;
 
-    public GetMessagesPrivateChannelQueryHandler(IMediator mediator, IMessageRepository messageRepository, IMapper mapper)
+    public GetMessagesPrivateChannelQueryHandler(IMediator mediator, IMessageRepository messageRepository)
     {
         _mediator = mediator;
         _messageRepository = messageRepository;
-        _mapper = mapper;
     }
 
     public async Task<ErrorOr<List<MessageSchema>>> Handle(GetMessagesPrivateChannelQuery request, CancellationToken cancellationToken)
@@ -38,6 +35,6 @@ public class GetMessagesPrivateChannelQueryHandler
 
         var messages = await _messageRepository.GetMessagesAsync(channelId, request.Before, request.Limit);
 
-        return _mapper.Map<List<MessageSchema>>(messages);
+        return MessageSchema.From(messages);
     }
 }

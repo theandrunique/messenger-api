@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
@@ -10,13 +9,11 @@ namespace MessengerAPI.Application.Users.Queries.GetMeQuery;
 public class GetMeQueryHandler : IRequestHandler<GetMeQuery, ErrorOr<UserPrivateSchema>>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IMapper _mapper;
     private readonly IClientInfoProvider _clientInfo;
 
-    public GetMeQueryHandler(IUserRepository userRepository, IMapper mapper, IClientInfoProvider clientInfo)
+    public GetMeQueryHandler(IUserRepository userRepository, IClientInfoProvider clientInfo)
     {
         _userRepository = userRepository;
-        _mapper = mapper;
         _clientInfo = clientInfo;
     }
 
@@ -29,6 +26,6 @@ public class GetMeQueryHandler : IRequestHandler<GetMeQuery, ErrorOr<UserPrivate
             throw new Exception("User was expected to be found here.");
         }
 
-        return _mapper.Map<UserPrivateSchema>(user);
+        return UserPrivateSchema.From(user);
     }
 }

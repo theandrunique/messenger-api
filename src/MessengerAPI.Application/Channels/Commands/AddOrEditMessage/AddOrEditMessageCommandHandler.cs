@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Channels.Events;
@@ -16,7 +15,6 @@ namespace MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCommand, ErrorOr<MessageSchema>>
 {
     private readonly IChannelRepository _channelRepository;
-    private readonly IMapper _mapper;
     private readonly AttachmentService _attachmentService;
     private readonly IMessageRepository _messageRepository;
     private readonly IUserRepository _userRepository;
@@ -26,7 +24,6 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
 
     public AddOrEditMessageCommandHandler(
         IChannelRepository channelRepository,
-        IMapper mapper,
         IMessageRepository messageRepository,
         AttachmentService attachmentService,
         IUserRepository userRepository,
@@ -35,7 +32,6 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         IClientInfoProvider clientInfo)
     {
         _channelRepository = channelRepository;
-        _mapper = mapper;
         _messageRepository = messageRepository;
         _attachmentService = attachmentService;
         _userRepository = userRepository;
@@ -113,7 +109,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         }
         await _messageRepository.UpsertAsync(message);
 
-        var messageSchema = _mapper.Map<MessageSchema>(message);
+        var messageSchema = MessageSchema.From(message);
 
         if (request.MessageId.HasValue)
         {
