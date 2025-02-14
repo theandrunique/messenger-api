@@ -5,6 +5,7 @@ using MessengerAPI.Core;
 using MessengerAPI.Presentation.Common;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace MessengerAPI.Infrastructure.Common.FileStorage;

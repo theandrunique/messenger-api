@@ -87,7 +87,7 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
             },
             OnAuthenticationFailed = context =>
             {
-                _logger.LogWarning("Authentication failed: {Message}", context.Exception.Message);
+                _logger.LogInformation("Authentication failed: {Message}", context.Exception.Message);
                 return Task.CompletedTask;
             }
         };
