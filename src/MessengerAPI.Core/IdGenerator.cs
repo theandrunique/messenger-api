@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using IdGen;
 using Microsoft.Extensions.Logging;
 
@@ -14,9 +16,12 @@ internal class IdGenerator : IIdGenerator
         {
             throw new Exception("HOSTNAME environment variable is not set");
         }
-        var workerId = Math.Abs(hostname.GetHashCode() % 1024);
 
-        logger.LogInformation("Worker ID of this instance: {workerId}", workerId);
+        using var sha = SHA256.Create();
+        var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(hostname));
+        var workerId = BitConverter.ToUInt16(hash, 0) % 1024;
+
+        logger.LogInformation("Worker ID: {workerId}", workerId);
 
         var epoch = new DateTime(2005, 5, 20);
 
