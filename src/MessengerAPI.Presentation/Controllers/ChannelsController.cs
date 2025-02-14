@@ -82,7 +82,7 @@ public class ChannelsController : ApiController
     [HttpPost("{channelId}/attachments")]
     public async Task<IActionResult> PostAttachmentAsync(
         long channelId,
-        CreateChannelAttachmentSchema schema,
+        CreateChannelAttachmentRequestSchema schema,
         CancellationToken cancellationToken)
     {
         var command = new CreateAttachmentCommand(
