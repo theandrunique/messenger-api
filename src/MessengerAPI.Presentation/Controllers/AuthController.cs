@@ -33,11 +33,9 @@ public class AuthController : ApiController
             schema.globalName,
             schema.password);
 
-        var registerResult = await _mediator.Send(command, cancellationToken);
+        var result = await _mediator.Send(command, cancellationToken);
 
-        return registerResult.Match(
-            success => Ok(success),
-            errors => Problem(errors));
+        return result.Match(onValue: Ok, onError: Problem);
     }
 
     [HttpPost("sign-in")]

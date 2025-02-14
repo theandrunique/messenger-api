@@ -18,12 +18,8 @@ public class AttachmentsController : ApiController
     public async Task<IActionResult> DeleteAttachmentAsync(string uploadFilename, CancellationToken token)
     {
         var command = new DeleteAttachmentCommand(uploadFilename);
-
         var result = await _mediator.Send(command, token);
-
-        return result.Match(
-            _ => NoContent(),
-            errors => Problem(errors));
+        return result.Match(onValue: _ => NoContent(), onError: Problem);
     }
 }
 

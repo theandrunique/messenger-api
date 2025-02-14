@@ -34,18 +34,16 @@ public class ChannelsController : ApiController
 
         var result = await _mediator.Send(command, cancellationToken);
 
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors));
+        return result.Match(onValue: Ok, onError: Problem);
     }
 
     [HttpGet("{channelId}/messages")]
     [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMessagesAsync(
         long channelId,
-        CancellationToken cancellationToken,
         long? before = null,
-        int limit = 50)
+        int limit = 50,
+        CancellationToken cancellationToken = default)
     {
         var actualBefore = before ?? long.MaxValue;
 
@@ -53,9 +51,7 @@ public class ChannelsController : ApiController
 
         var result = await _mediator.Send(query, cancellationToken);
 
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors));
+        return result.Match(onValue: Ok, onError: Problem);
     }
 
     [HttpPut("{channelId}/messages/{messageId}")]
@@ -74,9 +70,7 @@ public class ChannelsController : ApiController
 
         var result = await _mediator.Send(command, cancellationToken);
 
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors));
+        return result.Match(onValue: Ok, onError: Problem);
     }
 
     [HttpPost("{channelId}/attachments")]
@@ -96,8 +90,6 @@ public class ChannelsController : ApiController
 
         var result = await _mediator.Send(command, cancellationToken);
 
-        return result.Match(
-            success => Ok(success),
-            errors => Problem(errors));
+        return result.Match(onValue: Ok, onError: Problem);
     }
 }
