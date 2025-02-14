@@ -5,6 +5,7 @@ using MessengerAPI.Application.Channels.Commands.GetOrCreatePrivateChannel;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessagesPrivateChannel;
 using MessengerAPI.Application.Users.Queries.GetMeQuery;
+using MessengerAPI.Application.Users.Queries.GetUserById;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Presentation.Schemas.Channels;
@@ -46,6 +47,15 @@ public class UsersController : ApiController
         return result.Match(
             success => Ok(success),
             errors => Problem(errors));
+    }
+
+    [HttpGet("me/{userId}")]
+    [ProducesResponseType(typeof(UserPublicSchema), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUserAsync(long userId, CancellationToken cancellationToken)
+    {
+        var query = new GetUserByIdQuery(userId);
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.Match(onValue: Ok, onError: Problem);
     }
 
     [HttpGet("me/private-channel/{userId}")]

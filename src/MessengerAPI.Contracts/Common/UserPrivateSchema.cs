@@ -20,5 +20,5 @@ public record UserPrivateSchema : UserPublicSchema
         IsEmailVerified = user.IsEmailVerified;
     }
 
-    public static UserPrivateSchema From(User user) => new(user);
+    public new static UserPrivateSchema From(User user) => new(user);
 }

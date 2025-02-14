@@ -24,5 +24,5 @@ public record UserPublicSchema
         Timestamp = user.Timestamp;
     }
 
-    public static UserPublicSchema FromEntity(User user) => new(user);
+    public static UserPublicSchema From(User user) => new(user);
 }
