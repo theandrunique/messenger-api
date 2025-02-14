@@ -10,6 +10,7 @@ internal class MessengerGatewayService : IGatewayService
     private readonly IConnectionMultiplexer _redis;
     private readonly IEventSerializer _serializer;
     private readonly ILogger<MessengerGatewayService> _logger;
+    private const string _streamName = "gateway-events";
 
     public MessengerGatewayService(
         IConnectionMultiplexer redis,
@@ -26,7 +27,6 @@ internal class MessengerGatewayService : IGatewayService
         try
         {
             var db = _redis.GetDatabase();
-            var streamName = GetStreamName();
 
             var eventData = new NameValueEntry[]
             {
@@ -34,18 +34,13 @@ internal class MessengerGatewayService : IGatewayService
                 new NameValueEntry("payload", _serializer.Serialize(@event))
             };
 
-            await db.StreamAddAsync(streamName, eventData);
-            _logger.LogInformation("Published event {EventType} to {Stream}", @event.EventType, streamName);
+            await db.StreamAddAsync(_streamName, eventData);
+            _logger.LogInformation("Published event {EventType} to {Stream}", @event.EventType, _streamName);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to publish event {eventType}", @event.EventType);
             throw;
         }
-    }
-
-    private static string GetStreamName()
-    {
-        return "gateway-events";
     }
 }

@@ -1,28 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="awssdk.s3" Version="3.7.402.7" />
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="DeviceDetector.NET" Version="6.3.3" />
-    <PackageReference Include="jose-jwt" Version="5.0.0" />
-    <PackageReference Include="masstransit" Version="8.2.5" />
-    <PackageReference Include="masstransit.amazonsqs" Version="8.2.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="8.0.8" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-    <PackageReference Include="Otp.NET" Version="1.4.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.2" />
+    <PackageReference Include="awssdk.s3" Version="3.7.402.7"/>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
+    <PackageReference Include="DeviceDetector.NET" Version="6.3.3"/>
+    <PackageReference Include="jose-jwt" Version="5.0.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8"/>
+    <PackageReference Include="Otp.NET" Version="1.4.0"/>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.2"/>
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\MessengerAPI.Application\MessengerAPI.Application.csproj" />
-    <ProjectReference Include="..\MessengerAPI.Contracts\MessengerAPI.Contracts.csproj" />
+    <ProjectReference Include="..\MessengerAPI.Application\MessengerAPI.Application.csproj"/>
+    <ProjectReference Include="..\MessengerAPI.Contracts\MessengerAPI.Contracts.csproj"/>
   </ItemGroup>
-
 </Project>
