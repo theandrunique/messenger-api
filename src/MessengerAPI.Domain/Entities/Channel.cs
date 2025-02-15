@@ -57,14 +57,16 @@ public class Channel
         _members = members;
     }
 
-    public void AddNewMember(User user)
+    public ChannelMemberInfo AddNewMember(User user)
     {
         if (IsUserInTheChannel(user.Id))
         {
             throw new Exception($"User {user.Id} already in the channel");
         }
 
-        _members.Add(new ChannelMemberInfo(user));
+        var member = new ChannelMemberInfo(user);
+        _members.Add(member);
+        return member;
     }
 
     public bool IsUserInTheChannel(long userId)

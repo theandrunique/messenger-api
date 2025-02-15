@@ -5,17 +5,43 @@ public static partial class ApiErrors
     public static class Channel
     {
         public static BaseApiError NotFound(long channelId)
-            => new BaseApiError(ErrorCode.CHANNEL_NOT_FOUND, $"Channel '{channelId}' not found");
+            => new BaseApiError(
+                ErrorCode.CHANNEL_NOT_FOUND,
+                $"Channel '{channelId}' not found");
 
         public static BaseApiError MessageNotFound(long messageId)
-            => new BaseApiError(ErrorCode.MESSAGE_NOT_FOUND, $"Message '{messageId}' not found");
+            => new BaseApiError(
+                ErrorCode.MESSAGE_NOT_FOUND,
+                $"Message '{messageId}' not found");
+
+        public static BaseApiError InvalidOperationForChannelType(long channelId)
+            => new BaseApiError(
+                ErrorCode.CHANNEL_INVALID_OPERATION_FOR_TYPE,
+                $"Operation not allowed for this channel type");
+
+        public static BaseApiError InsufficientPermissions(long channelId, string requiredPermission)
+            => new BaseApiError(
+                ErrorCode.CHANNEL_INSUFFICIENT_PERMISSIONS,
+                $"Requires '{requiredPermission}' permission for channel '{channelId}'");
+
+        public static BaseApiError NotOwner(long channelId)
+            => new BaseApiError(
+                ErrorCode.CHANNEL_NOT_OWNER,
+                "Only channel owner can perform this operation");
 
         public static BaseApiError MessageWasSentByAnotherUser(long messageId)
             => new BaseApiError(
                 ErrorCode.MESSAGE_WAS_SEND_BY_ANOTHER_USER,
                 $"You are not author of message '{messageId}'");
 
-        public static BaseApiError NotAllowedToInteractWith(long channelId)
-            => new BaseApiError(ErrorCode.NOT_ALLOWED_TO_INTERACT, $"Not allowed to interact with channel '{channelId}'");
+        public static BaseApiError MemberAlreadyInChannel(long userId)
+            => new BaseApiError(
+                ErrorCode.CHANNEL_MEMBER_ALREADY_EXISTS,
+                $"User '{userId}' already in channel");
+
+        public static BaseApiError UserNotMember(long userId, long channelId)
+            => new BaseApiError(
+                ErrorCode.CHANNEL_USER_NOT_MEMBER,
+                $"User '{userId}' is not a member of channel '{channelId}'");
     }
 }

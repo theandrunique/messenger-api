@@ -31,7 +31,7 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
         }
         if (!channel.IsUserInTheChannel(_clientInfo.UserId))
         {
-            return ApiErrors.Channel.NotAllowedToInteractWith(channel.Id);
+            return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
         var messages = await _messageRepository.GetMessagesAsync(request.ChannelId, request.Before, request.Limit);

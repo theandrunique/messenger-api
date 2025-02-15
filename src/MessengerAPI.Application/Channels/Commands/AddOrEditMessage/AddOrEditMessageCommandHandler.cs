@@ -50,7 +50,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
 
         if (!channel.IsUserInTheChannel(_clientInfo.UserId))
         {
-            return ApiErrors.Channel.NotAllowedToInteractWith(channel.Id);
+            return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
         var user = await _userRepository.GetByIdOrNullAsync(_clientInfo.UserId);
