@@ -88,8 +88,8 @@ public class Channel
         return _members.Any(m => m.UserId == userId);
     }
 
-    public ChannelMemberInfo GetMemberInfo(long userId)
+    public bool HasPermission(long userId, ChannelPermissions permissions)
     {
-        return _members.First(m => m.UserId == userId);
+        return _members.Any(m => m.UserId == userId && m.Permissions.HasPermission(permissions));
     }
 }

@@ -45,12 +45,12 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
 
         if (channel.Type == ChannelType.PRIVATE)
         {
-            return ApiErrors.Channel.InvalidOperationForChannelType(channel.Id);
+            return ApiErrors.Channel.InvalidOperationForChannelType;
         }
 
-        if (channel.OwnerId != _clientInfo.UserId)
+        if (channel.HasPermission(_clientInfo.UserId, ChannelPermissions.MANAGE_MEMBERS))
         {
-            return ApiErrors.Channel.NotOwner(channel.Id);
+            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermissions.MANAGE_MEMBERS.ToString());
         }
 
         if (channel.HasMember(newMember.Id))
