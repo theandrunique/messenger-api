@@ -36,7 +36,7 @@ internal class ChannelRepository : IChannelRepository
             batch.Add(_channelUsers.Insert(channel.Id, member));
         }
 
-        if (channel.Type == ChannelType.Private)
+        if (channel.Type == ChannelType.PRIVATE)
         {
             batch.Add(_privateChannels.Insert(channel));
         }
@@ -119,13 +119,13 @@ internal class ChannelRepository : IChannelRepository
         var channelsData = (await channelsDataTask)
             .Select(ChannelMapper.Map)
             .ToArray();
-        
+
         var channelsMembers = (await channelsMembersTask)
             .Select(r => new
-                {
-                    channelId = r.GetValue<long>("channelid"),
-                    member = ChannelMapper.MapChannelUser(r)
-                }).ToList();
+            {
+                channelId = r.GetValue<long>("channelid"),
+                member = ChannelMapper.MapChannelUser(r)
+            }).ToList();
 
         for (int i = 0; i < channelsData.Length; i++)
         {

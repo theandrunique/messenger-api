@@ -2,6 +2,7 @@ using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
+using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.ValueObjects;
 using MessengerAPI.Errors;
 
@@ -42,7 +43,7 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             return ApiErrors.User.NotFound(request.UserId);
         }
 
-        if (channel.Type == ChannelType.Private)
+        if (channel.Type == ChannelType.PRIVATE)
         {
             return ApiErrors.Channel.InvalidOperationForChannelType(channel.Id);
         }
@@ -57,7 +58,7 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             return ApiErrors.Channel.MemberAlreadyInChannel(newMember.Id);
         }
 
-        var memberInfo = channel.AddNewMember(newMember);
+        var memberInfo = channel.AddNewMember(newMember, ChannelPermissions.DEFAULT);
 
         await _channelRepository.AddMemberToChannel(request.ChannelId, memberInfo);
 

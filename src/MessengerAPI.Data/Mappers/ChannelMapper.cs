@@ -1,5 +1,6 @@
 using Cassandra;
 using MessengerAPI.Data.DataDto;
+using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Data.Mappers;
@@ -27,6 +28,7 @@ internal static class ChannelMapper
             username: row.GetValue<string>("username"),
             globalName: row.GetValue<string>("globalname"),
             image: row.GetValue<Image?>("image"),
-            readAt: row.GetValue<long>("readat"));
+            readAt: row.GetValue<long>("readat"),
+            permissions: new ChannelPermissionSet((ulong)row.GetValue<long>("permissions")));
     }
 }

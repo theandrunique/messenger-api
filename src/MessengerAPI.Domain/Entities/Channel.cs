@@ -1,3 +1,4 @@
+using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Domain.Entities;
@@ -21,8 +22,12 @@ public class Channel
         {
             throw new ArgumentException($"Private channel must have exactly two or one member but was given {members.Length}.");
         }
-        var membersInfo = members.Select(user => new ChannelMemberInfo(user)).ToList();
-        var channel = new Channel(id, null, null, null, ChannelType.Private, null, null, membersInfo);
+        var membersInfo = members.Select(user =>
+            new ChannelMemberInfo(
+                user,
+                ChannelPermissions.PRIVATE_CHANNEL)).ToList();
+
+        var channel = new Channel(id, null, null, null, ChannelType.PRIVATE, null, null, membersInfo);
         return channel;
     }
 
@@ -32,8 +37,17 @@ public class Channel
         {
             title = null;
         }
-        var membersInfo = members.Select(user => new ChannelMemberInfo(user)).ToList();
-        var channel = new Channel(id, ownerId, title, null, ChannelType.Group, null, null, membersInfo);
+        var membersInfo = members
+            .Select(user =>
+            {
+                if (user.Id == ownerId)
+                    return new ChannelMemberInfo(user, ChannelPermissions.OWNER);
+
+                return new ChannelMemberInfo(user, ChannelPermissions.DEFAULT);
+            })
+            .ToList();
+
+        var channel = new Channel(id, ownerId, title, null, ChannelType.GROUP, null, null, membersInfo);
         return channel;
     }
 
@@ -57,14 +71,14 @@ public class Channel
         _members = members;
     }
 
-    public ChannelMemberInfo AddNewMember(User user)
+    public ChannelMemberInfo AddNewMember(User user, ChannelPermissions permissions)
     {
         if (HasMember(user.Id))
         {
             throw new Exception($"User {user.Id} already in the channel");
         }
 
-        var member = new ChannelMemberInfo(user);
+        var member = new ChannelMemberInfo(user, permissions);
         _members.Add(member);
         return member;
     }
@@ -72,5 +86,10 @@ public class Channel
     public bool HasMember(long userId)
     {
         return _members.Any(m => m.UserId == userId);
+    }
+
+    public ChannelMemberInfo GetMemberInfo(long userId)
+    {
+        return _members.First(m => m.UserId == userId);
     }
 }

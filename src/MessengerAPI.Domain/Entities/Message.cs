@@ -25,7 +25,7 @@ public class Message
         List<Attachment>? attachments = null)
     {
         Id = id;
-        Type = MessageType.Default;
+        Type = MessageType.DEFAULT;
         ChannelId = channelId;
         Author = new MessageAuthorInfo(author);
         AuthorId = author.Id;

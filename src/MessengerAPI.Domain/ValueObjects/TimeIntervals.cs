@@ -2,10 +2,10 @@ namespace MessengerAPI.Domain.ValueObjects;
 
 public enum TimeIntervals
 {
-    Week,
-    Month,
-    Month3,
-    Month6,
-    Year,
+    WEEK,
+    MONTH,
+    MONTH3,
+    MONTH6,
+    YEAR,
 }
 

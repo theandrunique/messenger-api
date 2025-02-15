@@ -36,7 +36,7 @@ public class User
         UsernameUpdatedTimestamp = timestamp;
         PasswordHash = passwordHash;
         PasswordUpdatedTimestamp = timestamp;
-        TerminateSessions = TimeIntervals.Month6;
+        TerminateSessions = TimeIntervals.MONTH6;
         GlobalName = globalName;
         IsActive = true;
         Timestamp = timestamp;

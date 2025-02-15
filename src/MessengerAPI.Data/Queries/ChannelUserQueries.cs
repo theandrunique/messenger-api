@@ -13,7 +13,17 @@ internal class ChannelUserQueries
 
     public ChannelUserQueries(ISession session)
     {
-        _insert = session.Prepare("INSERT INTO channel_users_by_user_id (userid, channelid, readat, username, globalname, image) VALUES (?, ?, ?, ?, ?, ?)");
+        _insert = session.Prepare("""
+            INSERT INTO channel_users_by_user_id (
+                userid,
+                channelid,
+                readat,
+                username,
+                globalname,
+                image,
+                permissions
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """);
 
         _selectByChannelId = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channelid = ?");
 
@@ -26,7 +36,14 @@ internal class ChannelUserQueries
 
     public BoundStatement Insert(long channelId, ChannelMemberInfo member)
     {
-        return _insert.Bind(member.UserId, channelId, member.ReadAt, member.Username, member.GlobalName, member.Image);
+        return _insert.Bind(
+            member.UserId,
+            channelId,
+            member.ReadAt,
+            member.Username,
+            member.GlobalName,
+            member.Image,
+            (long)member.Permissions.ToValue());
     }
 
     public BoundStatement SelectByChannelId(long channelId)

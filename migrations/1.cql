@@ -49,12 +49,13 @@ CREATE TABLE messenger.channel_users_by_user_id (
     username text,
     globalname text,
     image frozen<image>,
+    permissions bigint,
 
     PRIMARY KEY (userid, channelid)
 );
 
 CREATE MATERIALIZED VIEW messenger.channel_users_by_channel_id AS
-    SELECT userid, channelid, readat, username, globalname, image
+    SELECT userid, channelid, readat, username, globalname, image, permissions
     FROM messenger.channel_users_by_user_id
     WHERE channelid IS NOT NULL AND userid IS NOT NULL
     PRIMARY KEY(channelid, userid);
