@@ -29,7 +29,7 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
         {
             return ApiErrors.Channel.NotFound(request.ChannelId);
         }
-        if (!channel.IsUserInTheChannel(_clientInfo.UserId))
+        if (!channel.HasMember(_clientInfo.UserId))
         {
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }

@@ -31,7 +31,7 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             return ApiErrors.Channel.NotFound(request.ChannelId);
         }
 
-        if (!channel.IsUserInTheChannel(_clientInfo.UserId))
+        if (!channel.HasMember(_clientInfo.UserId))
         {
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
@@ -52,7 +52,7 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             return ApiErrors.Channel.NotOwner(channel.Id);
         }
 
-        if (channel.IsUserInTheChannel(newMember.Id))
+        if (channel.HasMember(newMember.Id))
         {
             return ApiErrors.Channel.MemberAlreadyInChannel(newMember.Id);
         }

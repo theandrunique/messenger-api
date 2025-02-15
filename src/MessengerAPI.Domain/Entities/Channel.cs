@@ -59,7 +59,7 @@ public class Channel
 
     public ChannelMemberInfo AddNewMember(User user)
     {
-        if (IsUserInTheChannel(user.Id))
+        if (HasMember(user.Id))
         {
             throw new Exception($"User {user.Id} already in the channel");
         }
@@ -69,7 +69,7 @@ public class Channel
         return member;
     }
 
-    public bool IsUserInTheChannel(long userId)
+    public bool HasMember(long userId)
     {
         return _members.Any(m => m.UserId == userId);
     }
