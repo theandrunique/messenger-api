@@ -1,10 +1,13 @@
 using MediatR;
+using MessengerAPI.Application.Channels.Events;
 using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.ValueObjects;
 using MessengerAPI.Errors;
+using MessengerAPI.Gateway;
 
 namespace MessengerAPI.Application.Channels.Commands.AddChannelMember;
 
@@ -13,15 +16,18 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
     private readonly IUserRepository _userRepository;
     private readonly IChannelRepository _channelRepository;
     private readonly IClientInfoProvider _clientInfo;
+    private readonly IGatewayService _gateway;
 
     public AddChannelMemberCommandHandler(
         IUserRepository userRepository,
         IChannelRepository channelRepository,
-        IClientInfoProvider clientInfo)
+        IClientInfoProvider clientInfo,
+        IGatewayService gateway)
     {
         _userRepository = userRepository;
         _channelRepository = channelRepository;
         _clientInfo = clientInfo;
+        _gateway = gateway;
     }
 
     public async Task<ErrorOr<Unit>> Handle(AddChannelMemberCommand request, CancellationToken cancellationToken)
@@ -61,6 +67,11 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
         var memberInfo = channel.AddNewMember(newMember, ChannelPermissions.DEFAULT);
 
         await _channelRepository.AddMemberToChannel(request.ChannelId, memberInfo);
+
+        await _gateway.PublishAsync(new ChannelMemberAddGatewayEvent(
+            ChannelMemberInfoSchema.From(memberInfo),
+            channel.Id,
+            channel.Members.Select(x => x.UserId.ToString())));
 
         return await Unit.Task;
     }

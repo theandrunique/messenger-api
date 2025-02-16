@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FluentValidation.AspNetCore;
 using MessengerAPI.Core;
 using MessengerAPI.Presentation.Common;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
