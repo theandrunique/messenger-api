@@ -1,14 +1,13 @@
 using MediatR;
 using MessengerAPI.Application.Channels.Common;
-using MessengerAPI.Application.Channels.Events;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Entities;
+using MessengerAPI.Domain.Events;
 using MessengerAPI.Errors;
-using MessengerAPI.Gateway;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 
@@ -19,7 +18,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
     private readonly IMessageRepository _messageRepository;
     private readonly IUserRepository _userRepository;
     private readonly IIdGenerator _idGenerator;
-    private readonly IGatewayService _gateway;
+    private readonly IPublisher _publisher;
     private readonly IClientInfoProvider _clientInfo;
 
     public AddOrEditMessageCommandHandler(
@@ -28,7 +27,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         AttachmentService attachmentService,
         IUserRepository userRepository,
         IIdGenerator idGenerator,
-        IGatewayService gateway,
+        IPublisher publisher,
         IClientInfoProvider clientInfo)
     {
         _channelRepository = channelRepository;
@@ -36,7 +35,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         _attachmentService = attachmentService;
         _userRepository = userRepository;
         _idGenerator = idGenerator;
-        _gateway = gateway;
+        _publisher = publisher;
         _clientInfo = clientInfo;
     }
 
@@ -53,8 +52,8 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
-        var user = await _userRepository.GetByIdOrNullAsync(_clientInfo.UserId);
-        if (user is null)
+        var initiator = await _userRepository.GetByIdOrNullAsync(_clientInfo.UserId);
+        if (initiator is null)
         {
             throw new ArgumentException("User was expected to be found.");
         }
@@ -91,7 +90,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
                 return ApiErrors.Channel.MessageNotFound(request.MessageId.Value);
             }
 
-            if (message.AuthorId != user.Id)
+            if (message.AuthorId != initiator.Id)
             {
                 return ApiErrors.Channel.MessageWasSentByAnotherUser(request.MessageId.Value);
             }
@@ -103,29 +102,21 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
             message = new Message(
                 _idGenerator.CreateId(),
                 request.ChannelId,
-                user,
+                initiator,
                 request.Content,
                 attachments);
         }
         await _messageRepository.UpsertAsync(message);
 
-        var messageSchema = MessageSchema.From(message);
-
         if (request.MessageId.HasValue)
         {
-            await _gateway.PublishAsync(new MessageUpdateGatewayEvent(
-                messageSchema,
-                channel.Members.Select(m => m.UserId.ToString()),
-                channel.Type));
+            await _publisher.Publish(new MessageUpdateDomainEvent(channel, message, initiator));
         }
         else
         {
-            await _gateway.PublishAsync(new MessageCreateGatewayEvent(
-                messageSchema,
-                channel.Members.Select(m => m.UserId.ToString()),
-                channel.Type));
+            await _publisher.Publish(new MessageCreateDomainEvent(channel, message, initiator));
         }
 
-        return messageSchema;
+        return MessageSchema.From(message);
     }
 }

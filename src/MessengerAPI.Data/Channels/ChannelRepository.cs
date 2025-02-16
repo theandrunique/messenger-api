@@ -49,6 +49,11 @@ internal class ChannelRepository : IChannelRepository
         return _session.ExecuteAsync(_channelUsers.Insert(channelId, member));
     }
 
+    public Task RemoveMemberFromChannel(long channelId, long userId)
+    {
+        return _session.ExecuteAsync(_channelUsers.Delete(userId, channelId));
+    }
+
     public async Task<Channel?> GetByIdOrNullAsync(long channelId)
     {
         var query = _channelsById.SelectById(channelId);

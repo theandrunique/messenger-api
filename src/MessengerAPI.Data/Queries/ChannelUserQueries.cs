@@ -6,6 +6,7 @@ namespace MessengerAPI.Data.Queries;
 internal class ChannelUserQueries
 {
     private readonly PreparedStatement _insert;
+    private readonly PreparedStatement _delete;
     private readonly PreparedStatement _selectByChannelId;
     private readonly PreparedStatement _selectByChannelIds;
     private readonly PreparedStatement _selectByUserId;
@@ -24,6 +25,8 @@ internal class ChannelUserQueries
                 permissions
             ) VALUES (?, ?, ?, ?, ?, ?, ?)
             """);
+        
+        _delete = session.Prepare("DELETE FROM channel_users_by_user_id WHERE userid = ? AND channelid = ?");
 
         _selectByChannelId = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channelid = ?");
 
@@ -44,6 +47,11 @@ internal class ChannelUserQueries
             member.GlobalName,
             member.Image,
             (long)member.Permissions.ToValue());
+    }
+
+    public BoundStatement Delete(long userId, long channelId)
+    {
+        return _delete.Bind(userId, channelId);
     }
 
     public BoundStatement SelectByChannelId(long channelId)

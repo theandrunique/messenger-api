@@ -7,7 +7,6 @@ using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.Events;
 using MessengerAPI.Errors;
-using MessengerAPI.Gateway;
 
 namespace MessengerAPI.Application.Channels.Commands;
 
@@ -16,21 +15,21 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
     private readonly IChannelRepository _channelRepository;
     private readonly IUserRepository _userRepository;
     private readonly IIdGenerator _idGenerator;
-    private readonly IGatewayService _gateway;
     private readonly IClientInfoProvider _clientInfo;
+    private readonly IPublisher _publisher;
 
     public CreateChannelCommandHandler(
         IChannelRepository channelRepository,
         IUserRepository userRepository,
         IIdGenerator idGenerator,
-        IGatewayService gateway,
-        IClientInfoProvider clientInfo)
+        IClientInfoProvider clientInfo,
+        IPublisher publisher)
     {
         _channelRepository = channelRepository;
         _userRepository = userRepository;
         _idGenerator = idGenerator;
-        _gateway = gateway;
         _clientInfo = clientInfo;
+        _publisher = publisher;
     }
 
     public async Task<ErrorOr<ChannelSchema>> Handle(CreateChannelCommand request, CancellationToken cancellationToken)
@@ -52,10 +51,8 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
 
         await _channelRepository.UpsertAsync(channel);
 
-        var channelSchema = ChannelSchema.From(channel);
+        await _publisher.Publish(new ChannelCreateDomainEvent(channel));
 
-        await _gateway.PublishAsync(new ChannelCreateGatewayEvent(channelSchema));
-
-        return channelSchema;
+        return ChannelSchema.From(channel);
     }
 }

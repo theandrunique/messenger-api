@@ -11,6 +11,7 @@ public interface IChannelRepository
     Task<IEnumerable<long>> GetMemberIdsFromChannelByIdAsync(long channelId);
     Task<Channel?> GetPrivateChannelOrNullAsync(long userId1, long userId2);
     Task AddMemberToChannel(long channelId, ChannelMemberInfo member);
+    Task RemoveMemberFromChannel(long channelId, long userId);
     Task UpdateChannelInfo(long channelId, string title, Image? image);
     Task UpdateOwnerId(long channelId, long ownerId);
 }

@@ -6,7 +6,7 @@ namespace MessengerAPI.Application.Channels.Events;
 public class ChannelMemberRemoveGatewayEvent : GatewayEventDto
 {
     public IReadOnlyList<string> Recipients { get; init; }
-    public long ChannelId { get; init; }
+    public string ChannelId { get; init; }
     public ChannelMemberInfoSchema User { get; init; }
 
     public ChannelMemberRemoveGatewayEvent(
@@ -16,7 +16,7 @@ public class ChannelMemberRemoveGatewayEvent : GatewayEventDto
         : base("CHANNEL_MEMBER_REMOVE")
     {
         User = member;
-        ChannelId = channelId;
+        ChannelId = channelId.ToString();
         Recipients = recipients.ToList();
     }
 }

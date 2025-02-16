@@ -1,13 +1,11 @@
 using MediatR;
-using MessengerAPI.Application.Channels.Events;
 using MessengerAPI.Application.Common.Interfaces;
-using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Channels;
+using MessengerAPI.Domain.Events;
 using MessengerAPI.Domain.ValueObjects;
 using MessengerAPI.Errors;
-using MessengerAPI.Gateway;
 
 namespace MessengerAPI.Application.Channels.Commands.AddChannelMember;
 
@@ -16,18 +14,18 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
     private readonly IUserRepository _userRepository;
     private readonly IChannelRepository _channelRepository;
     private readonly IClientInfoProvider _clientInfo;
-    private readonly IGatewayService _gateway;
+    private readonly IPublisher _publisher;
 
     public AddChannelMemberCommandHandler(
         IUserRepository userRepository,
         IChannelRepository channelRepository,
         IClientInfoProvider clientInfo,
-        IGatewayService gateway)
+        IPublisher publisher)
     {
         _userRepository = userRepository;
         _channelRepository = channelRepository;
         _clientInfo = clientInfo;
-        _gateway = gateway;
+        _publisher = publisher;
     }
 
     public async Task<ErrorOr<Unit>> Handle(AddChannelMemberCommand request, CancellationToken cancellationToken)
@@ -54,7 +52,7 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             return ApiErrors.Channel.InvalidOperationForChannelType;
         }
 
-        if (channel.HasPermission(_clientInfo.UserId, ChannelPermissions.MANAGE_MEMBERS))
+        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermissions.MANAGE_MEMBERS))
         {
             return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermissions.MANAGE_MEMBERS.ToString());
         }
@@ -68,10 +66,7 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
 
         await _channelRepository.AddMemberToChannel(request.ChannelId, memberInfo);
 
-        await _gateway.PublishAsync(new ChannelMemberAddGatewayEvent(
-            ChannelMemberInfoSchema.From(memberInfo),
-            channel.Id,
-            channel.Members.Select(x => x.UserId.ToString())));
+        await _publisher.Publish(new ChannelMemberAddDomainEvent(channel, memberInfo, _clientInfo.UserId));
 
         return await Unit.Task;
     }

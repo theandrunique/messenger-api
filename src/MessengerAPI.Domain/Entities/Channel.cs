@@ -83,6 +83,20 @@ public class Channel
         return member;
     }
 
+    public ChannelMemberInfo RemoveMember(long userId)
+    {
+        ChannelMemberInfo? member = _members.FirstOrDefault(m => m.UserId == userId);
+
+        if (!member.HasValue)
+        {
+            throw new Exception($"User {userId} not found in the channel");
+        }
+
+        var result = _members.Remove(member.Value);
+
+        return member.Value;
+    }
+
     public bool HasMember(long userId)
     {
         return _members.Any(m => m.UserId == userId);

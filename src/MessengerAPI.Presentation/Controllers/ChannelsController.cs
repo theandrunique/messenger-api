@@ -2,6 +2,7 @@ using MediatR;
 using MessengerAPI.Application.Channels.Commands.AddChannelMember;
 using MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 using MessengerAPI.Application.Channels.Commands.CreateAttachment;
+using MessengerAPI.Application.Channels.Commands.RemoveChannelMember;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Contracts.Common;
@@ -101,6 +102,17 @@ public class ChannelsController : ApiController
         CancellationToken cancellationToken)
     {
         var command = new AddChannelMemberCommand(channelId, userId);
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.Match(onValue: _ => NoContent(), onError: Problem);
+    }
+
+    [HttpDelete("{channelId}/members/{userId}")]
+    public async Task<IActionResult> RemoveMemberFromChannelAsync(
+        long channelId,
+        long userId,
+        CancellationToken cancellationToken)
+    {
+        var command = new RemoveChannelMemberCommand(channelId, userId);
         var result = await _mediator.Send(command, cancellationToken);
         return result.Match(onValue: _ => NoContent(), onError: Problem);
     }
