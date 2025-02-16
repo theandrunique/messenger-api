@@ -30,7 +30,7 @@ internal class MessengerGatewayService : IGatewayService
 
             var eventData = new NameValueEntry[]
             {
-                new NameValueEntry("eventType", @event.EventType),
+                new NameValueEntry("eventType", @event.EventType.ToString()),
                 new NameValueEntry("payload", _serializer.Serialize(@event))
             };
 

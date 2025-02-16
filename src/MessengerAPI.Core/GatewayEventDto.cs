@@ -2,11 +2,13 @@ namespace MessengerAPI.Core;
 
 public abstract class GatewayEventDto : IGatewayEvent
 {
-    public string EventType { get; }
     public string Source = "messenger-api";
+    public GatewayEventType EventType { get; }
+    public IReadOnlyList<string> Recipients { get; }
 
-    public GatewayEventDto(string eventType)
+    public GatewayEventDto(GatewayEventType eventType, IEnumerable<string> recipients)
     {
         EventType = eventType;
+        Recipients = recipients.ToList();
     }
 }
