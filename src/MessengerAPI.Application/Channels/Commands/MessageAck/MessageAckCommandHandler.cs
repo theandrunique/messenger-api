@@ -1,6 +1,7 @@
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Data.Channels;
+using MessengerAPI.Domain.Events;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands.MessageAck;
@@ -10,15 +11,18 @@ public class MessageAckCommandHandler : IRequestHandler<MessageAckCommand, Error
     private readonly IChannelRepository _channelRepository;
     private readonly IMessageRepository _messageRepository;
     private readonly IClientInfoProvider _clientInfo;
+    private readonly IPublisher _publisher;
 
     public MessageAckCommandHandler(
         IChannelRepository channelRepository,
         IClientInfoProvider clientInfo,
-        IMessageRepository messageRepository)
+        IMessageRepository messageRepository,
+        IPublisher publisher)
     {
         _channelRepository = channelRepository;
         _clientInfo = clientInfo;
         _messageRepository = messageRepository;
+        _publisher = publisher;
     }
 
     public async Task<ErrorOr<Unit>> Handle(MessageAckCommand request, CancellationToken cancellationToken)
@@ -47,6 +51,8 @@ public class MessageAckCommandHandler : IRequestHandler<MessageAckCommand, Error
         }
 
         await _channelRepository.UpdateReadAt(_clientInfo.UserId, request.ChannelId, request.MessageId);
+
+        await _publisher.Publish(new MessageAckDomainEvent(message, channel));
 
         return Unit.Value;
     }

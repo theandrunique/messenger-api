@@ -11,7 +11,8 @@ public class GatewayEventPublisherHandler
       INotificationHandler<MessageUpdateDomainEvent>,
       INotificationHandler<ChannelCreateDomainEvent>,
       INotificationHandler<ChannelMemberAddDomainEvent>,
-      INotificationHandler<ChannelMemberRemoveDomainEvent>
+      INotificationHandler<ChannelMemberRemoveDomainEvent>,
+      INotificationHandler<MessageAckDomainEvent>
 
 {
     private readonly IGatewayService _gateway;
@@ -21,48 +22,54 @@ public class GatewayEventPublisherHandler
         _gateway = gateway;
     }
 
-    public async Task Handle(MessageCreateDomainEvent @event, CancellationToken cancellationToken)
+    public Task Handle(MessageCreateDomainEvent @event, CancellationToken cancellationToken)
     {
         var messageSchema = MessageSchema.From(@event.Message);
 
-        await _gateway.PublishAsync(new MessageCreateGatewayEvent(
+        return _gateway.PublishAsync(new MessageCreateGatewayEvent(
             messageSchema,
             @event.Channel.Members.Select(m => m.UserId.ToString()),
             @event.Channel.Type));
     }
 
-    public async Task Handle(MessageUpdateDomainEvent @event, CancellationToken cancellationToken)
+    public Task Handle(MessageUpdateDomainEvent @event, CancellationToken cancellationToken)
     {
         var messageSchema = MessageSchema.From(@event.Message);
 
-        await _gateway.PublishAsync(new MessageUpdateGatewayEvent(
+        return _gateway.PublishAsync(new MessageUpdateGatewayEvent(
             messageSchema,
             @event.Channel.Members.Select(m => m.UserId.ToString()),
             @event.Channel.Type));
     }
 
-    public async Task Handle(ChannelMemberAddDomainEvent @event, CancellationToken cancellationToken)
+    public Task Handle(ChannelMemberAddDomainEvent @event, CancellationToken cancellationToken)
     {
-        await _gateway.PublishAsync(new ChannelMemberAddGatewayEvent(
+        return _gateway.PublishAsync(new ChannelMemberAddGatewayEvent(
             ChannelMemberInfoSchema.From(@event.MemberInfo),
             @event.Channel.Id,
-            @event.Channel.Members.Select(m => m.UserId.ToString())
-        ));
+            @event.Channel.Members.Select(m => m.UserId.ToString())));
     }
 
-    public async Task Handle(ChannelMemberRemoveDomainEvent @event, CancellationToken cancellationToken)
+    public Task Handle(ChannelMemberRemoveDomainEvent @event, CancellationToken cancellationToken)
     {
-        await _gateway.PublishAsync(new ChannelMemberRemoveGatewayEvent(
+        return _gateway.PublishAsync(new ChannelMemberRemoveGatewayEvent(
             ChannelMemberInfoSchema.From(@event.MemberInfo),
             @event.Channel.Id,
-            @event.Channel.Members.Select(m => m.UserId.ToString())
-        ));
+            @event.Channel.Members.Select(m => m.UserId.ToString())));
     }
 
-    public Task Handle(ChannelCreateDomainEvent notification, CancellationToken cancellationToken)
+    public Task Handle(ChannelCreateDomainEvent @event, CancellationToken cancellationToken)
     {
-        var channelSchema = ChannelSchema.From(notification.Channel);
+        var channelSchema = ChannelSchema.From(@event.Channel);
 
         return _gateway.PublishAsync(new ChannelCreateGatewayEvent(channelSchema));
+    }
+
+    public Task Handle(MessageAckDomainEvent @event, CancellationToken cancellationToken)
+    {
+        return _gateway.PublishAsync(new MessageAckGatewayEvent(
+            @event.Channel.Id,
+            @event.Message.Id,
+            @event.Channel.Members.Select(m => m.UserId.ToString())));
     }
 }

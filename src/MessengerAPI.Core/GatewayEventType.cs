@@ -7,4 +7,5 @@ public enum GatewayEventType
     CHANNEL_MEMBER_REMOVE,
     MESSAGE_CREATE,
     MESSAGE_UPDATE,
+    MESSAGE_ACK,
 }
