@@ -11,6 +11,7 @@ internal class ChannelUserQueries
     private readonly PreparedStatement _selectByChannelIds;
     private readonly PreparedStatement _selectByUserId;
     private readonly PreparedStatement _selectByChannelIdAndUserIds;
+    private readonly PreparedStatement _updateReadAt;
 
     public ChannelUserQueries(ISession session)
     {
@@ -25,7 +26,7 @@ internal class ChannelUserQueries
                 permissions
             ) VALUES (?, ?, ?, ?, ?, ?, ?)
             """);
-        
+
         _delete = session.Prepare("DELETE FROM channel_users_by_user_id WHERE userid = ? AND channelid = ?");
 
         _selectByChannelId = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channelid = ?");
@@ -35,6 +36,8 @@ internal class ChannelUserQueries
         _selectByUserId = session.Prepare("SELECT * FROM channel_users_by_user_id WHERE userid = ?");
 
         _selectByChannelIdAndUserIds = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channelid = ? AND userid IN ?");
+
+        _updateReadAt = session.Prepare("UPDATE channel_users_by_user_id SET readat = ? WHERE userid = ? AND channelid = ?");
     }
 
     public BoundStatement Insert(long channelId, ChannelMemberInfo member)
@@ -72,5 +75,10 @@ internal class ChannelUserQueries
     public BoundStatement SelectByChannelIdAndUserIds(long channelId, IEnumerable<long> userIds)
     {
         return _selectByChannelIdAndUserIds.Bind(channelId, userIds);
+    }
+
+    public BoundStatement UpdateReadAt(long userId, long channelId, long readAt)
+    {
+        return _updateReadAt.Bind(readAt, userId, channelId);
     }
 }

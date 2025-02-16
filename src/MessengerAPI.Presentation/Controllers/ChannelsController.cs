@@ -2,6 +2,7 @@ using MediatR;
 using MessengerAPI.Application.Channels.Commands.AddChannelMember;
 using MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 using MessengerAPI.Application.Channels.Commands.CreateAttachment;
+using MessengerAPI.Application.Channels.Commands.MessageAck;
 using MessengerAPI.Application.Channels.Commands.RemoveChannelMember;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
@@ -113,6 +114,17 @@ public class ChannelsController : ApiController
         CancellationToken cancellationToken)
     {
         var command = new RemoveChannelMemberCommand(channelId, userId);
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.Match(onValue: _ => NoContent(), onError: Problem);
+    }
+
+    [HttpPost("{channelId}/messages/{messageId}/ack")]
+    public async Task<IActionResult> AckMessageAsync(
+        long channelId,
+        long messageId,
+        CancellationToken cancellationToken)
+    {
+        var command = new MessageAckCommand(channelId, messageId);
         var result = await _mediator.Send(command, cancellationToken);
         return result.Match(onValue: _ => NoContent(), onError: Problem);
     }

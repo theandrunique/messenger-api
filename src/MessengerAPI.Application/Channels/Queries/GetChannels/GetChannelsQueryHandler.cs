@@ -22,6 +22,6 @@ public class GetChannelsQueryHandler : IRequestHandler<GetChannelsQuery, ErrorOr
     {
         List<Channel> channels = await _channelRepository.GetUserChannelsAsync(_clientInfo.UserId);
 
-        return ChannelSchema.From(channels);
+        return ChannelSchema.From(channels, _clientInfo.UserId);
     }
 }
