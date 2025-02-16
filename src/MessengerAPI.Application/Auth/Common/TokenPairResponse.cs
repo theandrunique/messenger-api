@@ -4,4 +4,5 @@ public record TokenPairResponse(
     string AccessToken,
     string RefreshToken,
     string TokenType,
-    int ExpiresIn);
+    int ExpiresIn,
+    DateTimeOffset IssuedAt);

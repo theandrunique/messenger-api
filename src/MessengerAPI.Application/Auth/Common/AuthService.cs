@@ -84,6 +84,11 @@ public class AuthService
         var refreshToken = GenerateRefreshToken(new RefreshTokenPayload(session.TokenId, user.Id));
         var accessToken = GenerateAccessToken(new AccessTokenPayload(user.Id, session.TokenId));
 
-        return new TokenPairResponse(accessToken, refreshToken, "Bearer", _options.AccessTokenExpiryMinutes * 60);
+        return new TokenPairResponse(
+            accessToken,
+            refreshToken,
+            "Bearer",
+            _options.AccessTokenExpiryMinutes * 60,
+            DateTimeOffset.UtcNow);
     }
 }

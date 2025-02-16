@@ -9,6 +9,7 @@ using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Errors;
 using MessengerAPI.Core;
+using Newtonsoft.Json;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -48,7 +49,7 @@ public class AuthController : ApiController
         return loginResult.Match(
             success =>
             {
-                AddRefreshTokenToCookies(success.RefreshToken);
+                AddRefreshTokenToCookies(success);
                 return Ok(success);
             },
             errors => Problem(errors));
@@ -64,7 +65,7 @@ public class AuthController : ApiController
         return result.Match(
             success =>
             {
-                AddRefreshTokenToCookies(success.RefreshToken);
+                AddRefreshTokenToCookies(success);
                 return Ok(success);
             },
             errors => Problem(errors));
@@ -74,21 +75,29 @@ public class AuthController : ApiController
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public IActionResult Token()
     {
-        string? refreshToken = Request.Cookies[MessengerConstants.Auth.SessionCookieName];
-        if (refreshToken == null)
+        string? sessionInfo = Request.Cookies[MessengerConstants.Auth.SessionCookieName];
+        if (sessionInfo == null)
         {
             return Problem(ApiErrors.Auth.NoSessionInfoFound);
         }
-        return Ok(refreshToken);
+        return Ok(JsonConvert.DeserializeObject<SessionSchema>(sessionInfo));
     }
 
-    private void AddRefreshTokenToCookies(string refreshToken)
+    private void AddRefreshTokenToCookies(TokenPairResponse tokenPair)
     {
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
             // Secure = true,
         };
-        Response.Cookies.Append(MessengerConstants.Auth.SessionCookieName, refreshToken, cookieOptions);
+        Response.Cookies.Append(
+            MessengerConstants.Auth.SessionCookieName,
+            JsonConvert.SerializeObject(new SessionSchema(
+                tokenPair.RefreshToken,
+                tokenPair.AccessToken,
+                tokenPair.TokenType,
+                tokenPair.ExpiresIn,
+                DateTimeOffset.UtcNow)),
+            cookieOptions);
     }
 }
