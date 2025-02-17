@@ -19,4 +19,9 @@ internal class VerificationCodeRepository : IVerificationCodeRepository
     {
         return _session.ExecuteAsync(_queries.Insert(verificationCode));
     }
+
+    public Task UpdateAttemptsAsync(VerificationCode verificationCode)
+    {
+        return _session.ExecuteAsync(_queries.UpdateAttempts(verificationCode));
+    }
 }

@@ -3,6 +3,7 @@ using Cassandra.Mapping;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Queries;
 using MessengerAPI.Data.Users;
+using MessengerAPI.Data.VerificationCodes;
 using MessengerAPI.Domain.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ISessionRepository, SessionRepository>();
         services.AddScoped<IChannelRepository, ChannelRepository>();
+        services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
 
         services.AddSingleton<UserQueries>();
         services.AddSingleton<ChannelByIdQueries>();
@@ -50,6 +52,7 @@ public static class DependencyInjection
         services.AddSingleton<MessageQueries>();
         services.AddSingleton<AttachmentQueries>();
         services.AddSingleton<SessionQueries>();
+        services.AddSingleton<VerificationCodeQueries>();
 
         return services;
     }

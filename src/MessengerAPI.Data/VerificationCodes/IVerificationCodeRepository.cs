@@ -5,4 +5,5 @@ namespace MessengerAPI.Data.VerificationCodes;
 public interface IVerificationCodeRepository
 {
     Task UpsertAsync(VerificationCode verificationCode);
+    Task UpdateAttemptsAsync(VerificationCode verificationCode);
 }
