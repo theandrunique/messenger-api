@@ -19,8 +19,3 @@ shell:
 .PHONY: logs
 logs:
 	docker compose ${ENV_FILE} -f ${APP} logs ${APP_SERVICE} -f
-
-.PHONY: migrations
-migrations:
-	dotnet ef database update -s src/MessengerAPI.Presentation -p src/MessengerAPI.Infrastructure
-
