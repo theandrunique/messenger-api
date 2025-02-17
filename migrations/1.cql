@@ -133,3 +133,14 @@ CREATE TABLE messenger.users (
 CREATE INDEX users_email_idx ON messenger.users(email);
 
 CREATE INDEX users_username_idx ON messenger.users(username);
+
+
+CREATE TABLE messenger.verification_codes (
+    identifier text, -- email, phone, etc
+    scenario text,   -- reset_password, verify_email, etc
+    codehash text,
+    timestamp timestamp,
+    expirestimestamp timestamp,
+    attempts int,
+    PRIMARY KEY ((identifier, scenario))
+);
