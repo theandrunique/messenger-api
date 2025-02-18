@@ -15,11 +15,12 @@ public class DeleteAttachmentCommandHandler : IRequestHandler<DeleteAttachmentCo
 
     public async Task<ErrorOr<bool>> Handle(DeleteAttachmentCommand request, CancellationToken cancellationToken)
     {
-        var result = await _attachmentService.DeleteAttachmentAsync(request.uploadFilename, cancellationToken);
-        if (result.IsError)
+        if (!await _attachmentService.IsAttachmentsExistsAsync(request.uploadFilename, cancellationToken))
         {
-            return result.Error;
+            return ApiErrors.Attachment.NotFoundInObjectStorage(request.uploadFilename);
         }
+
+        await _attachmentService.DeleteAttachmentAsync(request.uploadFilename, cancellationToken);
         return true;
     }
 }

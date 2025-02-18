@@ -2,10 +2,30 @@ namespace MessengerAPI.Application.Common.Interfaces.S3;
 
 public interface IS3Service
 {
-    Task PutObjectAsync(Stream fileStream, string key, string fileName, string contentType, CancellationToken cancellationToken);
-    Task<string> GeneratePreSignedUrlForUploadAsync(string key, DateTimeOffset expires, long size);
-    Task<GetObjectMetadataResponseDTO?> GetObjectMetadataAsync(string key, CancellationToken cancellationToken);
-    Task<string> GeneratePreSignedUrlForDownloadAsync(string key, DateTimeOffset expires);
-    Task DeleteObjectAsync(string key, CancellationToken cancellationToken);
-    Task<bool> IsObjectExistsAsync(string key, CancellationToken cancellationToken);
+    Task PutObjectAsync(
+        string key,
+        string bucket,
+        string fileName,
+        string contentType,
+        Stream fileStream,
+        CancellationToken cancellationToken = default);
+
+    string GenerateUploadUrl(string key, string bucket, DateTimeOffset expires, long size);
+
+    string GenerateDownloadUrl(string key, string bucket, DateTimeOffset expires);
+
+    Task<GetObjectMetadataResponseDTO?> GetObjectMetadataAsync(
+        string key,
+        string bucket,
+        CancellationToken cancellationToken = default);
+
+    Task DeleteObjectAsync(
+        string key,
+        string bucket,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> IsObjectExistsAsync(
+        string key,
+        string bucket,
+        CancellationToken cancellationToken = default);
 }

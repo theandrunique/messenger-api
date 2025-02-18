@@ -1,85 +1,86 @@
-using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using MessengerAPI.Application.Common.Interfaces.S3;
-using Microsoft.Extensions.Options;
 
 namespace MessengerAPI.Infrastructure.Common.Files;
 
 public class S3Service : IS3Service
 {
-    private readonly S3Options _settings;
     private readonly IAmazonS3 _s3Client;
+    private readonly TransferUtility _transferUtility;
 
-    public S3Service(IOptions<S3Options> settings)
+    public S3Service(IAmazonS3 client)
     {
-        _settings = settings.Value;
-
-        var config = new AmazonS3Config()
-        {
-            ServiceURL = _settings.EndpointUrl,
-        };
-        AWSCredentials credentials = new BasicAWSCredentials(_settings.AccessKey, _settings.SecretKey);
-
-        _s3Client = new AmazonS3Client(credentials, config);
+        _s3Client = client;
+        _transferUtility = new TransferUtility(_s3Client);
     }
 
     public Task PutObjectAsync(
-        Stream fileStream,
         string key,
+        string bucket,
         string fileName,
         string contentType,
-        CancellationToken cancellationToken)
+        Stream fileStream,
+        CancellationToken cancellationToken = default)
     {
         var uploadRequest = new TransferUtilityUploadRequest
         {
             InputStream = fileStream,
             Key = key,
-            BucketName = _settings.BucketName,
-            PartSize = _settings.UploadPartSize,
+            BucketName = bucket,
             ContentType = contentType,
             CalculateContentMD5Header = true,
         };
         uploadRequest.Headers.ContentDisposition = "attachment; filename=\"" + fileName + "\"";
 
-        var fileTransferUtility = new TransferUtility(_s3Client);
-        return fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
+        return _transferUtility.UploadAsync(uploadRequest, cancellationToken);
     }
 
-    public Task<string> GeneratePreSignedUrlForUploadAsync(string key, DateTimeOffset expires, long size)
+    public string GenerateUploadUrl(string key,
+        string bucket,
+        DateTimeOffset expires,
+        long size)
+        => GeneratePreSignedUrl(key, expires, bucket, HttpVerb.PUT, size);
+
+    public string GenerateDownloadUrl(
+        string key,
+        string bucket,
+        DateTimeOffset expires)
+        => GeneratePreSignedUrl(key, expires, bucket, HttpVerb.GET);
+
+    private string GeneratePreSignedUrl(
+        string key,
+        DateTimeOffset expires,
+        string bucket,
+        HttpVerb httpVerb,
+        long size = 0)
     {
         var getPreSignedUrlRequest = new GetPreSignedUrlRequest
         {
-            BucketName = _settings.BucketName,
+            BucketName = bucket,
             Key = key,
             Expires = expires.UtcDateTime,
-            Verb = HttpVerb.PUT,
+            Verb = httpVerb,
         };
-        getPreSignedUrlRequest.Headers.ContentLength = size;
-
-        return _s3Client.GetPreSignedURLAsync(getPreSignedUrlRequest);
-    }
-
-    public Task<string> GeneratePreSignedUrlForDownloadAsync(string key, DateTimeOffset expires)
-    {
-        var response = new GetPreSignedUrlRequest
+        if (httpVerb == HttpVerb.PUT)
         {
-            BucketName = _settings.BucketName,
-            Key = key,
-            Expires = expires.UtcDateTime,
-            Verb = HttpVerb.GET
-        };
-        return _s3Client.GetPreSignedURLAsync(response);
+            getPreSignedUrlRequest.Headers.ContentLength = size;
+        }
+
+        return _s3Client.GetPreSignedURL(getPreSignedUrlRequest);
     }
 
-    public async Task<GetObjectMetadataResponseDTO?> GetObjectMetadataAsync(string key, CancellationToken cancellationToken)
+    public async Task<GetObjectMetadataResponseDTO?> GetObjectMetadataAsync(
+        string key,
+        string bucket,
+        CancellationToken cancellationToken = default)
     {
         try
         {
             var getObjectMetadataRequest = new GetObjectMetadataRequest
             {
-                BucketName = _settings.BucketName,
+                BucketName = bucket,
                 Key = key
             };
             var response = await _s3Client.GetObjectMetadataAsync(getObjectMetadataRequest, cancellationToken);
@@ -100,22 +101,28 @@ public class S3Service : IS3Service
         }
     }
 
-    public Task DeleteObjectAsync(string key, CancellationToken cancellationToken)
+    public Task DeleteObjectAsync(
+        string key,
+        string bucket,
+        CancellationToken cancellationToken = default)
     {
         var request = new DeleteObjectRequest
         {
-            BucketName = _settings.BucketName,
+            BucketName = bucket,
             Key = key,
         };
 
         return _s3Client.DeleteObjectAsync(request, cancellationToken);
     }
 
-    public async Task<bool> IsObjectExistsAsync(string key, CancellationToken cancellationToken)
+    public async Task<bool> IsObjectExistsAsync(
+        string key,
+        string bucket,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await _s3Client.GetObjectMetadataAsync(_settings.BucketName, key);
+            var response = await _s3Client.GetObjectMetadataAsync(bucket, key, cancellationToken);
             return true;
         }
         catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)

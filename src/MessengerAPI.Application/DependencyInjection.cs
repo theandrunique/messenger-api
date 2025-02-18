@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Reflection;
 using FluentValidation;
 using MessengerAPI.Application.Auth.Common;
@@ -31,7 +32,7 @@ public static class DependencyInjection
         services.AddCaptchaService(config);
         services.AddAuthServices(config);
         services.AddUserServices();
-        services.AddChannelServices();
+        services.AddChannelServices(config);
 
         services.Configure<SmtpOptions>(config.GetSection(nameof(SmtpOptions)));
 
@@ -64,9 +65,10 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddChannelServices(this IServiceCollection services)
+    public static IServiceCollection AddChannelServices(this IServiceCollection services, ConfigurationManager config)
     {
         services.AddScoped<AttachmentService>();
+        services.Configure<AttachmentsOptions>(config.GetSection(nameof(AttachmentsOptions)));
 
         return services;
     }

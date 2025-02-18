@@ -3,6 +3,7 @@ using MessengerAPI.Application.Common.Interfaces.S3;
 using MessengerAPI.Core;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
+using Microsoft.Extensions.Options;
 
 namespace MessengerAPI.Application.Channels.Common;
 
@@ -10,29 +11,32 @@ public class AttachmentService
 {
     private readonly IS3Service _s3Service;
     private readonly IIdGenerator _idGenerator;
+    private readonly AttachmentsOptions _options;
 
-    public AttachmentService(IS3Service s3Service, IIdGenerator idGenerator)
+    public AttachmentService(IS3Service s3Service, IIdGenerator idGenerator, IOptions<AttachmentsOptions> options)
     {
         _s3Service = s3Service;
         _idGenerator = idGenerator;
+        _options = options.Value;
     }
 
-    public async Task<UploadUrlDto> GenerateUploadUrlAsync(long size, long channelId, string filename)
+    public UploadUrlDto GenerateUploadUrl(long size, long channelId, string filename)
     {
         var uploadFilename = GenerateUploadFilename(filename, channelId, _idGenerator.CreateId());
 
-        var preSignedUrl = await _s3Service.GeneratePreSignedUrlForUploadAsync(
-            uploadFilename,
-            DateTimeOffset.UtcNow.AddDays(1),
-            size
-        );
+        var preSignedUrl = _s3Service.GenerateUploadUrl(
+            key: uploadFilename,
+            bucket: _options.Bucket,
+            expires: DateTimeOffset.UtcNow.Add(_options.UploadUrlExpiration),
+            size: size);
+
         return new UploadUrlDto(uploadFilename, preSignedUrl);
     }
 
     public async Task<ErrorOr<Attachment>> ValidateAndCreateAttachmentsAsync(
         string uploadedFilename,
         string filename,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var parsedFilename = ParseUploadedFilename(uploadedFilename);
         if (parsedFilename == null)
@@ -40,18 +44,22 @@ public class AttachmentService
             return ApiErrors.Attachment.InvalidUploadFilename(uploadedFilename);
         }
 
-        var objectMetadata = await _s3Service.GetObjectMetadataAsync(uploadedFilename, cancellationToken);
+        var objectMetadata = await _s3Service.GetObjectMetadataAsync(
+            uploadedFilename,
+            _options.Bucket,
+            cancellationToken);
 
         if (objectMetadata is null)
         {
             return ApiErrors.Attachment.NotFoundInObjectStorage(uploadedFilename);
         }
 
-        var preSignedUrlExpiresAt = DateTimeOffset.UtcNow.AddDays(7);
+        var expires = DateTimeOffset.UtcNow.Add(_options.DownloadUrlExpiration);
 
-        var preSignedUrl = await _s3Service.GeneratePreSignedUrlForDownloadAsync(
-            uploadedFilename,
-            preSignedUrlExpiresAt);
+        var preSignedUrl = _s3Service.GenerateDownloadUrl(
+            key: uploadedFilename,
+            bucket: _options.Bucket,
+            expires: expires);
 
         return new Attachment(
             parsedFilename.Value.AttachmentId,
@@ -62,19 +70,16 @@ public class AttachmentService
             objectMetadata.ContentType,
             objectMetadata.ObjectSize,
             preSignedUrl,
-            preSignedUrlExpiresAt
-        );
+            expires);
     }
 
-    public async Task<ErrorOr<bool>> DeleteAttachmentAsync(string uploadedFilename, CancellationToken cancellationToken)
-    {
-        if (!await _s3Service.IsObjectExistsAsync(uploadedFilename, cancellationToken))
-        {
-            return ApiErrors.Attachment.NotFoundInObjectStorage(uploadedFilename);
-        }
-        await _s3Service.DeleteObjectAsync(uploadedFilename, cancellationToken);
-        return true;
-    }
+    public Task DeleteAttachmentAsync(
+        string uploadedFilename,
+        CancellationToken cancellationToken = default)
+        => _s3Service.DeleteObjectAsync(uploadedFilename, _options.Bucket, cancellationToken);
+
+    public Task<bool> IsAttachmentsExistsAsync(string uploadedFilename, CancellationToken cancellationToken = default)
+        => _s3Service.IsObjectExistsAsync(uploadedFilename, _options.Bucket, cancellationToken);
 
     private string GenerateUploadFilename(string filename, long channelId, long attachmentId)
     {
@@ -96,6 +101,5 @@ public class AttachmentService
 
         return (channelId, attachmentId, filename);
     }
-
 }
 

@@ -1,0 +1,8 @@
+namespace MessengerAPI.Application.Channels.Common;
+
+public record AttachmentsOptions
+{
+    public string Bucket { get; init; } = null!;
+    public TimeSpan UploadUrlExpiration { get; init; } = TimeSpan.FromDays(7);
+    public TimeSpan DownloadUrlExpiration { get; init; } = TimeSpan.FromDays(7);
+}

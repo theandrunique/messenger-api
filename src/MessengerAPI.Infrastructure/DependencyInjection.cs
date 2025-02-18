@@ -1,4 +1,6 @@
 using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.S3;
@@ -33,6 +35,18 @@ public static class DependencyInjection
     public static IServiceCollection AddS3Services(this IServiceCollection services, IConfigurationManager config)
     {
         AWSConfigsS3.UseSignatureVersion4 = true;
+
+        var options = new S3Options();
+        config.Bind(nameof(S3Options), options);
+
+        var s3Client = new AmazonS3Client(
+            credentials: new BasicAWSCredentials(options.AccessKey, options.SecretKey),
+            clientConfig: new AmazonS3Config()
+            {
+                ServiceURL = options.ServiceUrl,
+            });
+
+        services.AddSingleton<IAmazonS3, AmazonS3Client>(sp => s3Client);
 
         services.Configure<S3Options>(config.GetSection(nameof(S3Options)));
         services.AddScoped<IS3Service, S3Service>();

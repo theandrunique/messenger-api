@@ -14,16 +14,16 @@ class CreateAttachmentCommandHandler : IRequestHandler<CreateAttachmentCommand, 
         _attachmentService = attachmentService;
     }
 
-    public async Task<ErrorOr<List<CloudAttachmentSchema>>> Handle(CreateAttachmentCommand request, CancellationToken cancellationToken)
+    public Task<ErrorOr<List<CloudAttachmentSchema>>> Handle(CreateAttachmentCommand request, CancellationToken cancellationToken)
     {
         List<CloudAttachmentSchema> attachments = new();
 
         foreach (var file in request.Files)
         {
-            var uploadUrlDto = await _attachmentService.GenerateUploadUrlAsync(
-                    file.FileSize,
-                    request.ChannelId,
-                    file.Filename);
+            var uploadUrlDto = _attachmentService.GenerateUploadUrl(
+                size: file.FileSize,
+                channelId: request.ChannelId,
+                filename: file.Filename);
 
             attachments.Add(new CloudAttachmentSchema(
                 id: file.Id,
@@ -32,6 +32,6 @@ class CreateAttachmentCommandHandler : IRequestHandler<CreateAttachmentCommand, 
             ));
         }
 
-        return attachments;
+        return Task.FromResult(new ErrorOr<List<CloudAttachmentSchema>>(attachments));
     }
 }
