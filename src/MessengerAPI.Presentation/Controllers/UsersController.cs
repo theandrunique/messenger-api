@@ -4,10 +4,14 @@ using MessengerAPI.Application.Channels.Commands.AddOrEditMessagePrivateChannel;
 using MessengerAPI.Application.Channels.Commands.GetOrCreatePrivateChannel;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessagesPrivateChannel;
+using MessengerAPI.Application.Users.Commands;
+using MessengerAPI.Application.Users.Commands.RequestVerifyEmailCode;
+using MessengerAPI.Application.Users.Commands.VerifyEmail;
 using MessengerAPI.Application.Users.Queries.GetMeQuery;
 using MessengerAPI.Application.Users.Queries.GetUserById;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Infrastructure.Auth;
+using MessengerAPI.Presentation.Schemas.Auth;
 using MessengerAPI.Presentation.Schemas.Channels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,26 +27,50 @@ public class UsersController : ApiController
         _mediator = mediator;
     }
 
-    [HttpGet("@me")]
-    [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetMeAsync(CancellationToken cancellationToken)
-    {
-        var query = new GetMeQuery();
-
-        var result = await _mediator.Send(query, cancellationToken);
-
-        return result.Match(onValue: Ok, onError: Problem);
-    }
-
     [HttpGet("{userId}")]
     [ProducesResponseType(typeof(UserPublicSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUserAsync(long userId, CancellationToken cancellationToken)
     {
         var query = new GetUserByIdQuery(userId);
-
         var result = await _mediator.Send(query, cancellationToken);
-
         return result.Match(onValue: Ok, onError: Problem);
+    }
+
+    [HttpGet("@me")]
+    [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMeAsync(CancellationToken cancellationToken)
+    {
+        var query = new GetMeQuery();
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.Match(onValue: Ok, onError: Problem);
+    }
+
+    [HttpPost("@me/email/request-verify-code")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> RequestEmailCodeAsync(CancellationToken cancellationToken)
+    {
+        var command = new RequestVerifyEmailCommand();
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.Match(onValue: _ => NoContent(), onError: Problem);
+    }
+
+    [HttpPost("@me/email/verify")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> VerifyEmailCodeAsync(
+        VerifyEmailRequestSchema schema,
+        CancellationToken cancellationToken)
+    {
+        var command = new VerifyEmailCommand(schema.code);
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.Match(onValue: _ => NoContent(), onError: Problem);
+    }
+
+    [HttpPost("@me/mfa/totp/enable")]
+    public async Task<IActionResult> EnableMfaTotpAsync(CancellationToken cancellationToken)
+    {
+        var command = new MfaTotpEnableCommand();
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.Match(onValue: _ => NoContent(), onError: Problem);
     }
 
     [HttpGet("@me/channels")]

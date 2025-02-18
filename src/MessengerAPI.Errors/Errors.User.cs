@@ -16,5 +16,11 @@ public static partial class ApiErrors
             }
             return new BaseApiError(ErrorCode.USER_NOT_FOUND, $"Users '{string.Join(", ", userIdsList)}' not found");
         }
+
+        public static BaseApiError EmailAlreadyVerified(long userId)
+            => new BaseApiError(ErrorCode.USER_EMAIL_ALREADY_VERIFIED, $"User '{userId}' email already verified");
+        
+        public static BaseApiError InvalidEmailVerificationCode
+            => new BaseApiError(ErrorCode.INVALID_EMAIL_VERIFICATION_CODE, "Invalid email verification code");
     }
 }

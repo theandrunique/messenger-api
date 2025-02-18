@@ -48,7 +48,7 @@ public class ValidationBehavior<TRequest, TResponse> :
             fieldErrors[fieldError.PropertyName].Add(fieldError.ErrorMessage);
         }
 
-        var error = Errors.ApiErrors.Common.InvalidRequestBody(fieldErrors);
+        var error = ApiErrors.Common.InvalidRequestBody(fieldErrors);
 
         return (dynamic)error;
     }

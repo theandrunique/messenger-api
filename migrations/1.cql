@@ -137,7 +137,7 @@ CREATE INDEX users_username_idx ON messenger.users(username);
 
 CREATE TABLE messenger.verification_codes (
     identifier text, -- email, phone, etc
-    scenario text,   -- reset_password, verify_email, etc
+    scenario int,   -- (enum) reset_password, verify_email, etc
     codehash text,
     timestamp timestamp,
     expirestimestamp timestamp,

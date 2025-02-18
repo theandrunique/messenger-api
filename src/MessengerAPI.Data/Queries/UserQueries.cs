@@ -12,6 +12,7 @@ internal class UserQueries
     private readonly PreparedStatement _selectByUsername;
     private readonly PreparedStatement _updateEmailInfo;
     private readonly PreparedStatement _updateTOTPKey;
+    private readonly PreparedStatement _updateEmailVerified;
 
     public UserQueries(ISession session)
     {
@@ -43,9 +44,11 @@ internal class UserQueries
 
         _selectByUsername = session.Prepare("SELECT * FROM users WHERE username = ?");
 
-        _updateEmailInfo = session.Prepare("UPDATE users SET email = ?, emailupdatedtimestamp = ? WHERE id = ?");
+        _updateEmailInfo = session.Prepare("UPDATE users SET email = ?, emailupdatedtimestamp = ?, isemailverified = ? WHERE id = ?");
 
         _updateTOTPKey = session.Prepare("UPDATE users SET totpkey = ? WHERE id = ?");
+
+        _updateEmailVerified = session.Prepare("UPDATE users SET isemailverified = ? WHERE id = ?");
     }
 
     public BoundStatement Insert(User user)
@@ -89,9 +92,18 @@ internal class UserQueries
         return _selectByUsername.Bind(username);
     }
 
-    public BoundStatement UpdateEmailInfo(User user)
+    public BoundStatement UpdateEmail(
+        long userId,
+        string email,
+        DateTimeOffset emailUpdatedTimestamp,
+        bool isEmailVerified)
     {
-        return _updateEmailInfo.Bind(user.Email, user.EmailUpdatedTimestamp, user.Id);
+        return _updateEmailInfo.Bind(email, emailUpdatedTimestamp, isEmailVerified, userId);
+    }
+
+    public BoundStatement UpdateEmailVerified(long userId, bool status)
+    {
+        return _updateEmailVerified.Bind(status, userId);
     }
 
     public BoundStatement UpdateTOTPKey(User user)

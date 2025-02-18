@@ -49,9 +49,18 @@ internal class UserRepository : IUserRepository
         return result.Select(UserMapper.Map);
     }
 
-    public Task UpdateEmailInfoAsync(User user)
+    public Task UpdateEmailAsync(
+        long userId,
+        string email,
+        DateTimeOffset emailUpdatedTimestamp,
+        bool isEmailVerified)
     {
-        return _session.ExecuteAsync(_users.UpdateEmailInfo(user));
+        return _session.ExecuteAsync(_users.UpdateEmail(userId, email, emailUpdatedTimestamp, isEmailVerified));
+    }
+
+    public Task SetEmailVerifiedAsync(long userId)
+    {
+        return _session.ExecuteAsync(_users.UpdateEmailVerified(userId, true));
     }
 
     public Task UpdateTOTPKeyAsync(User user)

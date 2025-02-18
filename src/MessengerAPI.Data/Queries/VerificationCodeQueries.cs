@@ -1,5 +1,6 @@
 using Cassandra;
 using MessengerAPI.Domain.Entities;
+using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Data.Queries;
 
@@ -7,6 +8,8 @@ internal class VerificationCodeQueries
 {
     private readonly PreparedStatement _insert;
     private readonly PreparedStatement _updateAttempts;
+    private readonly PreparedStatement _selectByIdentifierAndScenario;
+    private readonly PreparedStatement _removeByIdentifierAndScenario;
 
     public VerificationCodeQueries(ISession session)
     {
@@ -20,9 +23,23 @@ internal class VerificationCodeQueries
                 attempts
             ) VALUES (?, ?, ?, ?, ?, ?) USING TTL ?
             """);
-        
+
         _updateAttempts = session.Prepare("""
-            UPDATE verification_codes SET attempts = ? WHERE identifier = ? AND scenario = ? USING TTL ?
+            UPDATE verification_codes
+            USING TTL ?
+            SET attempts = ?
+            WHERE identifier = ? AND scenario = ?
+        """);
+
+        _selectByIdentifierAndScenario = session.Prepare("""
+            SELECT *
+            FROM verification_codes
+            WHERE identifier = ? AND scenario = ?
+        """);
+
+        _removeByIdentifierAndScenario = session.Prepare("""
+            DELETE FROM verification_codes
+            WHERE identifier = ? AND scenario = ?
         """);
     }
 
@@ -30,19 +47,30 @@ internal class VerificationCodeQueries
     {
         return _insert.Bind(
             entity.Identifier,
-            entity.Scenario.ToString(),
+            (int)entity.Scenario,
             entity.CodeHash,
             entity.Timestamp,
             entity.ExpiresTimestamp,
+            entity.Attempts,
             entity.TTL);
     }
 
     public BoundStatement UpdateAttempts(VerificationCode entity)
     {
         return _updateAttempts.Bind(
+            entity.TTL,
             entity.Attempts,
             entity.Identifier,
-            entity.Scenario.ToString(),
-            entity.TTL);
+            (int)entity.Scenario);
+    }
+
+    public BoundStatement SelectByIdentifierAndScenario(string identifier, VerificationCodeScenario scenario)
+    {
+        return _selectByIdentifierAndScenario.Bind(identifier, (int)scenario);
+    }
+
+    public BoundStatement DeleteByIdentifierAndScenario(string identifier, VerificationCodeScenario scenario)
+    {
+        return _removeByIdentifierAndScenario.Bind(identifier, (int)scenario);
     }
 }

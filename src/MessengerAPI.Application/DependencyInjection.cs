@@ -6,6 +6,7 @@ using MessengerAPI.Application.Common;
 using MessengerAPI.Application.Common.Behaviors;
 using MessengerAPI.Application.Common.Captcha;
 using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Application.Users.Common;
 using MessengerAPI.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,7 @@ public static class DependencyInjection
 
         services.AddCaptchaService(config);
         services.AddAuthServices(config);
+        services.AddUserServices();
         services.AddChannelServices();
 
         services.Configure<SmtpOptions>(config.GetSection(nameof(SmtpOptions)));
@@ -65,6 +67,14 @@ public static class DependencyInjection
     public static IServiceCollection AddChannelServices(this IServiceCollection services)
     {
         services.AddScoped<AttachmentService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddUserServices(this IServiceCollection services)
+    {
+        services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+        services.AddScoped<VerificationCodeService>();
 
         return services;
     }
