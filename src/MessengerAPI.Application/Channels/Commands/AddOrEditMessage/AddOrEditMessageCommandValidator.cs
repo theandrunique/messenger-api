@@ -3,9 +3,9 @@ using MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrUpdateMessage;
 
-public class AddOrUpdateMessageCommandValidator : AbstractValidator<AddOrEditMessageCommand>
+public class AddOrEditMessageCommandValidator : AbstractValidator<AddOrEditMessageCommand>
 {
-    public AddOrUpdateMessageCommandValidator()
+    public AddOrEditMessageCommandValidator()
     {
         RuleFor(x => x.Content)
             .NotEmpty()

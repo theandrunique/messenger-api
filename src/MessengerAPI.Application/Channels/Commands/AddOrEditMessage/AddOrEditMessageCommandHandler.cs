@@ -59,25 +59,25 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         }
 
         List<Attachment>? attachments = null;
-
         if (request.Attachments?.Count > 0)
         {
-            attachments = new();
+            var attachmentTasks = request.Attachments.Select(f =>
+                _attachmentService.ValidateAndCreateAttachmentAsync(
+                    f.UploadedFilename,
+                    f.Filename,
+                    cancellationToken))
+                .ToList();
+            
+            var attachmentResults = await Task.WhenAll(attachmentTasks);
 
-            foreach (var fileData in request.Attachments)
+            foreach (var result in attachmentResults)
             {
-                var attachment = await _attachmentService.ValidateAndCreateAttachmentAsync(
-                    fileData.UploadedFilename,
-                    fileData.Filename,
-                    cancellationToken);
-
-                if (attachment.IsError)
+                if (result.IsError)
                 {
-                    return attachment.Error;
+                    return result.Error;
                 }
-
-                attachments.Add(attachment.Value);
             }
+            attachments = attachmentResults.Select(r => r.Value).ToList();
         }
 
         Message? message;
