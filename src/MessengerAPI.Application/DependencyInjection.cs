@@ -68,7 +68,7 @@ public static class DependencyInjection
     public static IServiceCollection AddChannelServices(this IServiceCollection services, ConfigurationManager config)
     {
         services.AddScoped<AttachmentService>();
-        services.Configure<AttachmentsOptions>(config.GetSection(nameof(AttachmentsOptions)));
+        services.Configure<AttachmentOptions>(config.GetSection(nameof(AttachmentOptions)));
 
         return services;
     }

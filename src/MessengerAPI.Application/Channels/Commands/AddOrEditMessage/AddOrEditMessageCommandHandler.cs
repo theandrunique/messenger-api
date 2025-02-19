@@ -66,7 +66,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
 
             foreach (var fileData in request.Attachments)
             {
-                var attachment = await _attachmentService.ValidateAndCreateAttachmentsAsync(
+                var attachment = await _attachmentService.ValidateAndCreateAttachmentAsync(
                     fileData.UploadedFilename,
                     fileData.Filename,
                     cancellationToken);
@@ -96,6 +96,8 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
             }
 
             message.Edit(request.Content, attachments);
+            await _messageRepository.UpsertAsync(message);
+            await _publisher.Publish(new MessageUpdateDomainEvent(channel, message, initiator));
         }
         else
         {
@@ -105,15 +107,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
                 initiator,
                 request.Content,
                 attachments);
-        }
-        await _messageRepository.UpsertAsync(message);
-
-        if (request.MessageId.HasValue)
-        {
-            await _publisher.Publish(new MessageUpdateDomainEvent(channel, message, initiator));
-        }
-        else
-        {
+            await _messageRepository.UpsertAsync(message);
             await _publisher.Publish(new MessageCreateDomainEvent(channel, message, initiator));
         }
 

@@ -11,9 +11,11 @@ public class AttachmentService
 {
     private readonly IS3Service _s3Service;
     private readonly IIdGenerator _idGenerator;
-    private readonly AttachmentsOptions _options;
+    private readonly AttachmentOptions _options;
+    private static readonly Regex _uploadFilenameRegex =
+        new Regex(@"^attachments/(?<channelId>\d+)/(?<attachmentId>\d+)/(?<filename>.+)$", RegexOptions.Compiled);
 
-    public AttachmentService(IS3Service s3Service, IIdGenerator idGenerator, IOptions<AttachmentsOptions> options)
+    public AttachmentService(IS3Service s3Service, IIdGenerator idGenerator, IOptions<AttachmentOptions> options)
     {
         _s3Service = s3Service;
         _idGenerator = idGenerator;
@@ -33,7 +35,7 @@ public class AttachmentService
         return new UploadUrlDto(uploadFilename, preSignedUrl);
     }
 
-    public async Task<ErrorOr<Attachment>> ValidateAndCreateAttachmentsAsync(
+    public async Task<ErrorOr<Attachment>> ValidateAndCreateAttachmentAsync(
         string uploadedFilename,
         string filename,
         CancellationToken cancellationToken = default)
@@ -88,18 +90,19 @@ public class AttachmentService
 
     private (long ChannelId, long AttachmentId, string Filename)? ParseUploadedFilename(string uploadedFilename)
     {
-        var regex = new Regex(@"attachments\/(?<channelId>\d+)\/(?<attachmentId>\d+)\/(?<filename>.+)");
-        var match = regex.Match(uploadedFilename);
+        var match = _uploadFilenameRegex.Match(uploadedFilename);
         if (!match.Success)
         {
             return null;
         }
 
-        var channelId = long.Parse(match.Groups["channelId"].Value);
-        var attachmentId = long.Parse(match.Groups["attachmentId"].Value);
-        var filename = match.Groups["filename"].Value;
+        if (!long.TryParse(match.Groups["channelId"].Value, out var channelId) ||
+            !long.TryParse(match.Groups["attachmentId"].Value, out var attachmentId))
+        {
+            return null;
+        }
 
+        var filename = match.Groups["filename"].Value;
         return (channelId, attachmentId, filename);
     }
 }
-
