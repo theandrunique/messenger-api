@@ -35,9 +35,11 @@ services:
       - scylla
 
   gateway:
-    image: theandru/messenger-api-gateway:latest
+    image: theandru/messenger-api-gateway:v0.3.0
     ports:
       - 3000:3000
     environment:
+      - PORT=3000
+      - EVENT_BATCH_SIZE=100
       - REDIS_URL=redis://redis:6379
       - JWKS_URL=http://app:8000/.well-known/jwks.json
