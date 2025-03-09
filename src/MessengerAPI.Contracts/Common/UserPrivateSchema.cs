@@ -8,14 +8,14 @@ namespace MessengerAPI.Contracts.Common;
 public record UserPrivateSchema : UserPublicSchema
 {
     public string TerminateSessions { get; init; } = null!;
-    public bool TwoFactorAuthentication { get; init; }
+    public bool Mfa { get; init; }
     public string Email { get; init; } = null!;
     public bool IsEmailVerified { get; init; }
 
     private UserPrivateSchema(User user) : base(user)
     {
         TerminateSessions = user.TerminateSessions.ToString();
-        TwoFactorAuthentication = user.TwoFactorAuthentication;
+        Mfa = user.TwoFactorAuthentication;
         Email = user.Email;
         IsEmailVerified = user.IsEmailVerified;
     }
