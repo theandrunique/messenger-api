@@ -35,7 +35,7 @@ services:
       - scylla
 
   gateway:
-    image: theandru/messenger-api-gateway:v0.3.0
+    image: theandru/messenger-api-gateway:v0.4.0
     ports:
       - 3000:3000
     environment:
@@ -43,3 +43,9 @@ services:
       - EVENT_BATCH_SIZE=100
       - REDIS_URL=redis://redis:6379
       - JWKS_URL=http://app:8000/.well-known/jwks.json
+      - CORS_ORIGIN=http://localhost:5173
+      - CORS_METHODS=GET, POST
+      - CORS_ALLOWED_HEADERS=Authorization
+      - CORS_CREDENTIALS=true
+
+      
