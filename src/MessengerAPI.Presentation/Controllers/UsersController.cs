@@ -6,7 +6,9 @@ using MessengerAPI.Application.Channels.Commands.GetOrCreatePrivateChannel;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessagesPrivateChannel;
 using MessengerAPI.Application.Users.Commands;
+using MessengerAPI.Application.Users.Commands.RemoveAvatar;
 using MessengerAPI.Application.Users.Commands.RequestVerifyEmailCode;
+using MessengerAPI.Application.Users.Commands.UpdateAvatar;
 using MessengerAPI.Application.Users.Commands.VerifyEmail;
 using MessengerAPI.Application.Users.Queries.GetMeQuery;
 using MessengerAPI.Application.Users.Queries.GetUserById;
@@ -16,6 +18,7 @@ using MessengerAPI.Presentation.Schemas.Auth;
 using MessengerAPI.Presentation.Schemas.Channels;
 using MessengerAPI.Presentation.Schemas.Users;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -45,6 +48,24 @@ public class UsersController : ApiController
         var query = new GetMeQuery();
         var result = await _mediator.Send(query, cancellationToken);
         return result.Match(onValue: Ok, onError: Problem);
+    }
+
+    [HttpPut("@me/avatar")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateAvatarAsync(IFormFile file, CancellationToken cancellationToken)
+    {
+        var command = new UpdateAvatarCommand(file);
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.Match(onValue: _ => NoContent(), onError: Problem);
+    }
+
+    [HttpDelete("@me/avatar")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteAvatarAsync(CancellationToken cancellationToken)
+    {
+        var command = new RemoveAvatarCommand();
+        var _ = await _mediator.Send(command, cancellationToken);
+        return NoContent();
     }
 
     [HttpPost("@me/email/request-verify-code")]

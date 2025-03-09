@@ -87,4 +87,11 @@ public class User
     }
 
     public void SetNewPassword(string passwordHash) => PasswordHash = passwordHash;
+
+    public void UpdateAvatar(string key)
+    {
+        Image = new Image { Key = key };
+    }
+
+    public void RemoveAvatar() => Image = null;
 }

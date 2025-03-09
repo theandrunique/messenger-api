@@ -1,4 +1,5 @@
 using Cassandra;
+using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Data.Queries;
@@ -11,7 +12,9 @@ internal class ChannelUserQueries
     private readonly PreparedStatement _selectByChannelIds;
     private readonly PreparedStatement _selectByUserId;
     private readonly PreparedStatement _selectByChannelIdAndUserIds;
+    private readonly PreparedStatement _selectChannelIdsByUserId;
     private readonly PreparedStatement _updateReadAt;
+    private readonly PreparedStatement _updateUserInfo;
 
     public ChannelUserQueries(ISession session)
     {
@@ -37,7 +40,11 @@ internal class ChannelUserQueries
 
         _selectByChannelIdAndUserIds = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channelid = ? AND userid IN ?");
 
+        _selectChannelIdsByUserId = session.Prepare("SELECT channelid FROM channel_users_by_user_id WHERE userid = ?");
+
         _updateReadAt = session.Prepare("UPDATE channel_users_by_user_id SET readat = ? WHERE userid = ? AND channelid = ?");
+
+        _updateUserInfo = session.Prepare("UPDATE channel_users_by_user_id SET globalname = ?, image = ? WHERE userid = ? AND channelid IN ?");
     }
 
     public BoundStatement Insert(long channelId, ChannelMemberInfo member)
@@ -77,8 +84,18 @@ internal class ChannelUserQueries
         return _selectByChannelIdAndUserIds.Bind(channelId, userIds);
     }
 
+    public BoundStatement SelectChannelIdsByUserId(long userId)
+    {
+        return _selectChannelIdsByUserId.Bind(userId);
+    }
+
     public BoundStatement UpdateReadAt(long userId, long channelId, long readAt)
     {
         return _updateReadAt.Bind(readAt, userId, channelId);
+    }
+
+    public BoundStatement UpdateUserInfo(User user, IEnumerable<long> channelIds)
+    {
+        return _updateUserInfo.Bind(user.GlobalName, user.Image, user.Id, channelIds);
     }
 }

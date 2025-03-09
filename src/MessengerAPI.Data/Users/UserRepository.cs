@@ -10,11 +10,13 @@ internal class UserRepository : IUserRepository
 {
     private readonly ISession _session;
     private readonly UserQueries _users;
+    private readonly ChannelUserQueries _channelUsers;
 
-    public UserRepository(ISession session, UserQueries users)
+    public UserRepository(ISession session, UserQueries users, ChannelUserQueries channelUsers)
     {
         _session = session;
         _users = users;
+        _channelUsers = channelUsers;
     }
 
     public Task AddAsync(User user)
@@ -66,6 +68,16 @@ internal class UserRepository : IUserRepository
     public Task UpdateMfaStatusAsync(User user)
     {
         return _session.ExecuteAsync(_users.UpdateMfaStatus(user));
+    }
+
+    public async Task UpdateAvatarAsync(User user)
+    {
+        await _session.ExecuteAsync(_users.UpdateAvatar(user.Id, user.Image));
+
+        var channelIds = (await _session.ExecuteAsync(_channelUsers.SelectChannelIdsByUserId(user.Id)))
+            .Select(row => row.GetValue<long>("channelid"));
+        
+        await _session.ExecuteAsync(_channelUsers.UpdateUserInfo(user, channelIds));
     }
 
     private User? MapOrDefault(Row? row)

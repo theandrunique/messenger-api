@@ -16,4 +16,5 @@ public interface IUserRepository
         bool isEmailVerified);
     Task SetEmailVerifiedAsync(long userId);
     Task UpdateMfaStatusAsync(User user);
+    Task UpdateAvatarAsync(User user);
 }

@@ -28,4 +28,9 @@ public static class MessengerConstants
         public const string KeyIdHeaderName = "kid";
         public const string SessionCookieName = "SessionId";
     }
+
+    public static class Images
+    {
+        public const long MaxSize = 10 * 1024 * 1024;
+    }
 }

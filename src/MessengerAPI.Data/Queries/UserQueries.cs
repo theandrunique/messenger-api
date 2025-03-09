@@ -1,5 +1,6 @@
 using Cassandra;
 using MessengerAPI.Domain.Entities;
+using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Data.Queries;
 
@@ -13,6 +14,7 @@ internal class UserQueries
     private readonly PreparedStatement _updateEmailInfo;
     private readonly PreparedStatement _updateMfaStatusKey;
     private readonly PreparedStatement _updateEmailVerified;
+    private readonly PreparedStatement _updateAvatar;
 
     public UserQueries(ISession session)
     {
@@ -49,6 +51,8 @@ internal class UserQueries
         _updateMfaStatusKey = session.Prepare("UPDATE users SET totpkey = ?, twofactorauthentication = ? WHERE id = ?");
 
         _updateEmailVerified = session.Prepare("UPDATE users SET isemailverified = ? WHERE id = ?");
+
+        _updateAvatar = session.Prepare("UPDATE users SET image = ? WHERE id = ?");
     }
 
     public BoundStatement Insert(User user)
@@ -109,5 +113,10 @@ internal class UserQueries
     public BoundStatement UpdateMfaStatus(User user)
     {
         return _updateMfaStatusKey.Bind(user.TOTPKey, user.TwoFactorAuthentication, user.Id);
+    }
+
+    public BoundStatement UpdateAvatar(long userId, Image? image)
+    {
+        return _updateAvatar.Bind(image, userId);
     }
 }

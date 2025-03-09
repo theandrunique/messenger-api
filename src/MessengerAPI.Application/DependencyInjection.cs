@@ -31,7 +31,7 @@ public static class DependencyInjection
 
         services.AddCaptchaService(config);
         services.AddAuthServices(config);
-        services.AddUserServices();
+        services.AddUserServices(config);
         services.AddChannelServices(config);
 
         services.Configure<SmtpOptions>(config.GetSection(nameof(SmtpOptions)));
@@ -73,10 +73,12 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddUserServices(this IServiceCollection services)
+    public static IServiceCollection AddUserServices(this IServiceCollection services, ConfigurationManager config)
     {
         services.AddScoped<IEmailTemplateService, EmailTemplateService>();
         services.AddScoped<VerificationCodeService>();
+        services.AddScoped<AvatarService>();
+        services.Configure<AvatarServiceOptions>(config.GetSection(nameof(AvatarServiceOptions)));
 
         return services;
     }

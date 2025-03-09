@@ -29,6 +29,8 @@ public static class DependencyInjection
         services.AddS3Services(config);
         services.AddRedis(config);
 
+        services.AddScoped<IImageProcessor, ImageProcessor>();
+
         return services;
     }
 

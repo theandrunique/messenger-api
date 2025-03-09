@@ -11,7 +11,7 @@ public record UserPublicSchema
     public string Username { get; init; }
     public string GlobalName { get; init; }
     public string? Bio { get; init; }
-    public string? Image { get; init; }
+    public string? Avatar { get; init; }
     public DateTimeOffset Timestamp { get; init; }
 
     protected UserPublicSchema(User user)
@@ -20,7 +20,7 @@ public record UserPublicSchema
         Username = user.Username;
         GlobalName = user.GlobalName;
         Bio = user.Bio;
-        Image = user.Image?.Key;
+        Avatar = user.Image?.Key;
         Timestamp = user.Timestamp;
     }
 
