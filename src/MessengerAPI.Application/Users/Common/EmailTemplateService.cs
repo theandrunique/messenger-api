@@ -4,16 +4,29 @@ namespace MessengerAPI.Application.Users.Common;
 
 public class EmailTemplateService : IEmailTemplateService
 {
-    private const string _message = """
+    public string GenerateEmailMfaEnableCode(User user, string code)
+    {
+        const string message = """
         Hello {0} ({1}),
 
-        You requested to verify your email.
+        You requested to enable two-factor authentication.
 
-        Use this code to verify: {2}
-    """;
+        Use this code to verify your action: {2}
+        """;
+
+        return string.Format(message, user.Username, user.GlobalName, code);
+    }
 
     public string GenerateEmailVerificationMessage(User user, string code)
     {
-        return string.Format(_message, user.Username, user.GlobalName, code);
+        const string message = """
+            Hello {0} ({1}),
+
+            You requested to verify your email.
+
+            Use this code to verify: {2}
+        """;
+
+        return string.Format(message, user.Username, user.GlobalName, code);
     }
 }

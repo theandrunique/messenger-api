@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using MessengerAPI.Application.Common.Interfaces.S3;
 using MessengerAPI.Core;
+using MessengerAPI.Data.Channels;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
 using Microsoft.Extensions.Options;
@@ -12,13 +13,19 @@ public class AttachmentService
     private readonly IS3Service _s3Service;
     private readonly IIdGenerator _idGenerator;
     private readonly AttachmentOptions _options;
+    private readonly IAttachmentRepository _attachmentRepository;
     private static readonly Regex _uploadFilenameRegex =
         new Regex(@"^attachments/(?<channelId>\d+)/(?<attachmentId>\d+)/(?<filename>.+)$", RegexOptions.Compiled);
 
-    public AttachmentService(IS3Service s3Service, IIdGenerator idGenerator, IOptions<AttachmentOptions> options)
+    public AttachmentService(
+        IS3Service s3Service,
+        IIdGenerator idGenerator,
+        IAttachmentRepository attachmentRepository,
+        IOptions<AttachmentOptions> options)
     {
         _s3Service = s3Service;
         _idGenerator = idGenerator;
+        _attachmentRepository = attachmentRepository;
         _options = options.Value;
     }
 
@@ -75,13 +82,26 @@ public class AttachmentService
             expires);
     }
 
-    public Task DeleteAttachmentAsync(
+    public Task DeleteObjectAsync(
         string uploadedFilename,
         CancellationToken cancellationToken = default)
         => _s3Service.DeleteObjectAsync(uploadedFilename, _options.Bucket, cancellationToken);
 
-    public Task<bool> IsAttachmentsExistsAsync(string uploadedFilename, CancellationToken cancellationToken = default)
+    public Task<bool> IsObjectExistsAsync(string uploadedFilename, CancellationToken cancellationToken = default)
         => _s3Service.IsObjectExistsAsync(uploadedFilename, _options.Bucket, cancellationToken);
+
+    public async Task<Attachment?> FindAttachmentByUploadFilename(string uploadFilename)
+    {
+        var parsedUploadFilename = ParseUploadedFilename(uploadFilename);
+        if (parsedUploadFilename == null)
+        {
+            throw new ArgumentException($"Invalid uploadFilename: {uploadFilename}");
+        }
+
+        return await _attachmentRepository.GetAttachmentAsync(
+            parsedUploadFilename.Value.ChannelId,
+            parsedUploadFilename.Value.AttachmentId);
+    }
 
     private string GenerateUploadFilename(string filename, long channelId, long attachmentId)
     {

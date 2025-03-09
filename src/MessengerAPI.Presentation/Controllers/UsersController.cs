@@ -1,3 +1,4 @@
+using Amazon.Runtime.CredentialManagement;
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
 using MessengerAPI.Application.Channels.Commands.AddOrEditMessagePrivateChannel;
@@ -13,6 +14,7 @@ using MessengerAPI.Contracts.Common;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Presentation.Schemas.Auth;
 using MessengerAPI.Presentation.Schemas.Channels;
+using MessengerAPI.Presentation.Schemas.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessengerAPI.Presentation.Controllers;
@@ -66,11 +68,13 @@ public class UsersController : ApiController
     }
 
     [HttpPost("@me/mfa/totp/enable")]
-    public async Task<IActionResult> EnableMfaTotpAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> EnableMfaTotpAsync(
+        MfaTotpEnableRequestSchema schema,
+        CancellationToken cancellationToken)
     {
-        var command = new MfaTotpEnableCommand();
+        var command = new MfaTotpEnableCommand(schema.password, schema.emailCode);
         var result = await _mediator.Send(command, cancellationToken);
-        return result.Match(onValue: _ => NoContent(), onError: Problem);
+        return result.Match(onValue: Ok, onError: Problem);
     }
 
     [HttpGet("@me/channels")]

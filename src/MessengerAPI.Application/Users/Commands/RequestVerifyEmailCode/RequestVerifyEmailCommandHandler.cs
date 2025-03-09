@@ -41,7 +41,7 @@ public class RequestVerifyEmailCommandHandler : IRequestHandler<RequestVerifyEma
             return ApiErrors.User.EmailAlreadyVerified(user.Id);
         }
 
-        var (otp, verificationCode) = await _verificationCodeService.CreateAsync(
+        var (otp, _) = await _verificationCodeService.CreateAsync(
             _clientInfo.UserId,
             VerificationCodeScenario.VERIFY_EMAIL,
             TimeSpan.FromHours(1));

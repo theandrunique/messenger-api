@@ -17,7 +17,9 @@ public class AttachmentsController : ApiController
     [HttpDelete("{uploadFilename}")]
     public async Task<IActionResult> DeleteAttachmentAsync(string uploadFilename, CancellationToken token)
     {
-        var command = new DeleteAttachmentCommand(uploadFilename);
+        var decodedUploadFilename = Uri.UnescapeDataString(uploadFilename);
+
+        var command = new DeleteAttachmentCommand(decodedUploadFilename);
         var result = await _mediator.Send(command, token);
         return result.Match(onValue: _ => NoContent(), onError: Problem);
     }

@@ -7,4 +7,4 @@ namespace MessengerAPI.Application.Auth.Commands.Login;
 public record LoginCommand(
     string Login,
     string Password,
-    string CaptchaToken) : IRequest<ErrorOr<TokenPairResponse>>;
+    string? Totp) : IRequest<ErrorOr<TokenPairResponse>>;

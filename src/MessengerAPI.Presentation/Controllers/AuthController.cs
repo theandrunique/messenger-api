@@ -43,7 +43,7 @@ public class AuthController : ApiController
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignInAsync([FromForm] SignInRequestSchema schema, CancellationToken cancellationToken)
     {
-        var command = new LoginCommand(schema.login, schema.password, schema.captchaToken);
+        var command = new LoginCommand(schema.login, schema.password, schema.totp);
         var loginResult = await _mediator.Send(command, cancellationToken);
 
         return loginResult.Match(

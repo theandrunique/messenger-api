@@ -17,6 +17,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
     private readonly IClientInfoProvider _clientInfo;
     private readonly AuthService _authService;
     private readonly IIdGenerator _idGenerator;
+    private readonly ITotpHelper _totpHelper;
 
     public LoginCommandHandler(
         IHashHelper hashHelper,
@@ -24,7 +25,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         ISessionRepository sessionRepository,
         IClientInfoProvider clientInfoProvider,
         AuthService authService,
-        IIdGenerator idGenerator)
+        IIdGenerator idGenerator,
+        ITotpHelper totpHelper)
     {
         _hashHelper = hashHelper;
         _userRepository = userRepository;
@@ -32,6 +34,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         _authService = authService;
         _sessionRepository = sessionRepository;
         _idGenerator = idGenerator;
+        _totpHelper = totpHelper;
     }
 
     public async Task<ErrorOr<TokenPairResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -50,6 +53,24 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         if (!_hashHelper.Verify(user.PasswordHash, request.Password))
         {
             return ApiErrors.Auth.InvalidCredentials;
+        }
+
+        if (user.TwoFactorAuthentication && request.Totp is null)
+        {
+            return ApiErrors.Auth.TotpRequired;
+        }
+
+        if (user.TOTPKey is null)
+        {
+            throw new Exception("TOTP was expected to be set.");
+        }
+
+        if (user.TwoFactorAuthentication)
+        {
+            if (!_totpHelper.Verify(request.Totp, user.TOTPKey, 30, 6))
+            {
+                return ApiErrors.Auth.InvalidTotp;
+            }
         }
 
         var session = new Session(

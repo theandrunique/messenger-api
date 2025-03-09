@@ -15,5 +15,5 @@ public interface IUserRepository
         DateTimeOffset emailUpdatedTimestamp,
         bool isEmailVerified);
     Task SetEmailVerifiedAsync(long userId);
-    Task UpdateTOTPKeyAsync(User user);
+    Task UpdateMfaStatusAsync(User user);
 }

@@ -7,6 +7,7 @@ internal class AttachmentQueries
 {
     private readonly PreparedStatement _insert;
     private readonly PreparedStatement _selectByChannelIdAndMessageIds;
+    private readonly PreparedStatement _selectByChannelIdAndId;
     private readonly PreparedStatement _removeByChannelIdAndMessageId;
 
     public AttachmentQueries(ISession session)
@@ -29,6 +30,8 @@ internal class AttachmentQueries
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """);
         _selectByChannelIdAndMessageIds = session.Prepare("SELECT * FROM attachments WHERE channelid = ? AND messageid IN ?");
+
+        _selectByChannelIdAndId = session.Prepare("SELECT * FROM attachments WHERE channelid = ? AND id = ?");
 
         _removeByChannelIdAndMessageId = session.Prepare("DELETE FROM attachments WHERE channelid = ? AND messageid = ?");
     }
@@ -55,6 +58,11 @@ internal class AttachmentQueries
             attachment.UploadFilename,
             attachment.Waveform
         );
+    }
+
+    public BoundStatement SelectByChannelIdAndId(long channelId, long attachmentId)
+    {
+        return _selectByChannelIdAndId.Bind(channelId, attachmentId);
     }
 
     public BoundStatement SelectByChannelIdInMessageIds(long channelId, IEnumerable<long> messageIds)

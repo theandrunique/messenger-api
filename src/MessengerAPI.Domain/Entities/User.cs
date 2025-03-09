@@ -14,7 +14,7 @@ public class User
     public string GlobalName { get; private set; }
     public bool IsActive { get; private set; }
     public DateTimeOffset Timestamp { get; private set; }
-    public byte[] TOTPKey { get; private set; }
+    public byte[]? TOTPKey { get; private set; }
     public bool TwoFactorAuthentication { get; private set; }
     public string Email { get; private set; }
     public bool IsEmailVerified { get; private set; }
@@ -26,8 +26,7 @@ public class User
         string username,
         string email,
         string passwordHash,
-        string globalName,
-        byte[] totpkey)
+        string globalName)
     {
         var timestamp = DateTimeOffset.UtcNow;
 
@@ -43,7 +42,6 @@ public class User
         TwoFactorAuthentication = false;
         Email = email.ToLower();
         EmailUpdatedTimestamp = timestamp;
-        TOTPKey = totpkey;
     }
 
     public User(
@@ -82,6 +80,11 @@ public class User
         Image = image;
     }
 
-    public void SetTOTPKey(byte[] totpkey) => TOTPKey = totpkey;
+    public void SetUp2FA(byte[] totpkey)
+    {
+        TOTPKey = totpkey;
+        TwoFactorAuthentication = true;
+    }
+
     public void SetNewPassword(string passwordHash) => PasswordHash = passwordHash;
 }

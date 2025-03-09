@@ -63,9 +63,9 @@ internal class UserRepository : IUserRepository
         return _session.ExecuteAsync(_users.UpdateEmailVerified(userId, true));
     }
 
-    public Task UpdateTOTPKeyAsync(User user)
+    public Task UpdateMfaStatusAsync(User user)
     {
-        return _session.ExecuteAsync(_users.UpdateTOTPKey(user));
+        return _session.ExecuteAsync(_users.UpdateMfaStatus(user));
     }
 
     private User? MapOrDefault(Row? row)

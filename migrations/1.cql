@@ -42,6 +42,8 @@ CREATE TABLE messenger.attachments (
     PRIMARY KEY (channelid, messageid, id)
 );
 
+CREATE INDEX ON messenger.attachments((channelid), id);
+
 CREATE TABLE messenger.channel_users_by_user_id (
     userid bigint,
     channelid bigint,

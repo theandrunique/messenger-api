@@ -8,11 +8,17 @@ public static partial class ApiErrors
             => new BaseApiError(ErrorCode.ATTACHMENT_NOT_FOUND, $"Attachment '{attachmentId}' not found");
 
         public static BaseApiError NotFoundInObjectStorage(string uploadedFilename)
-            => new BaseApiError(ErrorCode.ATTACHMENT_NOT_FOUND_IN_OBJECT_STORAGE, $"Attachment '{uploadedFilename}' not found in object storage");
+            => new BaseApiError(ErrorCode.ATTACHMENT_OBJECT_NOT_FOUND, $"Attachment '{uploadedFilename}' not found in object storage");
 
         public static BaseApiError InvalidUploadFilename(string uploadFilename)
             => new BaseApiError(
-                ErrorCode.INVALID_UPLOAD_FILENAME,
+                ErrorCode.ATTACHMENT_INVALID_UPLOAD_FILENAME,
                 $"Invalid upload filename format: '{uploadFilename}' (expected format: 'attachments/{{channelId}}/{{attachmentId}}/{{filename}}')");
+
+        public static BaseApiError ObjectInUse(string uploadFilename, long attachmentId)
+            => new BaseApiError(
+                ErrorCode.ATTACHMENT_OBJECT_IN_USE,
+                $"Object '{uploadFilename}' is in use by attachment '{attachmentId}'"
+            );
     }
 }

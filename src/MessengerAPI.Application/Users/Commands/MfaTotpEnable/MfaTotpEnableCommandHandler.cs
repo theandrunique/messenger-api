@@ -1,0 +1,101 @@
+using MediatR;
+using MessengerAPI.Application.Auth.Common.Interfaces;
+using MessengerAPI.Application.Common.Interfaces;
+using MessengerAPI.Application.Users.Common;
+using MessengerAPI.Data.Users;
+using MessengerAPI.Domain.ValueObjects;
+using MessengerAPI.Errors;
+
+namespace MessengerAPI.Application.Users.Commands.MfaTotpEnable;
+
+public class MfaTotpEnableCommandHandler : IRequestHandler<MfaTotpEnableCommand, ErrorOr<MfaTotpEnableCommandResult>>
+{
+    private readonly ITotpHelper _totpHelper;
+    private readonly IUserRepository _userRepository;
+    private readonly IClientInfoProvider _clientInfo;
+    private readonly IHashHelper _hashHelper;
+    private readonly VerificationCodeService _verificationCodeService;
+    private readonly IEmailTemplateService _emailTemplateService;
+    private readonly ISmtpClient _smtpClient;
+
+    public MfaTotpEnableCommandHandler(
+        ITotpHelper totpHelper,
+        IUserRepository userRepository,
+        IClientInfoProvider clientInfo,
+        IHashHelper hashHelper,
+        VerificationCodeService verificationCodeService,
+        IEmailTemplateService emailTemplateService,
+        ISmtpClient smtpClient)
+    {
+        _totpHelper = totpHelper;
+        _userRepository = userRepository;
+        _clientInfo = clientInfo;
+        _hashHelper = hashHelper;
+        _verificationCodeService = verificationCodeService;
+        _emailTemplateService = emailTemplateService;
+        _smtpClient = smtpClient;
+    }
+
+    public async Task<ErrorOr<MfaTotpEnableCommandResult>> Handle(MfaTotpEnableCommand request, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetByIdOrNullAsync(_clientInfo.UserId);
+        if (user is null)
+        {
+            throw new Exception("User was expected to be found here.");
+        }
+
+        if (!user.IsEmailVerified)
+        {
+            return ApiErrors.Auth.EmailVerificationRequired;
+        }
+
+        if (!_hashHelper.Verify(user.PasswordHash, request.Password))
+        {
+            return ApiErrors.Auth.InvalidCredentials;
+        }
+
+        if (user.TwoFactorAuthentication)
+        {
+            return ApiErrors.Auth.MfaAlreadyEnabled;
+        }
+
+        if (request.EmailCode == null)
+        {
+            var (otp, _) = await _verificationCodeService.CreateAsync(
+                userId: user.Id,
+                scenario: VerificationCodeScenario.MFA_ENABLE,
+                timeToExpire: TimeSpan.FromHours(1));
+
+            await _smtpClient.SendEmailAsync(
+                user.Email,
+                "MFA Enable Code",
+                _emailTemplateService.GenerateEmailMfaEnableCode(user, otp));
+
+            return ApiErrors.Auth.EmailCodeRequired;
+        }
+
+        if (!await _verificationCodeService.VerifyAsync(
+            request.EmailCode,
+            user.Id,
+            VerificationCodeScenario.MFA_ENABLE))
+        {
+            return ApiErrors.Auth.InvalidEmailCode;
+        }
+
+        user.SetUp2FA(_totpHelper.GenerateSecretKey(20));
+
+        if (user.TOTPKey == null)
+        {
+            throw new Exception("TOTPKey was expected to be set here.");
+        }
+
+        var otpAuthUrl = _totpHelper.CreateOtpAuthUrl(
+            secretKey: user.TOTPKey,
+            issuer: "Messenger",
+            accountName: user.Username);
+
+        await _userRepository.UpdateMfaStatusAsync(user);
+
+        return new MfaTotpEnableCommandResult(otpAuthUrl);
+    }
+}

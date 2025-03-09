@@ -1,3 +1,4 @@
+using System.IO.Pipelines;
 using System.Security.Cryptography;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Data.VerificationCodes;
@@ -63,11 +64,21 @@ public class VerificationCodeService
         return true;
     }
 
+    public async Task<VerificationCode?> GetExistedVerificationCodeAsync(
+        long userId,
+        VerificationCodeScenario scenario)
+    {
+        return await _verificationCodeRepository.GetByIdentifierOrNullAsync(
+            identifier: GetCodeIdentifier(userId, scenario),
+            scenario: scenario);
+    }
+
     private string GetCodeIdentifier(long userId, VerificationCodeScenario scenario)
     {
         return scenario switch
         {
             VerificationCodeScenario.VERIFY_EMAIL => $"email-{userId}",
+            VerificationCodeScenario.MFA_ENABLE => $"mfa-enable-{userId}",
             _ => $"code-{userId}"
         };
     }

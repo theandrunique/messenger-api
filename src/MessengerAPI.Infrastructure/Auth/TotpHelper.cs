@@ -11,13 +11,6 @@ public class TotpHelper : ITotpHelper
         return KeyGeneration.GenerateRandomKey(length);
     }
 
-    public string GenerateTotp(byte[] secretKey, int step, int totpSize)
-    {
-        var totp = new Totp(secretKey, step, OtpHashMode.Sha1, totpSize);
-
-        return totp.ComputeTotp(DateTime.UtcNow);
-    }
-
     public bool Verify(string totp, byte[] secretKey, int step, int totpSize)
     {
         var totpL = new Totp(secretKey, step, OtpHashMode.Sha1, totpSize);

@@ -13,18 +13,15 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
 {
     private readonly IUserRepository _userRepository;
     private readonly IHashHelper _hashHelper;
-    private readonly ITotpHelper _totpHelper;
     private readonly IIdGenerator _idGenerator;
 
     public RegisterCommandHandler(
         IUserRepository userRepository,
         IHashHelper hashHelper,
-        ITotpHelper totpHelper,
         IIdGenerator idGenerator)
     {
         _userRepository = userRepository;
         _hashHelper = hashHelper;
-        _totpHelper = totpHelper;
         _idGenerator = idGenerator;
     }
 
@@ -35,8 +32,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
             request.Username,
             request.Email,
             _hashHelper.Hash(request.Password),
-            request.GlobalName,
-            _totpHelper.GenerateSecretKey(20));
+            request.GlobalName);
 
         await _userRepository.AddAsync(newUser);
 

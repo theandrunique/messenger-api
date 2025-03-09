@@ -11,7 +11,7 @@ internal class UserQueries
     private readonly PreparedStatement _selectByEmail;
     private readonly PreparedStatement _selectByUsername;
     private readonly PreparedStatement _updateEmailInfo;
-    private readonly PreparedStatement _updateTOTPKey;
+    private readonly PreparedStatement _updateMfaStatusKey;
     private readonly PreparedStatement _updateEmailVerified;
 
     public UserQueries(ISession session)
@@ -46,7 +46,7 @@ internal class UserQueries
 
         _updateEmailInfo = session.Prepare("UPDATE users SET email = ?, emailupdatedtimestamp = ?, isemailverified = ? WHERE id = ?");
 
-        _updateTOTPKey = session.Prepare("UPDATE users SET totpkey = ? WHERE id = ?");
+        _updateMfaStatusKey = session.Prepare("UPDATE users SET totpkey = ?, twofactorauthentication = ? WHERE id = ?");
 
         _updateEmailVerified = session.Prepare("UPDATE users SET isemailverified = ? WHERE id = ?");
     }
@@ -106,8 +106,8 @@ internal class UserQueries
         return _updateEmailVerified.Bind(status, userId);
     }
 
-    public BoundStatement UpdateTOTPKey(User user)
+    public BoundStatement UpdateMfaStatus(User user)
     {
-        return _updateTOTPKey.Bind(user.TOTPKey, user.Id);
+        return _updateMfaStatusKey.Bind(user.TOTPKey, user.TwoFactorAuthentication, user.Id);
     }
 }
