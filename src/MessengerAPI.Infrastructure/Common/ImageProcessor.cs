@@ -21,14 +21,15 @@ public class ImageProcessor : IImageProcessor
         }
     }
 
-    public async Task<MemoryStream> ProcessImage(IFormFile file)
+    public async Task<MemoryStream> ProcessImageAsWebp(IFormFile file, int width, int height)
     {
         await using var stream = file.OpenReadStream();
 
         using var image = await Image.LoadAsync(stream);
 
-        image.Mutate(x => x.Resize(new ResizeOptions {
-            Size = new Size(256, 256),
+        image.Mutate(x => x.Resize(new ResizeOptions
+        {
+            Size = new Size(width, height),
             Mode = ResizeMode.Crop
         }));
 

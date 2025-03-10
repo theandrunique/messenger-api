@@ -19,9 +19,9 @@ public class S3Service : IS3Service
     public Task PutObjectAsync(
         string key,
         string bucket,
-        string fileName,
         string contentType,
         Stream fileStream,
+        string? fileName = null,
         CancellationToken cancellationToken = default)
     {
         var uploadRequest = new TransferUtilityUploadRequest
@@ -32,7 +32,10 @@ public class S3Service : IS3Service
             ContentType = contentType,
             CalculateContentMD5Header = true,
         };
-        uploadRequest.Headers.ContentDisposition = "attachment; filename=\"" + fileName + "\"";
+        if (fileName != null)
+        {
+            uploadRequest.Headers.ContentDisposition = "attachment; filename=\"" + fileName + "\"";
+        }
 
         return _transferUtility.UploadAsync(uploadRequest, cancellationToken);
     }

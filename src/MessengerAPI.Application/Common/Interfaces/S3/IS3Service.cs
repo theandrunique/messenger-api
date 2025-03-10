@@ -5,9 +5,9 @@ public interface IS3Service
     Task PutObjectAsync(
         string key,
         string bucket,
-        string fileName,
         string contentType,
         Stream fileStream,
+        string? fileName = null,
         CancellationToken cancellationToken = default);
 
     string GenerateUploadUrl(string key, string bucket, DateTimeOffset expires, long size);

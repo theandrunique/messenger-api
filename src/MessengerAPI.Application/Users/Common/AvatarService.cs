@@ -27,7 +27,7 @@ public class AvatarService
 
     public async Task<string> UploadAvatar(IFormFile file, CancellationToken ct)
     {
-        using var processedImage = await _imageProcessor.ProcessImage(file);
+        using var processedImage = await _imageProcessor.ProcessImageAsWebp(file, 512, 512);
         var mimeType = file.ContentType.ToLower();
         var result = GenerateUploadFilename(file);
 
@@ -36,7 +36,6 @@ public class AvatarService
         await _s3Service.PutObjectAsync(
             key: result.uploadFilename,
             bucket: _options.BucketName,
-            fileName: file.FileName,
             contentType: mimeType,
             fileStream: processedImage,
             cancellationToken: ct);
