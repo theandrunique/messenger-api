@@ -31,8 +31,6 @@ public class AvatarService
         var mimeType = file.ContentType.ToLower();
         var result = GenerateUploadFilename(file);
 
-        Console.WriteLine($"Uploaded filename: {result.uploadFilename}");
-
         await _s3Service.PutObjectAsync(
             key: result.uploadFilename,
             bucket: _options.BucketName,

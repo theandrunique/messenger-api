@@ -75,12 +75,7 @@ public class VerificationCodeService
 
     private string GetCodeIdentifier(long userId, VerificationCodeScenario scenario)
     {
-        return scenario switch
-        {
-            VerificationCodeScenario.VERIFY_EMAIL => $"email-{userId}",
-            VerificationCodeScenario.MFA_ENABLE => $"mfa-enable-{userId}",
-            _ => $"code-{userId}"
-        };
+        return $"{scenario}-{userId}";
     }
 
     private string GenerateOtp()

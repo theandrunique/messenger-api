@@ -80,10 +80,26 @@ public class User
         Image = image;
     }
 
-    public void SetUp2FA(byte[] totpkey)
+    public void EnableTotp2FA(byte[] totpkey)
     {
+        if (TwoFactorAuthentication)
+        {
+            throw new InvalidOperationException("TOTP 2FA is already enabled");
+        }
+
         TOTPKey = totpkey;
         TwoFactorAuthentication = true;
+    }
+
+    public void DisableTotp2FA()
+    {
+        if (!TwoFactorAuthentication)
+        {
+            throw new InvalidOperationException("TOTP 2FA is already disabled");
+        }
+
+        TOTPKey = null;
+        TwoFactorAuthentication = false;
     }
 
     public void SetNewPassword(string passwordHash) => PasswordHash = passwordHash;

@@ -15,21 +15,24 @@ public static partial class ApiErrors
         public static BaseApiError NoSessionInfoFound =>
             new BaseApiError(ErrorCode.AUTH_NO_SESSION_INFO_FOUND, "No session info was found");
 
-        public static BaseApiError MfaAlreadyEnabled
-            => new BaseApiError(ErrorCode.AUTH_MFA_ALREADY_ENABLED, "MFA already enabled");
+        public static BaseApiError TotpMfaAlreadyEnabled
+            => new BaseApiError(ErrorCode.AUTH_TOTP_MFA_ALREADY_ENABLED, "TOTP MFA already enabled");
+        
+        public static BaseApiError TotpMfaAlreadyDisabled
+            => new BaseApiError(ErrorCode.AUTH_TOTP_MFA_ALREADY_DISABLED, "TOTP MFA already disabled");
 
         public static BaseApiError TotpRequired
-            => new BaseApiError(ErrorCode.AUTH_TOTP_REQUIRED, "MFA required");
+            => new BaseApiError(ErrorCode.AUTH_TOTP_REQUIRED, "TOTP required");
 
         public static BaseApiError EmailCodeRequired
             => new BaseApiError(ErrorCode.AUTH_EMAIL_CODE_REQUIRED, "Email code required");
-        
+
         public static BaseApiError EmailVerificationRequired
             => new BaseApiError(ErrorCode.AUTH_EMAIL_VERIFICATION_REQUIRED, "Email verification required");
-        
+
         public static BaseApiError InvalidEmailCode
             => new BaseApiError(ErrorCode.AUTH_INVALID_EMAIL_CODE, "Invalid email code");
-        
+
         public static BaseApiError InvalidTotp
             => new BaseApiError(ErrorCode.AUTH_INVALID_TOTP, "Invalid totp");
     }

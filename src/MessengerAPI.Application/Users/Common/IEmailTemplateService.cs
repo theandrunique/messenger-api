@@ -5,6 +5,6 @@ namespace MessengerAPI.Application.Users.Common;
 public interface IEmailTemplateService
 {
     string GenerateEmailVerificationMessage(User user, string code);
-
-    string GenerateEmailMfaEnableCode(User user, string code);
+    string GenerateEmailTotpMfaEnableCode(User user, string code);
+    string GenerateEmailTotpMfaDisableCode(User user, string code);
 }
