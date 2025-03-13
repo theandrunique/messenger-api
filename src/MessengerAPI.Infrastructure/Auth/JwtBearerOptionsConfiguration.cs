@@ -44,8 +44,8 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
             RequireExpirationTime = true,
             RequireSignedTokens = true,
             ValidateIssuerSigningKey = true,
-            ValidAudience = this._options.Audience,
-            ValidIssuer = this._options.Issuer,
+            ValidAudience = _options.Audience,
+            ValidIssuer = _options.Issuer,
             IssuerSigningKeyResolver = GetPublicKeys
         };
         options.Events = new JwtBearerEvents
@@ -75,16 +75,6 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
                 }
             },
 
-            OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Query["accessToken"];
-
-                var path = context.HttpContext.Request.Path;
-                if (!string.IsNullOrEmpty(accessToken))
-                    context.Token = accessToken;
-
-                return Task.CompletedTask;
-            },
             OnAuthenticationFailed = context =>
             {
                 _logger.LogInformation("Authentication failed: {Message}", context.Exception.Message);
@@ -95,11 +85,14 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
 
     private IEnumerable<SecurityKey> GetPublicKeys(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)
     {
-        if (!_keyService.TryGetKeyById(kid, out var key))
+        if (_keyService.TryGetKeyById(kid, out var key))
         {
-            yield return null;
+            yield return new RsaSecurityKey(key);
         }
-        var securityKey = new RsaSecurityKey(key);
-        yield return securityKey;
+        else
+        {
+            _logger.LogInformation($"Key with id {kid} not found");
+            yield break;
+        }
     }
 }

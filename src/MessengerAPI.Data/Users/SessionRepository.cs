@@ -34,6 +34,12 @@ internal class SessionRepository : ISessionRepository
         return MapOrDefault(result);
     }
 
+    public async Task<List<Session>> GetSessionsByUserId(long userId)
+    {
+        var result = await _session.ExecuteAsync(_sessions.SelectByUserId(userId));
+        return result.Select(SessionMapper.Map).ToList();
+    }
+
     private Session? MapOrDefault(Row? row)
     {
         return row is null ? null : SessionMapper.Map(row);

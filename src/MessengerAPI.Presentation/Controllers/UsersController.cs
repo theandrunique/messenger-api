@@ -11,6 +11,7 @@ using MessengerAPI.Application.Users.Commands.RequestVerifyEmailCode;
 using MessengerAPI.Application.Users.Commands.UpdateAvatar;
 using MessengerAPI.Application.Users.Commands.VerifyEmail;
 using MessengerAPI.Application.Users.Queries.GetMeQuery;
+using MessengerAPI.Application.Users.Queries.GetSessions;
 using MessengerAPI.Application.Users.Queries.GetUserById;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Infrastructure.Auth;
@@ -48,6 +49,15 @@ public class UsersController : ApiController
         var query = new GetMeQuery();
         var result = await _mediator.Send(query, cancellationToken);
         return result.Match(onValue: Ok, onError: Problem);
+    }
+
+    [HttpGet("@me/sessions")]
+    [ProducesResponseType(typeof(List<SessionSchema>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMySessionsAsync(CancellationToken cancellationToken)
+    {
+        var query = new GetSessionsQuery();
+        var result = await _mediator.Send(query, cancellationToken);
+        return Ok(result);
     }
 
     [HttpPut("@me/avatar")]

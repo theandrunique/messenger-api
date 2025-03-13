@@ -72,7 +72,7 @@ public class AuthController : ApiController
     }
 
     [HttpGet("token")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public IActionResult Token()
     {
         string? sessionInfo = Request.Cookies[MessengerConstants.Auth.SessionCookieName];
@@ -80,7 +80,7 @@ public class AuthController : ApiController
         {
             return Problem(ApiErrors.Auth.NoSessionInfoFound);
         }
-        return Ok(JsonConvert.DeserializeObject<SessionSchema>(sessionInfo));
+        return Ok(JsonConvert.DeserializeObject<TokenPairResponse>(sessionInfo));
     }
 
     private void AddRefreshTokenToCookies(TokenPairResponse tokenPair)
@@ -92,12 +92,7 @@ public class AuthController : ApiController
         };
         Response.Cookies.Append(
             MessengerConstants.Auth.SessionCookieName,
-            JsonConvert.SerializeObject(new SessionSchema(
-                tokenPair.RefreshToken,
-                tokenPair.AccessToken,
-                tokenPair.TokenType,
-                tokenPair.ExpiresIn,
-                DateTimeOffset.UtcNow)),
+            JsonConvert.SerializeObject(tokenPair),
             cookieOptions);
     }
 }

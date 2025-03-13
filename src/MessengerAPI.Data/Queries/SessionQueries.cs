@@ -8,6 +8,7 @@ internal class SessionQueries
     private readonly PreparedStatement _insert;
     private readonly PreparedStatement _selectByUserIdAndId;
     private readonly PreparedStatement _selectByTokenId;
+    private readonly PreparedStatement _selectByUserId;
     private readonly PreparedStatement _updateTokenId;
 
     public SessionQueries(ISession session)
@@ -26,6 +27,7 @@ internal class SessionQueries
 
         _selectByUserIdAndId = session.Prepare("SELECT * FROM sessions WHERE userid = ? AND id = ?");
         _selectByTokenId = session.Prepare("SELECT * FROM sessions WHERE tokenid = ?");
+        _selectByUserId = session.Prepare("SELECT * FROM sessions WHERE userid = ?");
         _updateTokenId = session.Prepare("UPDATE sessions SET lastusedtimestamp = ?, tokenid = ? WHERE userid = ? AND id = ?");
     }
 
@@ -50,6 +52,11 @@ internal class SessionQueries
     public BoundStatement SelectByTokenId(Guid tokenId)
     {
         return _selectByTokenId.Bind(tokenId);
+    }
+
+    public BoundStatement SelectByUserId(long userId)
+    {
+        return _selectByUserId.Bind(userId);
     }
 
     public BoundStatement UpdateTokenId(Session session)
