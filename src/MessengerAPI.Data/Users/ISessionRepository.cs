@@ -9,4 +9,5 @@ public interface ISessionRepository
     Task<Session?> GetByTokenIdOrNullAsync(Guid tokenId);
     Task<List<Session>> GetSessionsByUserId(long userId);
     Task UpdateTokenIdAsync(Session session);
+    Task RemoveByIdAsync(long userId, long sessionId);
 }

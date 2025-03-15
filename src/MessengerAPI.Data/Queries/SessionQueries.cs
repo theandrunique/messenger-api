@@ -10,6 +10,7 @@ internal class SessionQueries
     private readonly PreparedStatement _selectByTokenId;
     private readonly PreparedStatement _selectByUserId;
     private readonly PreparedStatement _updateTokenId;
+    private readonly PreparedStatement _deleteByTokenId;
 
     public SessionQueries(ISession session)
     {
@@ -29,6 +30,7 @@ internal class SessionQueries
         _selectByTokenId = session.Prepare("SELECT * FROM sessions WHERE tokenid = ?");
         _selectByUserId = session.Prepare("SELECT * FROM sessions WHERE userid = ?");
         _updateTokenId = session.Prepare("UPDATE sessions SET lastusedtimestamp = ?, tokenid = ? WHERE userid = ? AND id = ?");
+        _deleteByTokenId = session.Prepare("DELETE FROM sessions WHERE userid = ? AND id = ?");
     }
 
     public BoundStatement Insert(Session session)
@@ -62,5 +64,10 @@ internal class SessionQueries
     public BoundStatement UpdateTokenId(Session session)
     {
         return _updateTokenId.Bind(session.LastUsedTimestamp, session.TokenId, session.UserId, session.Id);
+    }
+
+    public BoundStatement DeleteByTokenId(long userId, long sessionId)
+    {
+        return _deleteByTokenId.Bind(userId, sessionId);
     }
 }

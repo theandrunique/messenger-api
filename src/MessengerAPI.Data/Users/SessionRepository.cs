@@ -49,4 +49,9 @@ internal class SessionRepository : ISessionRepository
     {
         return _session.ExecuteAsync(_sessions.UpdateTokenId(session));
     }
+
+    public Task RemoveByIdAsync(long userId, long sessionId)
+    {
+        return _session.ExecuteAsync(_sessions.DeleteByTokenId(userId, sessionId));
+    }
 }

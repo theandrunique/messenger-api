@@ -10,11 +10,11 @@ using MessengerAPI.Contracts.Common;
 using MessengerAPI.Errors;
 using MessengerAPI.Core;
 using Newtonsoft.Json;
+using MessengerAPI.Application.Auth.Commands.Logout;
 
 namespace MessengerAPI.Presentation.Controllers;
 
 [Route("auth")]
-[AllowAnonymous]
 public class AuthController : ApiController
 {
     private readonly IMediator _mediator;
@@ -25,6 +25,7 @@ public class AuthController : ApiController
     }
 
     [HttpPost("sign-up")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignUpAsync([FromForm] SignUpRequestSchema schema, CancellationToken cancellationToken)
     {
@@ -40,6 +41,7 @@ public class AuthController : ApiController
     }
 
     [HttpPost("sign-in")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> SignInAsync([FromForm] SignInRequestSchema schema, CancellationToken cancellationToken)
     {
@@ -49,13 +51,24 @@ public class AuthController : ApiController
         return loginResult.Match(
             success =>
             {
-                AddRefreshTokenToCookies(success);
+                AddSessionCookies(success);
                 return Ok(success);
             },
             errors => Problem(errors));
     }
 
+    [HttpPost("sign-out")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> LogoutAsync(CancellationToken cancellationToken)
+    {
+        var command = new LogoutCommand();
+        await _mediator.Send(command, cancellationToken);
+        RemoveSessionCookie();
+        return NoContent();
+    }
+
     [HttpPost("token")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> RefreshTokenAsync([FromForm] string refreshToken, CancellationToken cancellationToken)
     {
@@ -65,13 +78,14 @@ public class AuthController : ApiController
         return result.Match(
             success =>
             {
-                AddRefreshTokenToCookies(success);
+                AddSessionCookies(success);
                 return Ok(success);
             },
             errors => Problem(errors));
     }
 
     [HttpGet("token")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
     public IActionResult Token()
     {
@@ -83,7 +97,7 @@ public class AuthController : ApiController
         return Ok(JsonConvert.DeserializeObject<TokenPairResponse>(sessionInfo));
     }
 
-    private void AddRefreshTokenToCookies(TokenPairResponse tokenPair)
+    private void AddSessionCookies(TokenPairResponse tokenPair)
     {
         var cookieOptions = new CookieOptions
         {
@@ -94,5 +108,10 @@ public class AuthController : ApiController
             MessengerConstants.Auth.SessionCookieName,
             JsonConvert.SerializeObject(tokenPair),
             cookieOptions);
+    }
+
+    private void RemoveSessionCookie()
+    {
+        Response.Cookies.Delete(MessengerConstants.Auth.SessionCookieName);
     }
 }
