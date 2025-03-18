@@ -1,12 +1,16 @@
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
+using Elastic.Clients.Elasticsearch;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.S3;
+using MessengerAPI.Application.Users.Common;
+using MessengerAPI.Domain.Users;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Common;
 using MessengerAPI.Infrastructure.Common.Files;
+using MessengerAPI.Infrastructure.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +32,7 @@ public static class DependencyInjection
         services.AddAuthServices();
         services.AddS3Services(config);
         services.AddRedis(config);
+        services.AddElasticsearch();
 
         services.AddScoped<IImageProcessor, ImageProcessor>();
 
@@ -65,6 +70,20 @@ public static class DependencyInjection
 
         var redis = ConnectionMultiplexer.Connect(redisSettings.ConnectionString);
         services.AddSingleton<IConnectionMultiplexer>(sp => redis);
+
+        return services;
+    }
+
+    public static IServiceCollection AddElasticsearch(this IServiceCollection services)
+    {
+        var settings = new ElasticsearchClientSettings(new Uri("http://elasticsearch:9200"))
+            .DefaultMappingFor<UserIndexModel>(i => i.IndexName("users"))
+            .EnableDebugMode();
+
+        var client = new ElasticsearchClient(settings);
+        services.AddSingleton(client);
+        services.AddHostedService<ElasticsearchIndexInitializationService>();
+        services.AddScoped<IUserSearchService, UserSearchService>();
 
         return services;
     }

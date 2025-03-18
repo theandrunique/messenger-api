@@ -1,4 +1,3 @@
-using Amazon.Runtime.CredentialManagement;
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
 using MessengerAPI.Application.Channels.Commands.AddOrEditMessagePrivateChannel;
@@ -13,13 +12,13 @@ using MessengerAPI.Application.Users.Commands.VerifyEmail;
 using MessengerAPI.Application.Users.Queries.GetMeQuery;
 using MessengerAPI.Application.Users.Queries.GetSessions;
 using MessengerAPI.Application.Users.Queries.GetUserById;
+using MessengerAPI.Application.Users.Queries.SearchUsers;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Presentation.Schemas.Auth;
 using MessengerAPI.Presentation.Schemas.Channels;
 using MessengerAPI.Presentation.Schemas.Users;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 
 namespace MessengerAPI.Presentation.Controllers;
 
@@ -31,6 +30,15 @@ public class UsersController : ApiController
     public UsersController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("search")]
+    [ProducesResponseType(typeof(List<UserSearchResultSchema>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SearchUsersAsync(string query, CancellationToken cancellationToken)
+    {
+        var searchQuery = new SearchUsersQuery(query);
+        var result = await _mediator.Send(searchQuery, cancellationToken);
+        return Ok(result);
     }
 
     [HttpGet("{userId}")]
