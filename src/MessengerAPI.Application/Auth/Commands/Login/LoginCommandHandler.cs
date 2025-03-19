@@ -55,18 +55,17 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
             return ApiErrors.Auth.InvalidCredentials;
         }
 
-        if (user.TwoFactorAuthentication && request.Totp is null)
-        {
-            return ApiErrors.Auth.TotpRequired;
-        }
-
-        if (user.TOTPKey is null)
-        {
-            throw new Exception("TOTP was expected to be set.");
-        }
-
         if (user.TwoFactorAuthentication)
         {
+            if (request.Totp is null)
+            {
+                return ApiErrors.Auth.TotpRequired;
+            }
+            if (user.TOTPKey is null)
+            {
+                throw new Exception("TOTP was expected to be set.");
+            }
+
             if (!_totpHelper.Verify(request.Totp, user.TOTPKey, 30, 6))
             {
                 return ApiErrors.Auth.InvalidTotp;
