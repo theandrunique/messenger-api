@@ -5,6 +5,7 @@ namespace MessengerAPI.Application.Users.Common;
 
 public interface IUserSearchService
 {
-    public Task IndexAsync(User user, CancellationToken ct);
-    public Task<IEnumerable<UserIndexModel>> SearchAsync(string query, CancellationToken ct);
+    Task IndexAsync(User user, CancellationToken ct);
+    Task UpdateAsync(User user, CancellationToken ct);
+    Task<IEnumerable<UserIndexModel>> SearchAsync(string query, CancellationToken ct);
 }
