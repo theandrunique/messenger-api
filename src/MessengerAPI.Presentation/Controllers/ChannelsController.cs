@@ -1,7 +1,7 @@
 using MediatR;
 using MessengerAPI.Application.Channels.Commands.AddChannelMember;
 using MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
-using MessengerAPI.Application.Channels.Commands.CreateAttachment;
+using MessengerAPI.Application.Channels.Commands.CreateCloudAttachments;
 using MessengerAPI.Application.Channels.Commands.MessageAck;
 using MessengerAPI.Application.Channels.Commands.RemoveChannelMember;
 using MessengerAPI.Application.Channels.Common;
@@ -82,7 +82,7 @@ public class ChannelsController : ApiController
         CreateChannelAttachmentRequestSchema schema,
         CancellationToken cancellationToken)
     {
-        var command = new CreateAttachmentCommand(
+        var command = new CreateCloudAttachmentsCommand(
             channelId,
             schema.files.ConvertAll(f => new UploadAttachmentDto
             {
@@ -90,10 +90,8 @@ public class ChannelsController : ApiController
                 Filename = f.filename,
                 FileSize = f.fileSize,
             }));
-
         var result = await _mediator.Send(command, cancellationToken);
-
-        return result.Match(onValue: Ok, onError: Problem);
+        return Ok(result);
     }
 
     [HttpPut("{channelId}/members/{userId}")]
