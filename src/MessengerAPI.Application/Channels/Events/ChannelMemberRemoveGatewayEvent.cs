@@ -6,10 +6,10 @@ namespace MessengerAPI.Application.Channels.Events;
 public class ChannelMemberRemoveGatewayEvent : GatewayEventDto
 {
     public string ChannelId { get; init; }
-    public ChannelMemberInfoSchema User { get; init; }
+    public UserPublicSchema User { get; init; }
 
     public ChannelMemberRemoveGatewayEvent(
-        ChannelMemberInfoSchema member,
+        UserPublicSchema member,
         long channelId,
         IEnumerable<string> recipients)
         : base(GatewayEventType.CHANNEL_MEMBER_REMOVE, recipients)

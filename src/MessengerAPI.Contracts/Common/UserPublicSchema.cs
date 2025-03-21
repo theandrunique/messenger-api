@@ -1,4 +1,7 @@
+using System.Text.Json.Serialization;
 using MessengerAPI.Domain.Entities;
+using MessengerAPI.Domain.Users;
+using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Contracts.Common;
 
@@ -10,9 +13,11 @@ public record UserPublicSchema
     public string Id { get; init; }
     public string Username { get; init; }
     public string GlobalName { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Bio { get; init; }
     public string? Avatar { get; init; }
-    public DateTimeOffset Timestamp { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DateTimeOffset? Timestamp { get; init; }
 
     protected UserPublicSchema(User user)
     {
@@ -25,4 +30,34 @@ public record UserPublicSchema
     }
 
     public static UserPublicSchema From(User user) => new(user);
+
+    private UserPublicSchema(UserIndexModel user)
+    {
+        Id = user.Id;
+        Username = user.Username;
+        GlobalName = user.GlobalName;
+        Avatar = user.Image;
+    }
+
+    public static UserPublicSchema From(UserIndexModel user) => new(user);
+
+    private UserPublicSchema(ChannelMemberInfo member)
+    {
+        Id = member.UserId.ToString();
+        Username = member.Username;
+        GlobalName = member.GlobalName;
+        Avatar = member.Image?.Key;
+    }
+
+    public static UserPublicSchema From(ChannelMemberInfo member) => new(member);
+
+    private UserPublicSchema(MessageAuthorInfo authorInfo)
+    {
+        Id = authorInfo.Id.ToString();
+        Username = authorInfo.Username;
+        GlobalName = authorInfo.GlobalName;
+        Avatar = authorInfo.Image?.Key;
+    }
+
+    public static UserPublicSchema From(MessageAuthorInfo authorInfo) => new(authorInfo);
 }

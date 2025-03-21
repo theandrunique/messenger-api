@@ -16,7 +16,7 @@ public record ChannelSchema
     public string? ReadAt { get; init; }
     public DateTimeOffset? LastMessageTimestamp { get; init; }
     public MessageInfoSchema? LastMessage { get; init; }
-    public List<ChannelMemberInfoSchema> Members { get; init; }
+    public List<UserPublicSchema> Members { get; init; }
 
     private ChannelSchema(Channel channel, long? userId = null)
     {
@@ -30,7 +30,7 @@ public record ChannelSchema
         {
             LastMessage = MessageInfoSchema.From(channel.LastMessage.Value);
         }
-        Members = channel.Members.Select(ChannelMemberInfoSchema.From).ToList();
+        Members = channel.Members.Select(UserPublicSchema.From).ToList();
         if (userId != null)
         {
             var currentMember = channel.Members.First(m => m.UserId == userId);

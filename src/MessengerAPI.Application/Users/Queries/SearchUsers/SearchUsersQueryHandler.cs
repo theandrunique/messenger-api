@@ -4,7 +4,7 @@ using MessengerAPI.Contracts.Common;
 
 namespace MessengerAPI.Application.Users.Queries.SearchUsers;
 
-public class SearchUsersQueryHandler : IRequestHandler<SearchUsersQuery, List<UserSearchResultSchema>>
+public class SearchUsersQueryHandler : IRequestHandler<SearchUsersQuery, List<UserPublicSchema>>
 {
     private readonly IUserSearchService _searchService;
 
@@ -13,9 +13,9 @@ public class SearchUsersQueryHandler : IRequestHandler<SearchUsersQuery, List<Us
         _searchService = searchService;
     }
 
-    public async Task<List<UserSearchResultSchema>> Handle(SearchUsersQuery request, CancellationToken cancellationToken)
+    public async Task<List<UserPublicSchema>> Handle(SearchUsersQuery request, CancellationToken cancellationToken)
     {
         var result = await _searchService.SearchAsync(request.Query, cancellationToken);
-        return result.Select(UserSearchResultSchema.From).ToList();
+        return result.Select(UserPublicSchema.From).ToList();
     }
 }

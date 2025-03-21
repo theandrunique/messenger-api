@@ -12,7 +12,7 @@ public record MessageSchema
     public string Content { get; init; }
     public DateTimeOffset Timestamp { get; init; }
     public DateTimeOffset? EditedTimestamp { get; init; }
-    public MessageAuthorInfoSchema Author { get; init; }
+    public UserPublicSchema Author { get; init; }
     public List<AttachmentSchema> Attachments { get; init; }
 
     private MessageSchema(Message message)
@@ -22,7 +22,7 @@ public record MessageSchema
         Content = message.Content;
         Timestamp = message.Timestamp;
         EditedTimestamp = message.EditedTimestamp;
-        Author = MessageAuthorInfoSchema.From(message.Author);
+        Author = UserPublicSchema.From(message.Author);
         Attachments = message.Attachments.Select(AttachmentSchema.From).ToList();
     }
 

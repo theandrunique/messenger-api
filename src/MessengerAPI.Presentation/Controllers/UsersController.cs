@@ -33,7 +33,7 @@ public class UsersController : ApiController
     }
 
     [HttpGet("search")]
-    [ProducesResponseType(typeof(List<UserSearchResultSchema>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<UserPublicSchema>), StatusCodes.Status200OK)]
     public async Task<IActionResult> SearchUsersAsync(string query, CancellationToken cancellationToken)
     {
         var searchQuery = new SearchUsersQuery(query);

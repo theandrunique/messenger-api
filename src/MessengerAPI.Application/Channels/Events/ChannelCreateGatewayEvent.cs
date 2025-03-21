@@ -8,7 +8,7 @@ public class ChannelCreateGatewayEvent : GatewayEventDto
     public ChannelSchema Payload { get; init; }
 
     public ChannelCreateGatewayEvent(ChannelSchema channel)
-        : base(GatewayEventType.CHANNEL_CREATE, channel.Members.Select(x => x.UserId))
+        : base(GatewayEventType.CHANNEL_CREATE, channel.Members.Select(x => x.Id))
     {
         Payload = channel;
     }
