@@ -23,7 +23,7 @@ public record MessageSchema
         Timestamp = message.Timestamp;
         EditedTimestamp = message.EditedTimestamp;
         Author = UserPublicSchema.From(message.Author);
-        Attachments = message.Attachments.Select(AttachmentSchema.From).ToList();
+        Attachments = AttachmentSchema.From(message.Attachments);
     }
 
     public static MessageSchema From(Message message) => new(message);

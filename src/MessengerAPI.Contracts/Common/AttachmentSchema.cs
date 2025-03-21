@@ -28,4 +28,6 @@ public record AttachmentSchema
     }
 
     public static AttachmentSchema From(Attachment attachment) => new AttachmentSchema(attachment);
+
+    public static List<AttachmentSchema> From(IEnumerable<Attachment> attachments) => attachments.Select(From).ToList();
 }

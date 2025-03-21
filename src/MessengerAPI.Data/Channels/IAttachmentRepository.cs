@@ -6,5 +6,6 @@ public interface IAttachmentRepository
 {
     Task RemoveAsync(long attachmentId);
     Task<Attachment?> GetAttachmentAsync(long channelId, long attachmentId);
-    Task<IEnumerable<Attachment>> GetChannelAttachmentsAsync(long channelId, int limit);
+    Task<List<Attachment>> GetChannelAttachmentsAsync(long channelId, long beforeMessageId, int limit);
+    Task UpdatePreSignedUrlsAsync(long channelId, IEnumerable<Attachment> attachments);
 }

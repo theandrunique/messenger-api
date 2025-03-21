@@ -6,6 +6,7 @@ using MessengerAPI.Application.Channels.Commands.MessageAck;
 using MessengerAPI.Application.Channels.Commands.RemoveChannelMember;
 using MessengerAPI.Application.Channels.Commands.UpdateChannel;
 using MessengerAPI.Application.Channels.Common;
+using MessengerAPI.Application.Channels.Queries.GetAttachments;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Presentation.Schemas.Channels;
@@ -25,7 +26,7 @@ public class ChannelsController : ApiController
 
     [HttpPost("{channelId}")]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateChannel(
+    public async Task<IActionResult> UpdateChannelAsync(
         long channelId,
         UpdateChannelRequestSchema schema,
         CancellationToken cancellationToken)
@@ -67,6 +68,21 @@ public class ChannelsController : ApiController
 
         var result = await _mediator.Send(query, cancellationToken);
 
+        return result.Match(onValue: Ok, onError: Problem);
+    }
+
+    [HttpGet("{channelId}/attachments")]
+    [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetChannelAttachmentsAsync(
+        long channelId,
+        long? before = null,
+        int limit = 50,
+        CancellationToken cancellationToken = default)
+    {
+        var actualBefore = before ?? long.MaxValue;
+
+        var query = new GetAttachmentsQuery(channelId, actualBefore, limit);
+        var result = await _mediator.Send(query, cancellationToken);
         return result.Match(onValue: Ok, onError: Problem);
     }
 

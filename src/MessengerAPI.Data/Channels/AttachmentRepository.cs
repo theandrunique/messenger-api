@@ -19,11 +19,31 @@ internal class AttachmentRepository : IAttachmentRepository
         _queries = queries;
     }
 
+    public Task UpdatePreSignedUrlsAsync(long channelId, IEnumerable<Attachment> attachments)
+    {
+        var batch = new BatchStatement();
+        foreach (var attachment in attachments)
+        {
+            if (!attachment.MessageId.HasValue)
+            {
+                throw new ArgumentException("MessageId was expected to be set.");
+            }
+
+            batch.Add(_queries.UpdatePreSignedUrl(
+                channelId,
+                attachment.MessageId.Value,
+                attachment.Id,
+                attachment.PreSignedUrl,
+                attachment.PreSignedUrlExpiresTimestamp));
+        }
+        return _session.ExecuteAsync(batch);
+    }
+
     public async Task<Attachment?> GetAttachmentAsync(long channelId, long attachmentId)
     {
         var result = (await _session.ExecuteAsync(_queries.SelectByChannelIdAndId(channelId, attachmentId)))
             .FirstOrDefault();
-        
+
         if (result is not null)
         {
             return AttachmentMapper.Map(result);
@@ -34,12 +54,11 @@ internal class AttachmentRepository : IAttachmentRepository
         }
     }
 
-    public Task<IEnumerable<Attachment>> GetChannelAttachmentsAsync(long channelId, int limit)
+    public async Task<List<Attachment>> GetChannelAttachmentsAsync(long channelId, long beforeMessageId, int limit)
     {
-        return _table
-            .Where(a => a.ChannelId == channelId)
-            .Take(limit)
-            .ExecuteAsync();
+        var result = (await _session.ExecuteAsync(_queries.SelectByChannelId(channelId, beforeMessageId, limit))).ToList();
+
+        return result.Select(AttachmentMapper.Map).ToList();
     }
 
     public Task RemoveAsync(long attachmentId)

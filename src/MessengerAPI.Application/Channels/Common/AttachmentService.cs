@@ -4,6 +4,7 @@ using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Options;
 
 namespace MessengerAPI.Application.Channels.Common;
@@ -27,6 +28,22 @@ public class AttachmentService
         _idGenerator = idGenerator;
         _attachmentRepository = attachmentRepository;
         _options = options.Value;
+    }
+
+    public Task UpdateUrlsAsync(long channelId, IEnumerable<Attachment> attachments)
+    {
+        List<Attachment> updated = new();
+
+        foreach(var item in attachments)
+        {
+            if (item.IsNeedUpdateUrl())
+            {
+                var expires = DateTimeOffset.UtcNow.Add(_options.DownloadUrlExpiration);
+                var preSignedUrl = GenerateDownloadUrl(item.UploadFilename, expires);
+                item.UpdatePreSignedUrl(preSignedUrl, expires);
+            }
+        }
+        return _attachmentRepository.UpdatePreSignedUrlsAsync(channelId, updated);
     }
 
     public UploadUrlDto GenerateUploadUrl(long size, long channelId, string filename)
@@ -64,11 +81,7 @@ public class AttachmentService
         }
 
         var expires = DateTimeOffset.UtcNow.Add(_options.DownloadUrlExpiration);
-
-        var preSignedUrl = _s3Service.GenerateDownloadUrl(
-            key: uploadedFilename,
-            bucket: _options.Bucket,
-            expires: expires);
+        var preSignedUrl = GenerateDownloadUrl(uploadedFilename, expires);
 
         return new Attachment(
             parsedFilename.Value.AttachmentId,
@@ -86,6 +99,14 @@ public class AttachmentService
         string uploadedFilename,
         CancellationToken cancellationToken = default)
         => _s3Service.DeleteObjectAsync(uploadedFilename, _options.Bucket, cancellationToken);
+
+    private string GenerateDownloadUrl(string uploadedFilename, DateTimeOffset expires)
+    {
+        return _s3Service.GenerateDownloadUrl(
+            key: uploadedFilename,
+            bucket: _options.Bucket,
+            expires: expires);
+    }
 
     public Task<bool> IsObjectExistsAsync(string uploadedFilename, CancellationToken cancellationToken = default)
         => _s3Service.IsObjectExistsAsync(uploadedFilename, _options.Bucket, cancellationToken);

@@ -1,4 +1,5 @@
 using MediatR;
+using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Channels;
@@ -11,15 +12,18 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
     private readonly IChannelRepository _channelRepository;
     private readonly IMessageRepository _messageRepository;
     private readonly IClientInfoProvider _clientInfo;
+    private readonly AttachmentService _attachmentService;
 
     public GetMessagesQueryHandler(
         IChannelRepository channelRepository,
         IMessageRepository messageRepository,
-        IClientInfoProvider clientInfo)
+        IClientInfoProvider clientInfo,
+        AttachmentService attachmentService)
     {
         _channelRepository = channelRepository;
         _messageRepository = messageRepository;
         _clientInfo = clientInfo;
+        _attachmentService = attachmentService;
     }
 
     public async Task<ErrorOr<List<MessageSchema>>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
@@ -34,7 +38,10 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
-        var messages = await _messageRepository.GetMessagesAsync(request.ChannelId, request.Before, request.Limit);
+        var messages = await _messageRepository
+            .GetMessagesAsync(request.ChannelId, request.Before, request.Limit);
+
+        await _attachmentService.UpdateUrlsAsync(channel.Id, messages.SelectMany(m => m.Attachments));
 
         return MessageSchema.From(messages);
     }
