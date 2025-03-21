@@ -4,6 +4,7 @@ using MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 using MessengerAPI.Application.Channels.Commands.CreateCloudAttachments;
 using MessengerAPI.Application.Channels.Commands.MessageAck;
 using MessengerAPI.Application.Channels.Commands.RemoveChannelMember;
+using MessengerAPI.Application.Channels.Commands.UpdateChannel;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Contracts.Common;
@@ -20,6 +21,18 @@ public class ChannelsController : ApiController
     public ChannelsController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpPost("{channelId}")]
+    [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateChannel(
+        long channelId,
+        UpdateChannelRequestSchema schema,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateChannelCommand(channelId, schema.title);
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.Match(onValue: Ok, onError: Problem);
     }
 
     [HttpPost("{channelId}/messages")]

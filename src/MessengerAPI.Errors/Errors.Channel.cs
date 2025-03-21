@@ -1,3 +1,5 @@
+using MessengerAPI.Domain.Channels;
+
 namespace MessengerAPI.Errors;
 
 public static partial class ApiErrors
@@ -14,15 +16,15 @@ public static partial class ApiErrors
                 ErrorCode.MESSAGE_NOT_FOUND,
                 $"Message '{messageId}' not found");
 
-        public static BaseApiError InvalidOperationForChannelType
+        public static BaseApiError InvalidOperationForThisChannelType
             => new BaseApiError(
                 ErrorCode.CHANNEL_INVALID_OPERATION_FOR_TYPE,
                 $"Operation not allowed for this channel type");
 
-        public static BaseApiError InsufficientPermissions(long channelId, string requiredPermission)
+        public static BaseApiError InsufficientPermissions(long channelId, ChannelPermissions permission)
             => new BaseApiError(
                 ErrorCode.CHANNEL_INSUFFICIENT_PERMISSIONS,
-                $"Requires '{requiredPermission}' permission for channel '{channelId}'");
+                $"Requires '{permission}' permission for channel '{channelId}'");
 
         public static BaseApiError NotOwner
             => new BaseApiError(

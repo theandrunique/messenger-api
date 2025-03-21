@@ -106,4 +106,14 @@ public class Channel
     {
         return _members.Any(m => m.UserId == userId && m.Permissions.HasPermission(permissions));
     }
+
+    public void UpdateChannel(string title)
+    {
+        if (Type == ChannelType.PRIVATE)
+        {
+            throw new InvalidOperationException("Cannot update channel of type Private");
+        }
+
+        Title = title;
+    }
 }
