@@ -27,10 +27,9 @@ internal class AttachmentQueries
                 presignedurl,
                 presignedurlexpirestimestamp,
                 size,
-                uploadfilename,
                 waveform,
                 timestamp
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """);
         _selectByChannelIdAndMessageIds = session.Prepare("SELECT * FROM attachments_by_messageid WHERE channelid = ? AND messageid IN ?");
 
@@ -62,7 +61,6 @@ internal class AttachmentQueries
             attachment.PreSignedUrl,
             attachment.PreSignedUrlExpiresTimestamp,
             attachment.Size,
-            attachment.UploadFilename,
             attachment.Waveform,
             attachment.Timestamp);
     }

@@ -32,7 +32,6 @@ CREATE TABLE messenger.attachments_by_messageid (
     presignedurl text,
     presignedurlexpirestimestamp timestamp,
     size bigint,
-    uploadfilename text,
     waveform text,
     timestamp timestamp,
 
@@ -52,7 +51,6 @@ CREATE MATERIALIZED VIEW attachments_by_id AS
         presignedurl,
         presignedurlexpirestimestamp,
         size,
-        uploadfilename,
         waveform,
         timestamp
     FROM messenger.attachments_by_messageid

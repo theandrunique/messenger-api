@@ -6,7 +6,6 @@ public class Attachment
     public long? MessageId { get; private set; }
     public long ChannelId { get; private set; }
     public string Filename { get; private set; }
-    public string UploadFilename { get; private set; }
     public string ContentType { get; private set; }
     public long Size { get; private set; }
     public string PreSignedUrl { get; private set; }
@@ -19,10 +18,28 @@ public class Attachment
 
     public Attachment(
         long id,
+        long channelId,
+        string filename,
+        string contentType,
+        long size,
+        string preSignedUrl,
+        DateTimeOffset preSignedUrlExpiresTimestamp)
+    {
+        Id = id;
+        ChannelId = channelId;
+        Filename = filename;
+        ContentType = contentType;
+        Size = size;
+        PreSignedUrl = preSignedUrl;
+        PreSignedUrlExpiresTimestamp = preSignedUrlExpiresTimestamp;
+        Timestamp = DateTimeOffset.UtcNow;
+    }
+
+    public Attachment(
+        long id,
         long messageId,
         long channelId,
         string filename,
-        string uploadFilename,
         string contentType,
         long size,
         string preSignedUrl,
@@ -33,33 +50,11 @@ public class Attachment
         MessageId = messageId;
         ChannelId = channelId;
         Filename = filename;
-        UploadFilename = uploadFilename;
         ContentType = contentType;
         Size = size;
         PreSignedUrl = preSignedUrl;
         PreSignedUrlExpiresTimestamp = preSignedUrlExpiresTimestamp;
         Timestamp = timestamp;
-    }
-
-    public Attachment(
-        long id,
-        long channelId,
-        string filename,
-        string uploadFilename,
-        string contentType,
-        long size,
-        string preSignedUrl,
-        DateTimeOffset preSignedUrlExpiresTimestamp)
-    {
-        Id = id;
-        ChannelId = channelId;
-        Filename = filename;
-        UploadFilename = uploadFilename;
-        ContentType = contentType;
-        Size = size;
-        PreSignedUrl = preSignedUrl;
-        PreSignedUrlExpiresTimestamp = preSignedUrlExpiresTimestamp;
-        Timestamp = DateTimeOffset.UtcNow;
     }
 
     public bool IsNeedUpdateUrl()

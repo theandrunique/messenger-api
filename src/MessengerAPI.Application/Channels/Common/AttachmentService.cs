@@ -38,7 +38,8 @@ public class AttachmentService
             if (item.IsNeedUpdateUrl())
             {
                 var expires = DateTimeOffset.UtcNow.Add(_options.DownloadUrlExpiration);
-                var preSignedUrl = GenerateDownloadUrl(item.UploadFilename, expires);
+                var uploadedFilename = GenerateUploadFilename(item.Filename, item.ChannelId, item.Id);
+                var preSignedUrl = GenerateDownloadUrl(uploadedFilename, expires);
                 item.UpdatePreSignedUrl(preSignedUrl, expires);
             }
         }
@@ -86,7 +87,6 @@ public class AttachmentService
             id: parsedFilename.Value.AttachmentId,
             channelId: parsedFilename.Value.ChannelId,
             filename: filename,
-            uploadFilename: uploadedFilename,
             contentType: objectMetadata.ContentType,
             size: objectMetadata.ObjectSize,
             preSignedUrl: preSignedUrl,
