@@ -19,7 +19,7 @@ public class User
     public string Email { get; private set; }
     public bool IsEmailVerified { get; private set; }
     public DateTimeOffset EmailUpdatedTimestamp { get; private set; }
-    public Image? Image { get; private set; }
+    public string? Image { get; private set; }
 
     public User(
         long id,
@@ -60,7 +60,7 @@ public class User
         string email,
         bool isEmailVerified,
         DateTimeOffset emailUpdatedTimestamp,
-        Image? image)
+        string? image)
     {
         Id = id;
         Username = username;
@@ -104,9 +104,9 @@ public class User
 
     public void SetNewPassword(string passwordHash) => PasswordHash = passwordHash;
 
-    public void UpdateAvatar(string key)
+    public void UpdateAvatar(string avatarHash)
     {
-        Image = new Image { Key = key };
+        Image = avatarHash;
     }
 
     public void RemoveAvatar() => Image = null;

@@ -16,6 +16,7 @@ internal class AttachmentMapper
             row.GetValue<string>("contenttype"),
             row.GetValue<long>("size"),
             row.GetValue<string>("presignedurl"),
-            row.GetValue<DateTimeOffset>("presignedurlexpirestimestamp"));
+            row.GetValue<DateTimeOffset>("presignedurlexpirestimestamp"),
+            row.GetValue<DateTimeOffset>("timestamp"));
     }
 }

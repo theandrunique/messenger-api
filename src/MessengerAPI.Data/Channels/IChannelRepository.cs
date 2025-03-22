@@ -13,6 +13,6 @@ public interface IChannelRepository
     Task AddMemberToChannel(long channelId, ChannelMemberInfo member);
     Task RemoveMemberFromChannel(long channelId, long userId);
     Task UpdateReadAt(long userId, long channelId, long messageId);
-    Task UpdateChannelInfo(long channelId, string title, Image? image);
+    Task UpdateChannelInfo(long channelId, string title, string? image);
     Task UpdateOwnerId(long channelId, long ownerId);
 }

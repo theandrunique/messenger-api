@@ -23,7 +23,7 @@ public record ChannelSchema
         Id = channel.Id.ToString();
         OwnerId = channel.OwnerId?.ToString();
         Title = channel.Title;
-        Image = channel.Image?.Key;
+        Image = channel.Image;
         Type = channel.Type;
         LastMessageTimestamp = channel.LastMessageTimestamp;
         if (channel.LastMessage.HasValue)

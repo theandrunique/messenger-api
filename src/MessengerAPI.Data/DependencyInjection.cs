@@ -29,7 +29,6 @@ public static class DependencyInjection
         var session = cluster.Connect();
 
         session.UserDefinedTypes.Define(
-            UdtMap.For<Image>("image"),
             UdtMap.For<MessageInfo>("messageinfo")
         );
 

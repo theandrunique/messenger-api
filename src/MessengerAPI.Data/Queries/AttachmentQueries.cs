@@ -10,12 +10,12 @@ internal class AttachmentQueries
     private readonly PreparedStatement _selectByChannelIdAndId;
     private readonly PreparedStatement _selectByChannelId;
     private readonly PreparedStatement _removeByChannelIdAndMessageId;
-    private readonly PreparedStatement _updatePreSignedUrls;
+    private readonly PreparedStatement _updatePreSignedUrl;
 
     public AttachmentQueries(ISession session)
     {
         _insert = session.Prepare("""
-            INSERT INTO attachments (
+            INSERT INTO attachments_by_messageid (
                 channelid,
                 messageid,
                 id,
@@ -28,18 +28,19 @@ internal class AttachmentQueries
                 presignedurlexpirestimestamp,
                 size,
                 uploadfilename,
-                waveform
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                waveform,
+                timestamp
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """);
-        _selectByChannelIdAndMessageIds = session.Prepare("SELECT * FROM attachments WHERE channelid = ? AND messageid IN ?");
+        _selectByChannelIdAndMessageIds = session.Prepare("SELECT * FROM attachments_by_messageid WHERE channelid = ? AND messageid IN ?");
 
-        _selectByChannelIdAndId = session.Prepare("SELECT * FROM attachments WHERE channelid = ? AND id = ?");
+        _selectByChannelIdAndId = session.Prepare("SELECT * FROM attachments_by_id WHERE channelid = ? AND id = ?");
 
-        _selectByChannelId = session.Prepare("SELECT * FROM attachments WHERE channelid = ? AND messageid < ? LIMIT ?");
+        _selectByChannelId = session.Prepare("SELECT * FROM attachments_by_id WHERE channelid = ? AND id < ? LIMIT ?");
 
-        _removeByChannelIdAndMessageId = session.Prepare("DELETE FROM attachments WHERE channelid = ? AND messageid = ?");
+        _removeByChannelIdAndMessageId = session.Prepare("DELETE FROM attachments_by_messageid WHERE channelid = ? AND messageid = ?");
 
-        _updatePreSignedUrls = session.Prepare("UPDATE attachments SET presignedurl = ?, presignedurlexpirestimestamp = ? WHERE channelid = ? AND messageid = ? AND id = ?");
+        _updatePreSignedUrl = session.Prepare("UPDATE attachments_by_messageid SET presignedurl = ?, presignedurlexpirestimestamp = ? WHERE channelid = ? AND messageid = ? AND id = ?");
     }
 
     public BoundStatement Insert(Attachment attachment)
@@ -62,8 +63,8 @@ internal class AttachmentQueries
             attachment.PreSignedUrlExpiresTimestamp,
             attachment.Size,
             attachment.UploadFilename,
-            attachment.Waveform
-        );
+            attachment.Waveform,
+            attachment.Timestamp);
     }
 
     public BoundStatement SelectByChannelIdAndId(long channelId, long attachmentId)
@@ -76,9 +77,9 @@ internal class AttachmentQueries
         return _selectByChannelIdAndMessageIds.Bind(channelId, messageIds);
     }
 
-    public BoundStatement SelectByChannelId(long channelId, long beforeMessageId, int limit)
+    public BoundStatement SelectByChannelId(long channelId, long before, int limit)
     {
-        return _selectByChannelId.Bind(channelId, beforeMessageId, limit);
+        return _selectByChannelId.Bind(channelId, before, limit);
     }
 
     public BoundStatement RemoveByChannelIdAndMessageId(long channelId, long messageId)
@@ -93,6 +94,6 @@ internal class AttachmentQueries
         string preSignedUrl,
         DateTimeOffset preSignedUrlExpiresTimestamp)
     {
-        return _updatePreSignedUrls.Bind(preSignedUrl, preSignedUrlExpiresTimestamp, channelId, messageId, attachmentId);
+        return _updatePreSignedUrl.Bind(preSignedUrl, preSignedUrlExpiresTimestamp, channelId, messageId, attachmentId);
     }
 }

@@ -43,7 +43,7 @@ internal class ChannelByIdQueries
         return _selectByIds.Bind(channelIds);
     }
 
-    public BoundStatement UpdateChannelInfo(long channelId, string title, Image? image)
+    public BoundStatement UpdateChannelInfo(long channelId, string title, string? image)
     {
         return _updateChannelInfo.Bind(title, image, channelId);
     }

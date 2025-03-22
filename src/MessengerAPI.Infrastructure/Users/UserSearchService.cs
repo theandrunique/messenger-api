@@ -21,7 +21,7 @@ public class UserSearchService : IUserSearchService
             Id = user.Id.ToString(),
             GlobalName = user.GlobalName,
             Username = user.Username,
-            Image = user.Image?.Key,
+            Image = user.Image,
         };
 
         await _client.IndexAsync(model, idx => idx.Index("users").Id(user.Id.ToString()), ct);
@@ -34,7 +34,7 @@ public class UserSearchService : IUserSearchService
             Id = user.Id.ToString(),
             GlobalName = user.GlobalName,
             Username = user.Username,
-            Image = user.Image?.Key,
+            Image = user.Image,
         };
 
         return _client.UpdateAsync<UserIndexModel, UserIndexModel>(

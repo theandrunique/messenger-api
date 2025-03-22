@@ -9,13 +9,11 @@ namespace MessengerAPI.Data.Channels;
 internal class AttachmentRepository : IAttachmentRepository
 {
     private readonly ISession _session;
-    private readonly Table<Attachment> _table;
     private readonly AttachmentQueries _queries;
 
     public AttachmentRepository(ISession session, AttachmentQueries queries)
     {
         _session = session;
-        _table = new Table<Attachment>(_session);
         _queries = queries;
     }
 
@@ -39,7 +37,7 @@ internal class AttachmentRepository : IAttachmentRepository
         return _session.ExecuteAsync(batch);
     }
 
-    public async Task<Attachment?> GetAttachmentAsync(long channelId, long attachmentId)
+    public async Task<Attachment?> GetAttachmentOrNullAsync(long channelId, long attachmentId)
     {
         var result = (await _session.ExecuteAsync(_queries.SelectByChannelIdAndId(channelId, attachmentId)))
             .FirstOrDefault();
@@ -54,17 +52,11 @@ internal class AttachmentRepository : IAttachmentRepository
         }
     }
 
-    public async Task<List<Attachment>> GetChannelAttachmentsAsync(long channelId, long beforeMessageId, int limit)
+    public async Task<List<Attachment>> GetChannelAttachmentsAsync(long channelId, long before, int limit)
     {
-        var result = (await _session.ExecuteAsync(_queries.SelectByChannelId(channelId, beforeMessageId, limit))).ToList();
+        var result = (await _session.ExecuteAsync(_queries.SelectByChannelId(channelId, before, limit)))
+            .ToList();
 
         return result.Select(AttachmentMapper.Map).ToList();
-    }
-
-    public Task RemoveAsync(long attachmentId)
-    {
-        return _table
-            .Where(a => a.Id == attachmentId).Delete()
-            .ExecuteAsync();
     }
 }

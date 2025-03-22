@@ -7,7 +7,7 @@ public struct MessageAuthorInfo
     public long Id { get; init; }
     public string Username { get; init; }
     public string GlobalName { get; init; }
-    public Image? Image { get; init; }
+    public string? Image { get; init; }
     public MessageAuthorInfo(User author)
     {
         Id = author.Id;
@@ -16,7 +16,7 @@ public struct MessageAuthorInfo
         Image = author.Image;
     }
 
-    public MessageAuthorInfo(long id, string username, string globalName, Image? image)
+    public MessageAuthorInfo(long id, string username, string globalName, string? image)
     {
         Id = id;
         Username = username;

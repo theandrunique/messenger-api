@@ -10,7 +10,11 @@ public struct ChannelMemberInfo
     public ChannelPermissionSet Permissions { get; init; }
     public string Username { get; init; }
     public string GlobalName { get; init; }
-    public Image? Image { get; init; }
+    public string? Image { get; init; }
+    public bool IsLeave { get; set; }
+    public bool IsBanned { get; set; }
+    public bool IsMuted { get; set; }
+    public bool IsKicked { get; set; }
 
     public ChannelMemberInfo(User user, ChannelPermissions permissions)
     {
@@ -26,7 +30,7 @@ public struct ChannelMemberInfo
         long userId,
         string username,
         string globalName,
-        Image? image,
+        string? image,
         long readAt,
         ChannelPermissionSet permissions)
     {

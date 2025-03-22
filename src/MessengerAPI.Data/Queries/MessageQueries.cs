@@ -30,5 +30,4 @@ internal class MessageQueries
     {
         return _selectByChannelId.Bind(channelId, before, limit);
     }
-
 }

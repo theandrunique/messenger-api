@@ -25,7 +25,7 @@ public record UserPublicSchema
         Username = user.Username;
         GlobalName = user.GlobalName;
         Bio = user.Bio;
-        Avatar = user.Image?.Key;
+        Avatar = user.Image;
         Timestamp = user.Timestamp;
     }
 
@@ -46,7 +46,7 @@ public record UserPublicSchema
         Id = member.UserId.ToString();
         Username = member.Username;
         GlobalName = member.GlobalName;
-        Avatar = member.Image?.Key;
+        Avatar = member.Image;
     }
 
     public static UserPublicSchema From(ChannelMemberInfo member) => new(member);
@@ -56,7 +56,7 @@ public record UserPublicSchema
         Id = authorInfo.Id.ToString();
         Username = authorInfo.Username;
         GlobalName = authorInfo.GlobalName;
-        Avatar = authorInfo.Image?.Key;
+        Avatar = authorInfo.Image;
     }
 
     public static UserPublicSchema From(MessageAuthorInfo authorInfo) => new(authorInfo);

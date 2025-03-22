@@ -115,7 +115,7 @@ internal class UserQueries
         return _updateMfaStatusKey.Bind(user.TOTPKey, user.TwoFactorAuthentication, user.Id);
     }
 
-    public BoundStatement UpdateAvatar(long userId, Image? image)
+    public BoundStatement UpdateAvatar(long userId, string? image)
     {
         return _updateAvatar.Bind(image, userId);
     }

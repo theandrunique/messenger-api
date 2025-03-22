@@ -12,7 +12,7 @@ internal static class MessageMapper
             id: row.GetValue<long>("userid"),
             username: row.GetValue<string>("username"),
             globalName: row.GetValue<string>("globalname"),
-            image: row.GetValue<Image?>("image")
+            image: row.GetValue<string?>("image")
         );
     }
 

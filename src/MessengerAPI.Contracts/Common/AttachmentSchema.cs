@@ -13,6 +13,7 @@ public record AttachmentSchema
     public float? DurationSecs { get; init; }
     public string? Waveform { get; init; }
     public bool IsSpoiler { get; init; }
+    public DateTimeOffset Timestamp { get; init; }
 
     private AttachmentSchema(Attachment attachment)
     {
@@ -25,6 +26,7 @@ public record AttachmentSchema
         DurationSecs = attachment.DurationSecs;
         Waveform = attachment.Waveform;
         IsSpoiler = attachment.IsSpoiler;
+        Timestamp = attachment.Timestamp;
     }
 
     public static AttachmentSchema From(Attachment attachment) => new AttachmentSchema(attachment);

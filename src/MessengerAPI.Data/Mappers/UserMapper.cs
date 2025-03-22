@@ -24,7 +24,7 @@ internal static class UserMapper
             email: row.GetValue<string>("email"),
             isEmailVerified: row.GetValue<bool>("isemailverified"),
             emailUpdatedTimestamp: row.GetValue<DateTimeOffset>("emailupdatedtimestamp"),
-            image: row.GetValue<Image?>("image")
+            image: row.GetValue<string?>("image")
         );
     }
 }

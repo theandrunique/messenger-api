@@ -18,16 +18,12 @@ CREATE TYPE messenger.messageinfo (
 
 );
 
-CREATE TYPE messenger.image (
-    key text
-);
-
 -- TABLES
 
-CREATE TABLE messenger.attachments (
+CREATE TABLE messenger.attachments_by_messageid (
     channelid bigint,
-    messageid bigint,
     id bigint,
+    messageid bigint,
     contenttype text,
     durationsecs float,
     filename text,
@@ -38,11 +34,34 @@ CREATE TABLE messenger.attachments (
     size bigint,
     uploadfilename text,
     waveform text,
+    timestamp timestamp,
 
-    PRIMARY KEY (channelid, messageid, id)
+    PRIMARY KEY ((channelid), messageid, id)
 );
 
-CREATE INDEX ON messenger.attachments((channelid), id);
+CREATE MATERIALIZED VIEW attachments_by_id AS
+    SELECT
+        channelid,
+        id,
+        messageid,
+        contenttype,
+        durationsecs,
+        filename,
+        isspoiler,
+        placeholder,
+        presignedurl,
+        presignedurlexpirestimestamp,
+        size,
+        uploadfilename,
+        waveform,
+        timestamp
+    FROM messenger.attachments_by_messageid
+    WHERE
+        channelid IS NOT NULL
+        AND id IS NOT NULL
+        AND messageid IS NOT NULL
+    PRIMARY KEY (channelid, id, messageid)
+    WITH CLUSTERING ORDER BY (id DESC);
 
 CREATE TABLE messenger.channel_users_by_user_id (
     userid bigint,
@@ -50,7 +69,7 @@ CREATE TABLE messenger.channel_users_by_user_id (
     readat bigint,
     username text,
     globalname text,
-    image frozen<image>,
+    image text,
     permissions bigint,
 
     PRIMARY KEY (userid, channelid)
@@ -65,13 +84,13 @@ CREATE MATERIALIZED VIEW messenger.channel_users_by_channel_id AS
 CREATE TABLE messenger.channels_by_id (
     channelid bigint,
     channeltype int,
-    image frozen<image>,
+    image text,
     lastmessage messageinfo,
     lastmessagetimestamp timestamp,
     ownerid bigint,
     title text,
 
-    PRIMARY KEY (channelid)
+    PRIMARY KEY ((channelid))
 );
 
 CREATE TABLE messenger.messages (
@@ -84,7 +103,7 @@ CREATE TABLE messenger.messages (
     pinned boolean,
     type int,
 
-    PRIMARY KEY (channelid, id)
+    PRIMARY KEY ((channelid), id)
 );
 
 CREATE TABLE messenger.private_channels (
@@ -105,7 +124,7 @@ CREATE TABLE messenger.sessions (
     location text,
     tokenid uuid,
 
-    PRIMARY KEY (userid, id)
+    PRIMARY KEY ((userid), id)
 );
 
 CREATE INDEX sessions_tokenid_idx ON messenger.sessions(tokenid);
@@ -127,9 +146,9 @@ CREATE TABLE messenger.users (
     twofactorauthentication boolean,
     username text,
     usernameupdatedtimestamp timestamp,
-    image frozen<image>,
+    image text,
 
-    PRIMARY KEY (id)
+    PRIMARY KEY ((id))
 );
 
 CREATE INDEX users_email_idx ON messenger.users(email);

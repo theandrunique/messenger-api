@@ -14,7 +14,7 @@ internal static class ChannelMapper
             Id = row.GetValue<long>("channelid"),
             OwnerId = row.GetValue<long?>("ownerid"),
             Title = row.GetValue<string?>("title"),
-            Image = row.GetValue<Image?>("image"),
+            Image = row.GetValue<string?>("image"),
             Type = (ChannelType)row.GetValue<int>("channeltype"),
             LastMessageTimestamp = row.GetValue<DateTimeOffset?>("lastmessagetimestamp"),
             LastMessage = row.GetValue<MessageInfo?>("lastmessage")
@@ -27,7 +27,7 @@ internal static class ChannelMapper
             userId: row.GetValue<long>("userid"),
             username: row.GetValue<string>("username"),
             globalName: row.GetValue<string>("globalname"),
-            image: row.GetValue<Image?>("image"),
+            image: row.GetValue<string?>("image"),
             readAt: row.GetValue<long>("readat"),
             permissions: new ChannelPermissionSet((ulong)row.GetValue<long>("permissions")));
     }

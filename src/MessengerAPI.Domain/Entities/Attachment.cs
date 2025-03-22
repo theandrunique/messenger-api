@@ -15,17 +15,19 @@ public class Attachment
     public float? DurationSecs { get; private set; }
     public string? Waveform { get; private set; }
     public bool IsSpoiler { get; private set; }
+    public DateTimeOffset Timestamp { get; private set; }
 
     public Attachment(
         long id,
-        long? messageId,
+        long messageId,
         long channelId,
         string filename,
         string uploadFilename,
         string contentType,
         long size,
         string preSignedUrl,
-        DateTimeOffset preSignedUrlExpiresTimestamp)
+        DateTimeOffset preSignedUrlExpiresTimestamp,
+        DateTimeOffset timestamp)
     {
         Id = id;
         MessageId = messageId;
@@ -36,6 +38,28 @@ public class Attachment
         Size = size;
         PreSignedUrl = preSignedUrl;
         PreSignedUrlExpiresTimestamp = preSignedUrlExpiresTimestamp;
+        Timestamp = timestamp;
+    }
+
+    public Attachment(
+        long id,
+        long channelId,
+        string filename,
+        string uploadFilename,
+        string contentType,
+        long size,
+        string preSignedUrl,
+        DateTimeOffset preSignedUrlExpiresTimestamp)
+    {
+        Id = id;
+        ChannelId = channelId;
+        Filename = filename;
+        UploadFilename = uploadFilename;
+        ContentType = contentType;
+        Size = size;
+        PreSignedUrl = preSignedUrl;
+        PreSignedUrlExpiresTimestamp = preSignedUrlExpiresTimestamp;
+        Timestamp = DateTimeOffset.UtcNow;
     }
 
     public bool IsNeedUpdateUrl()

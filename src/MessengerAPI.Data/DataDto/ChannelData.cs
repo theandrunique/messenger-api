@@ -8,7 +8,7 @@ internal struct ChannelData
     public long Id { get; set; }
     public long? OwnerId { get; set; }
     public string? Title { get; set; }
-    public Image? Image { get; set; }
+    public string? Image { get; set; }
     public ChannelType Type { get; set; }
     public DateTimeOffset? LastMessageTimestamp { get; set; }
     public MessageInfo? LastMessage { get; set; }

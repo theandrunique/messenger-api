@@ -10,7 +10,7 @@ public class Channel
     public long Id { get; private set; }
     public long? OwnerId { get; private set; }
     public string? Title { get; private set; }
-    public Image? Image { get; private set; }
+    public string? Image { get; private set; }
     public ChannelType Type { get; private set; }
     public DateTimeOffset? LastMessageTimestamp { get; private set; }
     public MessageInfo? LastMessage { get; private set; }
@@ -55,7 +55,7 @@ public class Channel
         long id,
         long? ownerId,
         string? title,
-        Image? image,
+        string? image,
         ChannelType type,
         DateTimeOffset? lastMessageTimestamp,
         MessageInfo? lastMessage,

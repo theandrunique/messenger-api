@@ -4,7 +4,6 @@ using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Options;
 
 namespace MessengerAPI.Application.Channels.Common;
@@ -34,7 +33,7 @@ public class AttachmentService
     {
         List<Attachment> updated = new();
 
-        foreach(var item in attachments)
+        foreach (var item in attachments)
         {
             if (item.IsNeedUpdateUrl())
             {
@@ -84,15 +83,14 @@ public class AttachmentService
         var preSignedUrl = GenerateDownloadUrl(uploadedFilename, expires);
 
         return new Attachment(
-            parsedFilename.Value.AttachmentId,
-            null,
-            parsedFilename.Value.ChannelId,
-            filename,
-            uploadedFilename,
-            objectMetadata.ContentType,
-            objectMetadata.ObjectSize,
-            preSignedUrl,
-            expires);
+            id: parsedFilename.Value.AttachmentId,
+            channelId: parsedFilename.Value.ChannelId,
+            filename: filename,
+            uploadFilename: uploadedFilename,
+            contentType: objectMetadata.ContentType,
+            size: objectMetadata.ObjectSize,
+            preSignedUrl: preSignedUrl,
+            preSignedUrlExpiresTimestamp: expires);
     }
 
     public Task DeleteObjectAsync(
@@ -119,7 +117,7 @@ public class AttachmentService
             throw new ArgumentException($"Invalid uploadFilename: {uploadFilename}");
         }
 
-        return await _attachmentRepository.GetAttachmentAsync(
+        return await _attachmentRepository.GetAttachmentOrNullAsync(
             parsedUploadFilename.Value.ChannelId,
             parsedUploadFilename.Value.AttachmentId);
     }
