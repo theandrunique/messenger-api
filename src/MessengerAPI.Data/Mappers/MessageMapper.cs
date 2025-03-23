@@ -23,6 +23,7 @@ internal static class MessageMapper
             Id = row.GetValue<long>("id"),
             ChannelId = row.GetValue<long>("channelid"),
             AuthorId = row.GetValue<long>("authorid"),
+            TargetUserId = row.GetValue<long?>("targetuserid"),
             Content = row.GetValue<string>("content"),
             Timestamp = row.GetValue<DateTimeOffset>("timestamp"),
             EditedTimestamp = row.GetValue<DateTimeOffset?>("editedtimestamp"),

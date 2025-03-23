@@ -98,7 +98,14 @@ internal class MessageRepository : IMessageRepository
             return Enumerable.Empty<Message>();
         }
 
-        query = _channelUsers.SelectByChannelIdAndUserIds(channelId, messagesData.Select(m => m.AuthorId).Distinct());
+        var userIds = messagesData
+            .Select(m => m.AuthorId)
+            .Concat(messagesData.
+                Where(m => m.TargetUserId != null)
+                .Select(m => m.TargetUserId!.Value))
+                .Distinct();
+
+        query = _channelUsers.SelectByChannelIdAndUserIds(channelId, userIds);
         var channelUsersTask = _session.ExecuteAsync(query);
         query = _attachments.SelectByChannelIdInMessageIds(channelId, messagesData.Select(m => m.Id));
         var attachmentsTask = _session.ExecuteAsync(query);
