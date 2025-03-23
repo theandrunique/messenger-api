@@ -7,6 +7,7 @@ using MessengerAPI.Application.Channels.Commands.RemoveChannelMember;
 using MessengerAPI.Application.Channels.Commands.UpdateChannel;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Channels.Queries.GetAttachments;
+using MessengerAPI.Application.Channels.Queries.GetChannel;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Presentation.Schemas.Channels;
@@ -22,6 +23,15 @@ public class ChannelsController : ApiController
     public ChannelsController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet("{channelId}")]
+    [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetChannelAsync(long channelId, CancellationToken cancellationToken)
+    {
+        var query = new GetChannelQuery(channelId);
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.Match(onValue: Ok, onError: Problem);
     }
 
     [HttpPost("{channelId}")]
