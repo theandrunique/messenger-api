@@ -44,16 +44,23 @@ public class RemoveChannelMemberCommandHandler : IRequestHandler<RemoveChannelMe
             return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermissions.MANAGE_MEMBERS);
         }
 
-        if (!channel.HasMember(request.UserId))
+        var memberToRemove = channel.FindMember(request.UserId);
+        if (memberToRemove is null)
         {
+            // user has never been in this channel
+            return ApiErrors.Channel.UserNotMember(request.UserId, channel.Id);
+        }
+        if (memberToRemove.IsLeave)
+        {
+            // user has been in this channel but left
             return ApiErrors.Channel.UserNotMember(request.UserId, channel.Id);
         }
 
-        var memberInfo = channel.RemoveMember(request.UserId);
+        memberToRemove.SetLeaveStatus(true);
 
-        await _channelRepository.RemoveMemberFromChannel(request.ChannelId, request.UserId);
+        await _channelRepository.UpdateIsLeaveStatus(memberToRemove.UserId, request.ChannelId, memberToRemove.IsLeave);
 
-        await _publisher.Publish(new ChannelMemberRemoveDomainEvent(channel, memberInfo, _clientInfo.UserId));
+        await _publisher.Publish(new ChannelMemberRemoveDomainEvent(channel, memberToRemove, _clientInfo.UserId));
 
         return await Unit.Task;
     }

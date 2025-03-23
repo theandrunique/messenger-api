@@ -1,8 +1,9 @@
 using MessengerAPI.Domain.Entities;
+using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Domain.Events;
 
 public record MessageUpdateDomainEvent(
     Channel Channel,
     Message Message,
-    User Initiator) : IDomainEvent;
+    ChannelMemberInfo Initiator) : IDomainEvent;

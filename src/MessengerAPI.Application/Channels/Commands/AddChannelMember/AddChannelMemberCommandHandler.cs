@@ -41,12 +41,6 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
-        var newMember = await _userRepository.GetByIdOrNullAsync(request.UserId);
-        if (newMember is null)
-        {
-            return ApiErrors.User.NotFound(request.UserId);
-        }
-
         if (channel.Type == ChannelType.PRIVATE)
         {
             return ApiErrors.Channel.InvalidOperationForThisChannelType;
@@ -57,16 +51,32 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermissions.MANAGE_MEMBERS);
         }
 
-        if (channel.HasMember(newMember.Id))
+        var memberToReturn = channel.FindMember(request.UserId);
+        if (memberToReturn != null)
         {
-            return ApiErrors.Channel.MemberAlreadyInChannel(newMember.Id);
+            // Member was in channel before
+            if (!memberToReturn.IsLeave)
+            {
+                return ApiErrors.Channel.MemberAlreadyInChannel(memberToReturn.UserId);
+            }
+
+            memberToReturn.SetLeaveStatus(false);
+            await _channelRepository.UpdateIsLeaveStatus(memberToReturn.UserId, channel.Id, memberToReturn.IsLeave);
+            await _publisher.Publish(new ChannelMemberAddDomainEvent(channel, memberToReturn, _clientInfo.UserId));
         }
+        else
+        {
+            // Member added to the channel for the first time
+            var newMember = await _userRepository.GetByIdOrNullAsync(request.UserId);
+            if (newMember is null)
+            {
+                return ApiErrors.User.NotFound(request.UserId);
+            }
+            var memberInfo = channel.AddNewMember(newMember, ChannelPermissions.DEFAULT_MEMBER);
 
-        var memberInfo = channel.AddNewMember(newMember, ChannelPermissions.DEFAULT);
-
-        await _channelRepository.AddMemberToChannel(request.ChannelId, memberInfo);
-
-        await _publisher.Publish(new ChannelMemberAddDomainEvent(channel, memberInfo, _clientInfo.UserId));
+            await _channelRepository.UpsertChannelMemberAsync(channel.Id, memberInfo);
+            await _publisher.Publish(new ChannelMemberAddDomainEvent(channel, memberInfo, _clientInfo.UserId));
+        }
 
         return await Unit.Task;
     }

@@ -25,18 +25,18 @@ public class Message
         MessageType type,
         long id,
         long channelId,
-        User author,
+        ChannelMemberInfo author,
         string content,
-        User? targetUser = null,
+        ChannelMemberInfo? targetUser = null,
         List<Attachment>? attachments = null,
         IMessageMetadata? metadata = null)
     {
         Id = id;
         Type = type;
         ChannelId = channelId;
-        AuthorId = author.Id;
+        AuthorId = author.UserId;
         Author = new MessageAuthorInfo(author);
-        TargetUserId = targetUser?.Id;
+        TargetUserId = targetUser?.UserId;
         TargetUser = targetUser != null ? new MessageAuthorInfo(targetUser) : null;
         Content = content;
         Timestamp = DateTimeOffset.UtcNow;

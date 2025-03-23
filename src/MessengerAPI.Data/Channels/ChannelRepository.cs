@@ -44,14 +44,15 @@ internal class ChannelRepository : IChannelRepository
         return _session.ExecuteAsync(batch);
     }
 
-    public Task AddMemberToChannel(long channelId, ChannelMemberInfo member)
+    public Task UpsertChannelMemberAsync(long channelId, ChannelMemberInfo member)
     {
         return _session.ExecuteAsync(_channelUsers.Insert(channelId, member));
     }
 
-    public Task RemoveMemberFromChannel(long channelId, long userId)
+    public Task UpdateIsLeaveStatus(long userId, long channelId, bool isLeave)
     {
-        return _session.ExecuteAsync(_channelUsers.Delete(userId, channelId));
+        Console.WriteLine("Executing UpdateIsLeaveStatus with parameters: userId: {0}, channelId: {1}, isLeave: {2}", userId, channelId, isLeave);
+        return _session.ExecuteAsync(_channelUsers.UpdateIsLeave(userId, channelId, isLeave));
     }
 
     public Task UpdateReadAt(long userId, long channelId, long messageId)

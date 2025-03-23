@@ -7,7 +7,6 @@ namespace MessengerAPI.Data.Queries;
 internal class ChannelUserQueries
 {
     private readonly PreparedStatement _insert;
-    private readonly PreparedStatement _delete;
     private readonly PreparedStatement _selectByChannelId;
     private readonly PreparedStatement _selectByChannelIds;
     private readonly PreparedStatement _selectByUserId;
@@ -15,6 +14,7 @@ internal class ChannelUserQueries
     private readonly PreparedStatement _selectChannelIdsByUserId;
     private readonly PreparedStatement _updateReadAt;
     private readonly PreparedStatement _updateUserInfo;
+    private readonly PreparedStatement _updateIsLeave;
 
     public ChannelUserQueries(ISession session)
     {
@@ -26,11 +26,10 @@ internal class ChannelUserQueries
                 username,
                 globalname,
                 image,
-                permissions
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                permissions,
+                isleave
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """);
-
-        _delete = session.Prepare("DELETE FROM channel_users_by_user_id WHERE userid = ? AND channelid = ?");
 
         _selectByChannelId = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channelid = ?");
 
@@ -45,6 +44,8 @@ internal class ChannelUserQueries
         _updateReadAt = session.Prepare("UPDATE channel_users_by_user_id SET readat = ? WHERE userid = ? AND channelid = ?");
 
         _updateUserInfo = session.Prepare("UPDATE channel_users_by_user_id SET globalname = ?, image = ? WHERE userid = ? AND channelid IN ?");
+        
+        _updateIsLeave = session.Prepare("UPDATE channel_users_by_user_id SET isleave = ? WHERE userid = ? AND channelid = ?");
     }
 
     public BoundStatement Insert(long channelId, ChannelMemberInfo member)
@@ -56,12 +57,8 @@ internal class ChannelUserQueries
             member.Username,
             member.GlobalName,
             member.Image,
-            (long)member.Permissions.ToValue());
-    }
-
-    public BoundStatement Delete(long userId, long channelId)
-    {
-        return _delete.Bind(userId, channelId);
+            (long)member.Permissions.ToValue(),
+            member.IsLeave);
     }
 
     public BoundStatement SelectByChannelId(long channelId)
@@ -97,5 +94,10 @@ internal class ChannelUserQueries
     public BoundStatement UpdateUserInfo(User user, IEnumerable<long> channelIds)
     {
         return _updateUserInfo.Bind(user.GlobalName, user.Image, user.Id, channelIds);
+    }
+
+    public BoundStatement UpdateIsLeave(long userId, long channelId, bool isLeave)
+    {
+        return _updateIsLeave.Bind(isLeave, userId, channelId);
     }
 }

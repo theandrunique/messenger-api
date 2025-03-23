@@ -30,7 +30,7 @@ public record ChannelSchema
         {
             LastMessage = MessageInfoSchema.From(channel.LastMessage.Value);
         }
-        Members = channel.Members.Select(UserPublicSchema.From).ToList();
+        Members = channel.Members.Where(m => !m.IsLeave).Select(UserPublicSchema.From).ToList();
         if (userId != null)
         {
             var currentMember = channel.Members.First(m => m.UserId == userId);

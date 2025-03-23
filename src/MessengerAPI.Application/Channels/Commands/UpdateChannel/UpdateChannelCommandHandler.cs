@@ -45,11 +45,11 @@ public class UpdateChannelCommandHandler : IRequestHandler<UpdateChannelCommand,
             return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermissions.MANAGE_CHANNEL);
         }
 
-        channel.UpdateChannel(request.Title);
+        channel.UpdateChannelTitle(request.Title);
 
         await _channelRepository.UpdateChannelInfo(channel.Id, request.Title, channel.Image);
 
-        await _mediator.Publish(new ChannelUpdateDomainEvent(channel));
+        await _mediator.Publish(new ChannelTitleUpdateDomainEvent(channel, request.Title, _clientInfo.UserId));
 
         return ChannelSchema.From(channel);
     }

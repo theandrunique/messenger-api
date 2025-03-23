@@ -10,7 +10,7 @@ public class GatewayEventPublisherHandler
     : INotificationHandler<MessageCreateDomainEvent>,
       INotificationHandler<MessageUpdateDomainEvent>,
       INotificationHandler<ChannelCreateDomainEvent>,
-      INotificationHandler<ChannelUpdateDomainEvent>,
+      INotificationHandler<ChannelTitleUpdateDomainEvent>,
       INotificationHandler<ChannelMemberAddDomainEvent>,
       INotificationHandler<ChannelMemberRemoveDomainEvent>,
       INotificationHandler<MessageAckDomainEvent>
@@ -51,7 +51,7 @@ public class GatewayEventPublisherHandler
             @event.Channel.Members.Select(m => m.UserId.ToString())));
     }
 
-    public Task Handle(ChannelUpdateDomainEvent @event, CancellationToken cancellationToken)
+    public Task Handle(ChannelTitleUpdateDomainEvent @event, CancellationToken cancellationToken)
     {
         return _gateway.PublishAsync(new ChannelUpdateGatewayEvent(
             ChannelSchema.From(@event.Channel)));

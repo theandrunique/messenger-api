@@ -43,7 +43,7 @@ public class Channel
                 if (user.Id == ownerId)
                     return new ChannelMemberInfo(user, ChannelPermissions.OWNER);
 
-                return new ChannelMemberInfo(user, ChannelPermissions.DEFAULT);
+                return new ChannelMemberInfo(user, ChannelPermissions.DEFAULT_MEMBER);
             })
             .ToList();
 
@@ -83,18 +83,9 @@ public class Channel
         return member;
     }
 
-    public ChannelMemberInfo RemoveMember(long userId)
+    public ChannelMemberInfo? FindMember(long userId)
     {
-        ChannelMemberInfo? member = _members.FirstOrDefault(m => m.UserId == userId);
-
-        if (!member.HasValue)
-        {
-            throw new Exception($"User {userId} not found in the channel");
-        }
-
-        var result = _members.Remove(member.Value);
-
-        return member.Value;
+        return _members.FirstOrDefault(m => m.UserId == userId);
     }
 
     public bool HasMember(long userId)
@@ -107,7 +98,7 @@ public class Channel
         return _members.Any(m => m.UserId == userId && m.Permissions.HasPermission(permissions));
     }
 
-    public void UpdateChannel(string title)
+    public void UpdateChannelTitle(string title)
     {
         if (Type == ChannelType.PRIVATE)
         {

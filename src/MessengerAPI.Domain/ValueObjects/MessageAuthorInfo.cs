@@ -24,6 +24,14 @@ public struct MessageAuthorInfo
         Image = image;
     }
 
+    public MessageAuthorInfo(ChannelMemberInfo member)
+    {
+        Id = member.UserId;
+        Username = member.Username;
+        GlobalName = member.GlobalName;
+        Image = member.Image;
+    }
+
 #pragma warning disable CS8618
     public MessageAuthorInfo() { }
 #pragma warning restore CS8618

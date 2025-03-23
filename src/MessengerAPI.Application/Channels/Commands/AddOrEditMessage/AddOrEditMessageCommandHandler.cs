@@ -17,7 +17,6 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
     private readonly IChannelRepository _channelRepository;
     private readonly AttachmentService _attachmentService;
     private readonly IMessageRepository _messageRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IIdGenerator _idGenerator;
     private readonly IPublisher _publisher;
     private readonly IClientInfoProvider _clientInfo;
@@ -26,7 +25,6 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         IChannelRepository channelRepository,
         IMessageRepository messageRepository,
         AttachmentService attachmentService,
-        IUserRepository userRepository,
         IIdGenerator idGenerator,
         IPublisher publisher,
         IClientInfoProvider clientInfo)
@@ -34,7 +32,6 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         _channelRepository = channelRepository;
         _messageRepository = messageRepository;
         _attachmentService = attachmentService;
-        _userRepository = userRepository;
         _idGenerator = idGenerator;
         _publisher = publisher;
         _clientInfo = clientInfo;
@@ -53,11 +50,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
-        var initiator = await _userRepository.GetByIdOrNullAsync(_clientInfo.UserId);
-        if (initiator is null)
-        {
-            throw new ArgumentException("User was expected to be found.");
-        }
+        var initiator = channel.Members.First(m => m.UserId == _clientInfo.UserId);
 
         List<Attachment>? attachments = null;
         if (request.Attachments?.Count > 0)
@@ -90,7 +83,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
                 return ApiErrors.Channel.MessageNotFound(request.MessageId.Value);
             }
 
-            if (message.AuthorId != initiator.Id)
+            if (message.AuthorId != initiator.UserId)
             {
                 return ApiErrors.Channel.MessageWasSentByAnotherUser(request.MessageId.Value);
             }

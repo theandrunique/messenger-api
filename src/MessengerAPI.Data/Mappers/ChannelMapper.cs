@@ -29,6 +29,7 @@ internal static class ChannelMapper
             globalName: row.GetValue<string>("globalname"),
             image: row.GetValue<string?>("image"),
             readAt: row.GetValue<long>("readat"),
-            permissions: new ChannelPermissionSet((ulong)row.GetValue<long>("permissions")));
+            permissions: new ChannelPermissionSet((ulong)row.GetValue<long>("permissions")),
+            isLeave: row.GetValue<bool>("isleave"));
     }
 }
