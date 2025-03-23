@@ -10,7 +10,7 @@ public static class MessengerConstants
     public static class Message
     {
         public const long MaxAttachmentsCount = 10;
-        public const long MaxContentLength = 10000;
+        public const int MaxContentLength = 10000;
     }
 
     public static class Session
