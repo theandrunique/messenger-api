@@ -7,6 +7,7 @@ using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.Events;
+using MessengerAPI.Domain.ValueObjects;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
@@ -81,7 +82,6 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         }
 
         Message? message;
-
         if (request.MessageId.HasValue)
         {
             message = await _messageRepository.GetMessageByIdOrNullAsync(request.ChannelId, request.MessageId.Value);
@@ -102,11 +102,13 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         else
         {
             message = new Message(
-                _idGenerator.CreateId(),
-                request.ChannelId,
-                initiator,
-                request.Content,
-                attachments);
+                type: MessageType.DEFAULT,
+                id: _idGenerator.CreateId(),
+                channelId: request.ChannelId,
+                author: initiator,
+                content: request.Content,
+                attachments: attachments);
+
             await _messageRepository.UpsertAsync(message);
             await _publisher.Publish(new MessageCreateDomainEvent(channel, message, initiator));
         }

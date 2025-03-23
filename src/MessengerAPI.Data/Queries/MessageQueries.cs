@@ -1,5 +1,6 @@
 using Cassandra;
 using MessengerAPI.Domain.Entities;
+using System.Text.Json;
 
 namespace MessengerAPI.Data.Queries;
 
@@ -11,14 +12,38 @@ internal class MessageQueries
 
     public MessageQueries(ISession session)
     {
-        _insert = session.Prepare("INSERT INTO messages (channelid, id, authorid, content, timestamp, editedtimestamp, pinned, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        _insert = session.Prepare("""
+            INSERT INTO messages (
+                channelid,
+                id,
+                authorid,
+                targetuserid,
+                content,
+                timestamp,
+                editedtimestamp,
+                pinned,
+                type,
+                metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """);
+
         _selectById = session.Prepare("SELECT * FROM messages WHERE channelid = ? AND id = ?");
+
         _selectByChannelId = session.Prepare("SELECT * FROM messages WHERE channelid = ? AND id < ? ORDER BY id DESC LIMIT ?");
     }
 
     public BoundStatement Insert(Message message)
     {
-        return _insert.Bind(message.ChannelId, message.Id, message.AuthorId, message.Content, message.Timestamp, message.EditedTimestamp, message.Pinned, (int)message.Type);
+        return _insert.Bind(
+            message.ChannelId,
+            message.Id,
+            message.AuthorId,
+            message.TargetUserId,
+            message.Content,
+            message.Timestamp,
+            message.EditedTimestamp,
+            message.Pinned,
+            (int)message.Type,
+            JsonSerializer.Serialize(message.Metadata));
     }
 
     public BoundStatement SelectById(long channelId, long messageId)

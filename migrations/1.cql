@@ -95,14 +95,16 @@ CREATE TABLE messenger.messages (
     channelid bigint,
     id bigint,
     authorid bigint,
+    targetuserid bigint,
     content text,
     timestamp timestamp,
     editedtimestamp timestamp,
     pinned boolean,
     type int,
+    metadata text,
 
     PRIMARY KEY ((channelid), id)
-);
+) WITH CLUSTERING ORDER BY (id DESC);
 
 CREATE TABLE messenger.private_channels (
     userid1 bigint,
