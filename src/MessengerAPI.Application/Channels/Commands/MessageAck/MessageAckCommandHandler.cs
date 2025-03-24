@@ -37,7 +37,7 @@ public class MessageAckCommandHandler : IRequestHandler<MessageAckCommand, Error
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
-        var memberInfo = channel.Members.First(m => m.UserId == _clientInfo.UserId);
+        var memberInfo = channel.AllMembers.First(m => m.UserId == _clientInfo.UserId);
 
         if (memberInfo.ReadAt >= request.MessageId)
         {

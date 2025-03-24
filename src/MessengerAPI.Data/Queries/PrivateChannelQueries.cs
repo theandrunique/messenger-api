@@ -17,7 +17,7 @@ internal class PrivateChannelQueries
 
     public BoundStatement Insert(Channel channel)
     {
-        var sortedMembers = channel.Members.OrderBy(member => member.UserId).ToList();
+        var sortedMembers = channel.AllMembers.OrderBy(member => member.UserId).ToList();
 
         if (sortedMembers.Count == 2)
         {

@@ -5,6 +5,7 @@ using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Users;
+using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.Events;
 using MessengerAPI.Domain.ValueObjects;
@@ -49,8 +50,12 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         {
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
+        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermissions.SEND_MESSAGES))
+        {
+            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermissions.SEND_MESSAGES);
+        }
 
-        var initiator = channel.Members.First(m => m.UserId == _clientInfo.UserId);
+        var initiator = channel.ActiveMembers.First(m => m.UserId == _clientInfo.UserId);
 
         List<Attachment>? attachments = null;
         if (request.Attachments?.Count > 0)
@@ -61,7 +66,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
                     f.Filename,
                     cancellationToken))
                 .ToList();
-            
+
             var attachmentResults = await Task.WhenAll(attachmentTasks);
 
             foreach (var result in attachmentResults)

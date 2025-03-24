@@ -39,7 +39,7 @@ public class MetaMessagesCreator
         }
         else
         {
-            var actionInitiatorInfo = @event.Channel.Members.First(m => m.UserId == @event.InitiatorId);
+            var actionInitiatorInfo = @event.Channel.ActiveMembers.First(m => m.UserId == @event.InitiatorId);
 
             var metaMessage = new Message(
                 type: MessageType.MEMBER_REMOVE,
@@ -55,7 +55,7 @@ public class MetaMessagesCreator
 
     public async Task Handle(ChannelTitleUpdateDomainEvent @event, CancellationToken cancellationToken)
     {
-        var actionInitiatorInfo = @event.Channel.Members.First(m => m.UserId == @event.InitiatorId);
+        var actionInitiatorInfo = @event.Channel.ActiveMembers.First(m => m.UserId == @event.InitiatorId);
 
         var metaMessage = new Message(
             type: MessageType.CHANNEL_TITLE_CHANGE,
@@ -71,7 +71,7 @@ public class MetaMessagesCreator
 
     public async Task Handle(ChannelMemberAddDomainEvent @event, CancellationToken cancellationToken)
     {
-        var actionInitiatorInfo = @event.Channel.Members.First(m => m.UserId == @event.InitiatorId);
+        var actionInitiatorInfo = @event.Channel.ActiveMembers.First(m => m.UserId == @event.InitiatorId);
 
         var metaMessage = new Message(
             type: MessageType.MEMBER_ADD,

@@ -31,7 +31,7 @@ internal class ChannelRepository : IChannelRepository
         var batch = new BatchStatement()
             .Add(_channelsById.Insert(channel));
 
-        foreach (var member in channel.Members)
+        foreach (var member in channel.AllMembers)
         {
             batch.Add(_channelUsers.Insert(channel.Id, member));
         }

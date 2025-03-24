@@ -29,7 +29,7 @@ public class GatewayEventPublisherHandler
 
         return _gateway.PublishAsync(new MessageCreateGatewayEvent(
             messageSchema,
-            @event.Channel.Members.Select(m => m.UserId.ToString()),
+            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString()),
             @event.Channel.Type));
     }
 
@@ -39,7 +39,7 @@ public class GatewayEventPublisherHandler
 
         return _gateway.PublishAsync(new MessageUpdateGatewayEvent(
             messageSchema,
-            @event.Channel.Members.Select(m => m.UserId.ToString()),
+            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString()),
             @event.Channel.Type));
     }
 
@@ -48,7 +48,7 @@ public class GatewayEventPublisherHandler
         return _gateway.PublishAsync(new ChannelMemberAddGatewayEvent(
             UserPublicSchema.From(@event.MemberInfo),
             @event.Channel.Id,
-            @event.Channel.Members.Select(m => m.UserId.ToString())));
+            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 
     public Task Handle(ChannelTitleUpdateDomainEvent @event, CancellationToken cancellationToken)
@@ -62,7 +62,7 @@ public class GatewayEventPublisherHandler
         return _gateway.PublishAsync(new ChannelMemberRemoveGatewayEvent(
             UserPublicSchema.From(@event.MemberInfo),
             @event.Channel.Id,
-            @event.Channel.Members.Select(m => m.UserId.ToString())));
+            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 
     public Task Handle(ChannelCreateDomainEvent @event, CancellationToken cancellationToken)
@@ -77,6 +77,6 @@ public class GatewayEventPublisherHandler
         return _gateway.PublishAsync(new MessageAckGatewayEvent(
             @event.Channel.Id,
             @event.Message.Id,
-            @event.Channel.Members.Select(m => m.UserId.ToString())));
+            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 }

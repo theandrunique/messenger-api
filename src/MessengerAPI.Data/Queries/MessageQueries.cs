@@ -1,5 +1,7 @@
 using Cassandra;
+using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.Entities;
+using Newtonsoft.Json;
 using System.Text.Json;
 
 namespace MessengerAPI.Data.Queries;
@@ -43,7 +45,10 @@ internal class MessageQueries
             message.EditedTimestamp,
             message.Pinned,
             (int)message.Type,
-            JsonSerializer.Serialize(message.Metadata));
+            JsonConvert.SerializeObject(message.Metadata, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            }));
     }
 
     public BoundStatement SelectById(long channelId, long messageId)

@@ -1,4 +1,3 @@
-using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
@@ -18,7 +17,7 @@ public record MessageSchema
     public UserPublicSchema Author { get; init; }
     public UserPublicSchema? TargetUser { get; init; }
     public List<AttachmentSchema> Attachments { get; init; }
-    public IMessageMetadata? Metadata { get; init; }
+    public object? Metadata { get; init; }
 
     private MessageSchema(Message message)
     {

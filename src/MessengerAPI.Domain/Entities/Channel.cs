@@ -14,7 +14,8 @@ public class Channel
     public ChannelType Type { get; private set; }
     public DateTimeOffset? LastMessageTimestamp { get; private set; }
     public MessageInfo? LastMessage { get; private set; }
-    public List<ChannelMemberInfo> Members => _members.ToList();
+    public List<ChannelMemberInfo> AllMembers => _members.ToList();
+    public List<ChannelMemberInfo> ActiveMembers => _members.Where(m => !m.IsLeave).ToList();
 
     public static Channel CreatePrivate(long id, User[] members)
     {
@@ -90,7 +91,7 @@ public class Channel
 
     public bool HasMember(long userId)
     {
-        return _members.Any(m => m.UserId == userId);
+        return _members.Any(m => m.UserId == userId && !m.IsLeave);
     }
 
     public bool HasPermission(long userId, ChannelPermissions permissions)
