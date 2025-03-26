@@ -35,7 +35,7 @@ services:
       - scylla
 
   gateway:
-    image: theandru/messenger-api-gateway:v0.4.0
+    image: theandru/messenger-api-gateway:latest
     ports:
       - 3000:3000
     environment:
