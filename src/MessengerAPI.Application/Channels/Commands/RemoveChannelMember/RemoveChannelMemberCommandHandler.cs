@@ -56,9 +56,10 @@ public class RemoveChannelMemberCommandHandler : IRequestHandler<RemoveChannelMe
             return ApiErrors.Channel.UserNotMember(request.UserId, channel.Id);
         }
 
-        memberToRemove.SetLeaveStatus(true);
+        // We are not setting this, because we need to send a gateway event to user that was removed
+        // memberToRemove.SetLeaveStatus(true);
 
-        await _channelRepository.UpdateIsLeaveStatus(memberToRemove.UserId, request.ChannelId, memberToRemove.IsLeave);
+        await _channelRepository.UpdateIsLeaveStatus(memberToRemove.UserId, request.ChannelId, isLeave: true);
 
         await _publisher.Publish(new ChannelMemberRemoveDomainEvent(channel, memberToRemove, _clientInfo.UserId));
 
