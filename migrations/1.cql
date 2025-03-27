@@ -107,6 +107,15 @@ CREATE TABLE messenger.messages (
     PRIMARY KEY ((channelid), id)
 ) WITH CLUSTERING ORDER BY (id DESC);
 
+CREATE TABLE messenger.message_acks (
+    channelid bigint,
+    userid bigint,
+    lastreadmessageid bigint,
+    timestamp timestamp,
+
+    PRIMARY KEY ((channelid), lastreadmessageid, userid)
+) WITH CLUSTERING ORDER BY (lastreadmessageid DESC);
+
 CREATE TABLE messenger.private_channels (
     userid1 bigint,
     userid2 bigint,

@@ -1,5 +1,4 @@
 using Cassandra;
-using Cassandra.Mapping;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Data.Queries;
 using MessengerAPI.Data.Users;
@@ -24,8 +23,6 @@ public static class DependencyInjection
             .WithRetryPolicy(new LoggingRetryPolicy(new DefaultRetryPolicy()))
             .Build();
 
-        MappingConfiguration.Global.Define<ModelsMappings>();
-
         var session = cluster.Connect();
 
         session.UserDefinedTypes.Define(
@@ -43,6 +40,7 @@ public static class DependencyInjection
         services.AddScoped<ISessionRepository, SessionRepository>();
         services.AddScoped<IChannelRepository, ChannelRepository>();
         services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
+        services.AddScoped<IMessageAckRepository, MessageAckRepository>();
 
         services.AddSingleton<UserQueries>();
         services.AddSingleton<ChannelByIdQueries>();
@@ -52,6 +50,7 @@ public static class DependencyInjection
         services.AddSingleton<AttachmentQueries>();
         services.AddSingleton<SessionQueries>();
         services.AddSingleton<VerificationCodeQueries>();
+        services.AddSingleton<MessageAckQueries>();
 
         return services;
     }

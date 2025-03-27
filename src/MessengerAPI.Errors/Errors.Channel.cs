@@ -15,6 +15,11 @@ public static partial class ApiErrors
             => new BaseApiError(
                 ErrorCode.MESSAGE_NOT_FOUND,
                 $"Message '{messageId}' not found");
+        
+        public static BaseApiError NoMessageAcksFound(long messageId)
+            => new BaseApiError(
+                ErrorCode.MESSAGE_NO_ACKS_FOUND,
+                $"No acks found for message '{messageId}'");
 
         public static BaseApiError InvalidOperationForThisChannelType
             => new BaseApiError(

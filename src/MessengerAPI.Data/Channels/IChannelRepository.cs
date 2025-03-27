@@ -12,7 +12,6 @@ public interface IChannelRepository
     Task<Channel?> GetPrivateChannelOrNullAsync(long userId1, long userId2);
     Task UpsertChannelMemberAsync(long channelId, ChannelMemberInfo member);
     Task UpdateIsLeaveStatus(long userId, long channelId, bool isLeave);
-    Task UpdateReadAt(long userId, long channelId, long messageId);
     Task UpdateChannelInfo(long channelId, string title, string? image);
     Task UpdateOwnerId(long channelId, long ownerId);
 }

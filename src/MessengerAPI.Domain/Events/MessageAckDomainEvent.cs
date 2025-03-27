@@ -2,4 +2,4 @@ using MessengerAPI.Domain.Entities;
 
 namespace MessengerAPI.Domain.Events;
 
-public record MessageAckDomainEvent(Message Message, Channel Channel) : IDomainEvent;
+public record MessageAckDomainEvent(long messageId, Channel Channel) : IDomainEvent;

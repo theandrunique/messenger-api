@@ -51,13 +51,7 @@ internal class ChannelRepository : IChannelRepository
 
     public Task UpdateIsLeaveStatus(long userId, long channelId, bool isLeave)
     {
-        Console.WriteLine("Executing UpdateIsLeaveStatus with parameters: userId: {0}, channelId: {1}, isLeave: {2}", userId, channelId, isLeave);
         return _session.ExecuteAsync(_channelUsers.UpdateIsLeave(userId, channelId, isLeave));
-    }
-
-    public Task UpdateReadAt(long userId, long channelId, long messageId)
-    {
-        return _session.ExecuteAsync(_channelUsers.UpdateReadAt(userId, channelId, messageId));
     }
 
     public async Task<Channel?> GetByIdOrNullAsync(long channelId)

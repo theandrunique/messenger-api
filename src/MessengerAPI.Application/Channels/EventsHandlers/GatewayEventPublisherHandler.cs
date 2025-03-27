@@ -76,7 +76,7 @@ public class GatewayEventPublisherHandler
     {
         return _gateway.PublishAsync(new MessageAckGatewayEvent(
             @event.Channel.Id,
-            @event.Message.Id,
+            @event.messageId,
             @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 }

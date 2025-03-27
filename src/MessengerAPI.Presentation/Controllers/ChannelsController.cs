@@ -1,13 +1,14 @@
 using MediatR;
+using MessengerAPI.Application.Channels.Commands.AckMessage;
 using MessengerAPI.Application.Channels.Commands.AddChannelMember;
 using MessengerAPI.Application.Channels.Commands.AddOrEditMessage;
 using MessengerAPI.Application.Channels.Commands.CreateCloudAttachments;
-using MessengerAPI.Application.Channels.Commands.MessageAck;
 using MessengerAPI.Application.Channels.Commands.RemoveChannelMember;
 using MessengerAPI.Application.Channels.Commands.UpdateChannel;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Channels.Queries.GetAttachments;
 using MessengerAPI.Application.Channels.Queries.GetChannel;
+using MessengerAPI.Application.Channels.Queries.GetMessageAcks;
 using MessengerAPI.Application.Channels.Queries.GetMessages;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Presentation.Schemas.Channels;
@@ -155,14 +156,25 @@ public class ChannelsController : ApiController
         return result.Match(onValue: _ => NoContent(), onError: Problem);
     }
 
-    [HttpPost("{channelId}/messages/{messageId}/ack")]
+    [HttpPost("{channelId}/messages/{messageId}/acks")]
     public async Task<IActionResult> AckMessageAsync(
         long channelId,
         long messageId,
         CancellationToken cancellationToken)
     {
-        var command = new MessageAckCommand(channelId, messageId);
+        var command = new AckMessageCommand(channelId, messageId);
         var result = await _mediator.Send(command, cancellationToken);
         return result.Match(onValue: _ => NoContent(), onError: Problem);
+    }
+
+    [HttpGet("{channelId}/messages/{messageId}/acks")]
+    public async Task<IActionResult> GetMessageAcksAsync(
+        long channelId,
+        long messageId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetMessageAcksQuery(channelId, messageId);
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.Match(onValue: Ok, onError: Problem);
     }
 }
