@@ -101,7 +101,7 @@ public class AuthController : ApiController
     {
         var cookieOptions = new CookieOptions
         {
-            Expires = tokenPair.IssuedAt.AddSeconds(tokenPair.ExpiresIn),
+            Expires = tokenPair.IssuedAt.AddDays(7),
             HttpOnly = true,
             // Secure = true,
         };
