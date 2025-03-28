@@ -4,7 +4,6 @@ using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
 using MessengerAPI.Data.Channels;
-using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.Events;
@@ -108,6 +107,12 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
                 attachments: attachments);
 
             await _messageRepository.UpsertAsync(message);
+
+            if (channel.LastMessage == null && channel.Type == ChannelType.PRIVATE)
+            {
+                await _publisher.Publish(new ChannelCreateDomainEvent(channel));
+            }
+
             await _publisher.Publish(new MessageCreateDomainEvent(channel, message, initiator));
         }
 
