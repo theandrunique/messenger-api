@@ -3,6 +3,7 @@ using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Data.Channels;
 using MessengerAPI.Domain.Entities;
+using MessengerAPI.Domain.ValueObjects;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Queries.GetChannels;
@@ -22,7 +23,10 @@ public class GetChannelsQueryHandler : IRequestHandler<GetChannelsQuery, ErrorOr
     {
         List<Channel> channels = await _channelRepository.GetUserChannelsAsync(_clientInfo.UserId);
 
-        channels = channels.Where(c => c.HasMember(_clientInfo.UserId)).ToList();
+        channels = channels
+            .Where(c => c.HasMember(_clientInfo.UserId))
+            .Where(c => !(c.Type == ChannelType.PRIVATE && c.LastMessage == null))
+            .ToList();
 
         return ChannelSchema.From(channels, _clientInfo.UserId);
     }
