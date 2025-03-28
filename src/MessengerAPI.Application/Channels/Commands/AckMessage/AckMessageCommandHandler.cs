@@ -48,7 +48,7 @@ public class AckMessageCommandHandler : IRequestHandler<AckMessageCommand, Error
 
         await _messageAckRepository.UpsertMessageAckStatus(newAck);
 
-        await _publisher.Publish(new MessageAckDomainEvent(newAck.LastReadMessageId, channel));
+        await _publisher.Publish(new MessageAckDomainEvent(newAck.LastReadMessageId, channel, _clientInfo.UserId));
 
         return Unit.Value;
     }

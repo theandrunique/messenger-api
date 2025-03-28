@@ -14,6 +14,7 @@ public record ChannelSchema
     public string? Image { get; init; }
     public ChannelType Type { get; init; }
     public string? ReadAt { get; init; }
+    public string? MaxReadAt { get; init; }
     public DateTimeOffset? LastMessageTimestamp { get; init; }
     public MessageInfoSchema? LastMessage { get; init; }
     public List<UserPublicSchema> Members { get; init; }
@@ -35,6 +36,11 @@ public record ChannelSchema
         {
             var currentMember = channel.ActiveMembers.First(m => m.UserId == userId);
             ReadAt = currentMember.ReadAt.ToString();
+
+            MaxReadAt = channel.ActiveMembers
+                .Where(m => m.UserId != userId)
+                .Select(m => (long?)m.ReadAt)
+                .Max()?.ToString();
         }
     }
 
