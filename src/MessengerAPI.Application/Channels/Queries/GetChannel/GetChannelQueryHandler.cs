@@ -29,6 +29,6 @@ public class GetChannelQueryHandler : IRequestHandler<GetChannelQuery, ErrorOr<C
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
-        return ChannelSchema.From(channel);
+        return ChannelSchema.From(channel, _clientInfo.UserId);
     }
 }
