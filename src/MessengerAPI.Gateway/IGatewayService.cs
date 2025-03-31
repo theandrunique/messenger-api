@@ -4,5 +4,5 @@ namespace MessengerAPI.Gateway;
 
 public interface IGatewayService
 {
-    Task PublishAsync<TEvent>(TEvent @event) where TEvent : IGatewayEvent;
+    Task PublishAsync<TPayload>(GatewayEvent<TPayload> @event) where TPayload : IGatewayEventPayload;
 }

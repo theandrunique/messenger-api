@@ -1,21 +1,23 @@
+using System.Text.Json.Serialization;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
 using MessengerAPI.Domain.ValueObjects;
 
 namespace MessengerAPI.Application.Channels.Events;
 
-public class MessageCreateGatewayEvent : GatewayEventDto
+public class MessageCreateGatewayEvent : IGatewayEventPayload
 {
-    public MessageSchema Payload { get; init; }
+    [JsonIgnore]
+    public GatewayEventType EventType => GatewayEventType.MESSAGE_CREATE;
+
+    public MessageSchema Message { get; init; }
     public MessageExtra Extra { get; init; }
 
     public MessageCreateGatewayEvent(
         MessageSchema message,
-        IEnumerable<string> recipients,
         ChannelType channelType)
-        : base(GatewayEventType.MESSAGE_CREATE, recipients)
     {
-        Payload = message;
+        Message = message;
         Extra = new MessageExtra
         {
             ChannelType = channelType,

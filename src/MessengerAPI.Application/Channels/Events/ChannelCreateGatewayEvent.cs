@@ -1,15 +1,18 @@
+using System.Text.Json.Serialization;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
 
 namespace MessengerAPI.Domain.Events;
 
-public class ChannelCreateGatewayEvent : GatewayEventDto
+public class ChannelCreateGatewayEvent : IGatewayEventPayload
 {
-    public ChannelSchema Payload { get; init; }
+    [JsonIgnore]
+    public GatewayEventType EventType => GatewayEventType.CHANNEL_CREATE;
+
+    public ChannelSchema Channel { get; init; }
 
     public ChannelCreateGatewayEvent(ChannelSchema channel)
-        : base(GatewayEventType.CHANNEL_CREATE, channel.Members.Select(x => x.Id))
     {
-        Payload = channel;
+        Channel = channel;
     }
 }

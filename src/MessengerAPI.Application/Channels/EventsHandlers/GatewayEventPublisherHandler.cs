@@ -1,6 +1,7 @@
 using MediatR;
 using MessengerAPI.Application.Channels.Events;
 using MessengerAPI.Contracts.Common;
+using MessengerAPI.Core;
 using MessengerAPI.Domain.Events;
 using MessengerAPI.Gateway;
 
@@ -27,57 +28,56 @@ public class GatewayEventPublisherHandler
     {
         var messageSchema = MessageSchema.From(@event.Message);
 
-        return _gateway.PublishAsync(new MessageCreateGatewayEvent(
-            messageSchema,
-            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString()),
-            @event.Channel.Type));
+        return _gateway.PublishAsync(new GatewayEvent<MessageCreateGatewayEvent>(
+            new MessageCreateGatewayEvent(messageSchema, @event.Channel.Type),
+            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 
     public Task Handle(MessageUpdateDomainEvent @event, CancellationToken cancellationToken)
     {
         var messageSchema = MessageSchema.From(@event.Message);
 
-        return _gateway.PublishAsync(new MessageUpdateGatewayEvent(
-            messageSchema,
-            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString()),
-            @event.Channel.Type));
+        return _gateway.PublishAsync(new GatewayEvent<MessageUpdateGatewayEvent>(
+            new MessageUpdateGatewayEvent(messageSchema, @event.Channel.Type),
+            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 
     public Task Handle(ChannelMemberAddDomainEvent @event, CancellationToken cancellationToken)
     {
-        return _gateway.PublishAsync(new ChannelMemberAddGatewayEvent(
-            UserPublicSchema.From(@event.MemberInfo),
-            @event.Channel.Id,
+        var member = UserPublicSchema.From(@event.MemberInfo);
+
+        return _gateway.PublishAsync(new GatewayEvent<ChannelMemberAddGatewayEvent>(
+            new ChannelMemberAddGatewayEvent(member, @event.Channel.Id),
             @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 
     public Task Handle(ChannelTitleUpdateDomainEvent @event, CancellationToken cancellationToken)
     {
-        return _gateway.PublishAsync(new ChannelUpdateGatewayEvent(
-            ChannelSchema.From(@event.Channel)));
+        return _gateway.PublishAsync(new GatewayEvent<ChannelUpdateGatewayEvent>(
+            new ChannelUpdateGatewayEvent(ChannelSchema.From(@event.Channel)),
+            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 
     public Task Handle(ChannelMemberRemoveDomainEvent @event, CancellationToken cancellationToken)
     {
-        return _gateway.PublishAsync(new ChannelMemberRemoveGatewayEvent(
-            UserPublicSchema.From(@event.MemberInfo),
-            @event.Channel.Id,
+        var member = UserPublicSchema.From(@event.MemberInfo);
+
+        return _gateway.PublishAsync(new GatewayEvent<ChannelMemberRemoveGatewayEvent>(
+            new ChannelMemberRemoveGatewayEvent(member, @event.Channel.Id),
             @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 
     public Task Handle(ChannelCreateDomainEvent @event, CancellationToken cancellationToken)
     {
-        var channelSchema = ChannelSchema.From(@event.Channel);
-
-        return _gateway.PublishAsync(new ChannelCreateGatewayEvent(channelSchema));
+        return _gateway.PublishAsync(new GatewayEvent<ChannelCreateGatewayEvent>(
+            new ChannelCreateGatewayEvent(ChannelSchema.From(@event.Channel)),
+            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 
     public Task Handle(MessageAckDomainEvent @event, CancellationToken cancellationToken)
     {
-        return _gateway.PublishAsync(new MessageAckGatewayEvent(
-            @event.Channel.Id,
-            @event.messageId,
-            @event.initiatorId,
+        return _gateway.PublishAsync(new GatewayEvent<MessageAckGatewayEvent>(
+            new MessageAckGatewayEvent(@event.Channel.Id, @event.messageId, @event.initiatorId),
             @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 }

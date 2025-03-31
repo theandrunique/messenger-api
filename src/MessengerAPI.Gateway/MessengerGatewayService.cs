@@ -22,7 +22,7 @@ internal class MessengerGatewayService : IGatewayService
         _logger = logger;
     }
 
-    public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IGatewayEvent
+    public async Task PublishAsync<TPayload>(GatewayEvent<TPayload> @event) where TPayload : IGatewayEventPayload
     {
         try
         {
@@ -31,11 +31,13 @@ internal class MessengerGatewayService : IGatewayService
             var eventData = new NameValueEntry[]
             {
                 new NameValueEntry("eventType", @event.EventType.ToString()),
-                new NameValueEntry("payload", _serializer.Serialize(@event))
+                new NameValueEntry("payload", _serializer.Serialize(@event.Payload)),
+                new NameValueEntry("recipients", _serializer.Serialize(@event.Recipients)),
+                new NameValueEntry("source", GatewayEvent<TPayload>.Source),
             };
 
-            await db.StreamAddAsync(_streamName, eventData);
-            _logger.LogInformation("Published event {EventType} to {Stream}", @event.EventType, _streamName);
+            var result = await db.StreamAddAsync(_streamName, eventData);
+            _logger.LogInformation("Published event {Id} ({EventType}) to {Stream}", result, @event.EventType, _streamName);
         }
         catch (Exception ex)
         {

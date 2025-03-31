@@ -8,10 +8,10 @@ internal class JsonEventSerializer : IEventSerializer
     private readonly JsonSerializerOptions _settings = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        Converters = { new JsonStringEnumConverter() }
+        Converters = { new JsonStringEnumConverter() },
     };
 
-    public T Deserialize<T>(string json)
+    public T? Deserialize<T>(string json)
     {
         return JsonSerializer.Deserialize<T>(json, _settings);
     }
