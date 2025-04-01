@@ -58,7 +58,7 @@ public class Attachment
     }
 
     public bool IsNeedUpdateUrl()
-        => PreSignedUrlExpiresTimestamp < DateTimeOffset.UtcNow - TimeSpan.FromDays(1);
+        => PreSignedUrlExpiresTimestamp < DateTimeOffset.UtcNow + TimeSpan.FromDays(1);
 
     public void UpdatePreSignedUrl(string preSignedUrl, DateTimeOffset preSignedUrlExpiresTimestamp)
     {

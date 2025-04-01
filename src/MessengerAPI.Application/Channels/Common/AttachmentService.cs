@@ -40,6 +40,7 @@ public class AttachmentService
                 var expires = DateTimeOffset.UtcNow.Add(_options.DownloadUrlExpiration);
                 var uploadedFilename = GenerateUploadFilename(item.Filename, item.ChannelId, item.Id);
                 var preSignedUrl = GenerateDownloadUrl(uploadedFilename, expires);
+
                 item.UpdatePreSignedUrl(preSignedUrl, expires);
             }
         }
