@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
@@ -15,8 +16,10 @@ public record MessageSchema
     public DateTimeOffset Timestamp { get; init; }
     public DateTimeOffset? EditedTimestamp { get; init; }
     public UserPublicSchema Author { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public UserPublicSchema? TargetUser { get; init; }
     public List<AttachmentSchema> Attachments { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public object? Metadata { get; init; }
 
     private MessageSchema(Message message)
