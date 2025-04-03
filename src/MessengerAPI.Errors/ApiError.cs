@@ -1,6 +1,6 @@
 namespace MessengerAPI.Errors;
 
-public class BaseApiError
+public class ApiError
 {
     public ErrorCode Code { get; }
     public string Message { get; }
@@ -8,10 +8,10 @@ public class BaseApiError
 
     public Dictionary<string, object>? Metadata { get; }
 
-    public BaseApiError(ErrorCode code, string message, Dictionary<string, object>? metadata = null)
+    public ApiError(ErrorCode code, string message, Dictionary<string, object>? metadata = null)
         : this(code, message, null, metadata) { }
 
-    public BaseApiError(
+    public ApiError(
         ErrorCode code,
         string message,
         Dictionary<string, List<string>>? errors,

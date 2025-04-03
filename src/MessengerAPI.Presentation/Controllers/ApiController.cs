@@ -9,7 +9,7 @@ namespace MessengerAPI.Presentation.Controllers;
 [Authorize]
 public class ApiController : ControllerBase
 {
-    protected IActionResult Problem(BaseApiError error)
+    protected IActionResult Problem(ApiError error)
     {
         Dictionary<string, object?> extensions = new()
         {
