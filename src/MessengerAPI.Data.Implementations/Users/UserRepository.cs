@@ -1,11 +1,12 @@
 using Cassandra;
 using Cassandra.Data.Linq;
-using MessengerAPI.Data.Implementations.Mappers;
-using MessengerAPI.Data.Implementations.Queries;
+using MessengerAPI.Data.Implementations.Channels.Queries;
+using MessengerAPI.Data.Implementations.Users.Mappers;
+using MessengerAPI.Data.Implementations.Users.Queries;
 using MessengerAPI.Data.Interfaces.Users;
 using MessengerAPI.Domain.Entities;
 
-namespace MessengerAPI.Data.Users;
+namespace MessengerAPI.Data.Implementations.Users;
 
 public class UserRepository : IUserRepository
 {
@@ -77,7 +78,7 @@ public class UserRepository : IUserRepository
 
         var channelIds = (await _session.ExecuteAsync(_channelUsers.SelectChannelIdsByUserId(user.Id)))
             .Select(row => row.GetValue<long>("channelid"));
-        
+
         await _session.ExecuteAsync(_channelUsers.UpdateUserInfo(user, channelIds));
     }
 

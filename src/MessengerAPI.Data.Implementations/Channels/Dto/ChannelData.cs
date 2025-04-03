@@ -1,7 +1,7 @@
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
-namespace MessengerAPI.Data.Implementations.DataDto;
+namespace MessengerAPI.Data.Implementations.Channels.Dto;
 
 public struct ChannelData
 {

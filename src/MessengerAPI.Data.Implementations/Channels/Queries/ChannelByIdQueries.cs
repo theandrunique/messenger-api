@@ -2,7 +2,7 @@ using Cassandra;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
-namespace MessengerAPI.Data.Implementations.Queries;
+namespace MessengerAPI.Data.Implementations.Channels.Queries;
 
 public class ChannelByIdQueries
 {

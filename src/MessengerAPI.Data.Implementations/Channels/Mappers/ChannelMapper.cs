@@ -1,9 +1,9 @@
 using Cassandra;
-using MessengerAPI.Data.Implementations.DataDto;
+using MessengerAPI.Data.Implementations.Channels.Dto;
 using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.ValueObjects;
 
-namespace MessengerAPI.Data.Implementations.Mappers;
+namespace MessengerAPI.Data.Implementations.Channels.Mappers;
 
 public static class ChannelMapper
 {

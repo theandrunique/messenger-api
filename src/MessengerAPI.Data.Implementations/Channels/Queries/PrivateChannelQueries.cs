@@ -1,6 +1,8 @@
 using Cassandra;
 using MessengerAPI.Domain.Entities;
 
+namespace MessengerAPI.Data.Implementations.Channels.Queries;
+
 public class PrivateChannelQueries
 {
     private readonly PreparedStatement _insert;

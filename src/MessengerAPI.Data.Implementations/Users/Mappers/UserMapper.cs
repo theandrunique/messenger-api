@@ -2,7 +2,7 @@ using Cassandra;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
-namespace MessengerAPI.Data.Implementations.Mappers;
+namespace MessengerAPI.Data.Implementations.Users.Mappers;
 
 public static class UserMapper
 {

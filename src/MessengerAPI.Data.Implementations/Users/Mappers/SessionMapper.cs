@@ -1,7 +1,7 @@
 using Cassandra;
 using Session = MessengerAPI.Domain.Entities.Session;
 
-namespace MessengerAPI.Data.Implementations.Mappers;
+namespace MessengerAPI.Data.Implementations.Users.Mappers;
 
 public static class SessionMapper
 {

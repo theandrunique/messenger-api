@@ -1,10 +1,10 @@
 using Cassandra;
-using MessengerAPI.Data.Implementations.DataDto;
+using MessengerAPI.Data.Implementations.Messages.Dto;
 using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.ValueObjects;
 using Newtonsoft.Json;
 
-namespace MessengerAPI.Data.Implementations.Mappers;
+namespace MessengerAPI.Data.Implementations.Messages.Mappers;
 
 public static class MessageMapper
 {

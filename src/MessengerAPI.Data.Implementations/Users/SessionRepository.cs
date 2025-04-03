@@ -1,11 +1,11 @@
 using Cassandra;
 using Cassandra.Data.Linq;
-using MessengerAPI.Data.Implementations.Mappers;
-using MessengerAPI.Data.Implementations.Queries;
+using MessengerAPI.Data.Implementations.Users.Mappers;
+using MessengerAPI.Data.Implementations.Users.Queries;
 using MessengerAPI.Data.Interfaces.Users;
 using Session = MessengerAPI.Domain.Entities.Session;
 
-namespace MessengerAPI.Data.Users;
+namespace MessengerAPI.Data.Implementations.Users;
 
 public class SessionRepository : ISessionRepository
 {

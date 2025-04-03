@@ -1,6 +1,6 @@
 using Cassandra;
-using MessengerAPI.Data.Implementations.Mappers;
-using MessengerAPI.Data.Implementations.Queries;
+using MessengerAPI.Data.Implementations.Channels.Mappers;
+using MessengerAPI.Data.Implementations.Channels.Queries;
 using MessengerAPI.Data.Interfaces.Channels;
 using MessengerAPI.Domain.Entities;
 

@@ -2,7 +2,7 @@ using Cassandra;
 using MessengerAPI.Domain.Entities;
 using Newtonsoft.Json;
 
-namespace MessengerAPI.Data.Implementations.Queries;
+namespace MessengerAPI.Data.Implementations.Messages.Queries;
 
 public class MessageQueries
 {

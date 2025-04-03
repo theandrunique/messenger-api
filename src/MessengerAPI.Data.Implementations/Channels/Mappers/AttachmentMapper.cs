@@ -1,7 +1,7 @@
 using Cassandra;
 using MessengerAPI.Domain.Entities;
 
-namespace MessengerAPI.Data.Implementations.Mappers;
+namespace MessengerAPI.Data.Implementations.Channels.Mappers;
 
 public class AttachmentMapper
 {

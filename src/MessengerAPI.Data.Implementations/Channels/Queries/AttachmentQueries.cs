@@ -1,7 +1,7 @@
 using Cassandra;
 using MessengerAPI.Domain.Entities;
 
-namespace MessengerAPI.Data.Implementations.Queries;
+namespace MessengerAPI.Data.Implementations.Channels.Queries;
 
 public class AttachmentQueries
 {

@@ -1,11 +1,12 @@
 using Cassandra;
-using MessengerAPI.Data.Implementations.Queries;
+using MessengerAPI.Data.Implementations.Channels.Queries;
+using MessengerAPI.Data.Implementations.Messages.Mappers;
+using MessengerAPI.Data.Implementations.Messages.Queries;
 using MessengerAPI.Data.Interfaces.Channels;
-using MessengerAPI.Data.Mappers;
 using MessengerAPI.Domain.Entities;
 using Microsoft.Extensions.Logging;
 
-namespace MessengerAPI.Data.Implementations.Channels;
+namespace MessengerAPI.Data.Implementations.Messages;
 
 internal class MessageAckRepository : IMessageAckRepository
 {

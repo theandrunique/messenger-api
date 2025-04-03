@@ -1,7 +1,7 @@
 using Cassandra;
 using MessengerAPI.Domain.Entities;
 
-namespace MessengerAPI.Data.Mappers;
+namespace MessengerAPI.Data.Implementations.Messages.Mappers;
 
 public class MessageAckMapper
 {

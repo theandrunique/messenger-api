@@ -1,11 +1,11 @@
 using Cassandra;
-using MessengerAPI.Data.Implementations.Mappers;
-using MessengerAPI.Data.Implementations.Queries;
+using MessengerAPI.Data.Implementations.VerificationCodes.Mappers;
+using MessengerAPI.Data.Implementations.VerificationCodes.Queries;
 using MessengerAPI.Data.Interfaces.VerificationCodes;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
-namespace MessengerAPI.Data.VerificationCodes;
+namespace MessengerAPI.Data.Implementations.VerificationCodes;
 
 public class VerificationCodeRepository : IVerificationCodeRepository
 {
