@@ -59,7 +59,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         {
             if (request.Totp is null)
             {
-                return ApiErrors.Auth.TotpRequired;
+                return ApiErrors.Auth.TotpRequired(user);
             }
             if (user.TOTPKey is null)
             {
