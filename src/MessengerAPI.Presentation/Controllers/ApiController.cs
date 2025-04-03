@@ -22,6 +22,10 @@ public class ApiController : ControllerBase
         {
             extensions["errors"] = error.Errors;
         }
+        if (error.Metadata != null)
+        {
+            extensions["metadata"] = error.Metadata;
+        }
 
         var problemDetails = new ProblemDetails
         {
