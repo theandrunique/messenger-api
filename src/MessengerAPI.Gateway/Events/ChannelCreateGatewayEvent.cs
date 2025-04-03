@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Core;
+using MessengerAPI.Gateway.Common;
 
-namespace MessengerAPI.Domain.Events;
+namespace MessengerAPI.Gateway.Events;
 
 public class ChannelCreateGatewayEvent : IGatewayEventPayload
 {

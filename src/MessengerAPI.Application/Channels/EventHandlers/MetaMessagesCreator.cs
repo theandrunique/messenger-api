@@ -6,7 +6,7 @@ using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.Events;
 using MessengerAPI.Domain.ValueObjects;
 
-namespace MessengerAPI.Application.Channels.EventsHandlers;
+namespace MessengerAPI.Application.Channels.EventHandlers;
 
 public class MetaMessagesCreator
     : INotificationHandler<ChannelTitleUpdateDomainEvent>,

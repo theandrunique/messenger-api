@@ -1,4 +1,4 @@
-using MessengerAPI.Core;
+using MessengerAPI.Gateway.Common;
 using MessengerAPI.Gateway.Serializers;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;

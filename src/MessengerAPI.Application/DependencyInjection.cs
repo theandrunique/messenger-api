@@ -1,4 +1,3 @@
-using System.Net.Mail;
 using System.Reflection;
 using FluentValidation;
 using MessengerAPI.Application.Auth.Common;

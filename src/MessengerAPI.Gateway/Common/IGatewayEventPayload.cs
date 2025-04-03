@@ -1,4 +1,4 @@
-namespace MessengerAPI.Core;
+namespace MessengerAPI.Gateway.Common;
 
 public interface IGatewayEventPayload
 {

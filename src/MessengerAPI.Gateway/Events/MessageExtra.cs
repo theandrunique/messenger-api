@@ -1,6 +1,6 @@
 using MessengerAPI.Domain.ValueObjects;
 
-namespace MessengerAPI.Application.Channels.Events;
+namespace MessengerAPI.Gateway.Events;
 
 public struct MessageExtra
 {

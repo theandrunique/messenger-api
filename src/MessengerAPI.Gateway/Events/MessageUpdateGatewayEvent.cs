@@ -1,9 +1,9 @@
 using System.Text.Json.Serialization;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Core;
 using MessengerAPI.Domain.ValueObjects;
+using MessengerAPI.Gateway.Common;
 
-namespace MessengerAPI.Application.Channels.Events;
+namespace MessengerAPI.Gateway.Events;
 
 public class MessageUpdateGatewayEvent : IGatewayEventPayload
 {

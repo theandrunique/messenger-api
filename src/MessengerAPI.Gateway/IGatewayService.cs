@@ -1,4 +1,4 @@
-using MessengerAPI.Core;
+using MessengerAPI.Gateway.Common;
 
 namespace MessengerAPI.Gateway;
 
