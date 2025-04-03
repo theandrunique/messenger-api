@@ -2,18 +2,18 @@ using MediatR;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Errors;
 
-namespace MessengerAPI.Application.Channels.Commands.DeleteAttachment;
+namespace MessengerAPI.Application.Channels.Commands.DeleteCloudAttachment;
 
-public class DeleteAttachmentCommandHandler : IRequestHandler<DeleteAttachmentCommand, ErrorOr<bool>>
+public class DeleteCloudAttachmentCommandHandler : IRequestHandler<DeleteCloudAttachmentCommand, ErrorOr<bool>>
 {
     private readonly AttachmentService _attachmentService;
 
-    public DeleteAttachmentCommandHandler(AttachmentService attachmentService)
+    public DeleteCloudAttachmentCommandHandler(AttachmentService attachmentService)
     {
         _attachmentService = attachmentService;
     }
 
-    public async Task<ErrorOr<bool>> Handle(DeleteAttachmentCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<bool>> Handle(DeleteCloudAttachmentCommand request, CancellationToken cancellationToken)
     {
         if (!await _attachmentService.IsObjectExistsAsync(request.uploadFilename, cancellationToken))
         {

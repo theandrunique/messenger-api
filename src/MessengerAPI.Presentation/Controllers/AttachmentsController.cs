@@ -1,5 +1,5 @@
 using MediatR;
-using MessengerAPI.Application.Channels.Commands.DeleteAttachment;
+using MessengerAPI.Application.Channels.Commands.DeleteCloudAttachment;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessengerAPI.Presentation.Controllers;
@@ -19,7 +19,7 @@ public class AttachmentsController : ApiController
     {
         var decodedUploadFilename = Uri.UnescapeDataString(uploadFilename);
 
-        var command = new DeleteAttachmentCommand(decodedUploadFilename);
+        var command = new DeleteCloudAttachmentCommand(decodedUploadFilename);
         var result = await _mediator.Send(command, token);
         return result.Match(onValue: _ => NoContent(), onError: Problem);
     }
