@@ -1,6 +1,5 @@
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
-using MessengerAPI.Application.Channels.Commands.AddOrEditMessagePrivateChannel;
 using MessengerAPI.Application.Channels.Commands.GetOrCreatePrivateChannel;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Channels.Queries.GetMessagesPrivateChannel;
@@ -159,46 +158,6 @@ public class UsersController : ApiController
 
         return result.Match(onValue: Ok, onError: Problem);
     }
-
-    [HttpPost("{userId}/messages")]
-    [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SendMessageToPrivateChannelAsync(
-        long userId,
-        CreateMessageRequestSchema schema,
-        CancellationToken cancellationToken)
-    {
-        var command = new AddOrEditMessagePrivateChannelCommand(
-            userId,
-            null,
-            userId,
-            schema.content,
-            schema.attachments);
-
-        var result = await _mediator.Send(command, cancellationToken);
-
-        return result.Match(onValue: Ok, onError: Problem);
-    }
-
-    [HttpPut("{userId}/messages/{messageId}")]
-    [ProducesResponseType(typeof(MessageSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> EditMessageInPrivateChannelAsync(
-        long userId,
-        long messageId,
-        CreateMessageRequestSchema schema,
-        CancellationToken cancellationToken)
-    {
-        var command = new AddOrEditMessagePrivateChannelCommand(
-            userId,
-            messageId,
-            userId,
-            schema.content,
-            schema.attachments);
-
-        var result = await _mediator.Send(command, cancellationToken);
-
-        return result.Match(onValue: Ok, onError: Problem);
-    }
-
 
     [HttpGet("{userId}/messages")]
     [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
