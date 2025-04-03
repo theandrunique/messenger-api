@@ -7,16 +7,16 @@ using MessengerAPI.Data.Users;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
 
-namespace MessengerAPI.Application.Channels.Commands.GetOrCreatePrivateChannel;
+namespace MessengerAPI.Application.Channels.Commands.GetPrivateChannel;
 
-public class GetOrCreatePrivateChannelCommandHandler : IRequestHandler<GetOrCreatePrivateChannelCommand, ErrorOr<ChannelSchema>>
+public class GetPrivateChannelCommandHandler : IRequestHandler<GetPrivateChannelCommand, ErrorOr<ChannelSchema>>
 {
     private readonly IChannelRepository _channelRepository;
     private readonly IIdGenerator _idGenerator;
     private readonly IUserRepository _userRepository;
     private readonly IClientInfoProvider _clientInfo;
 
-    public GetOrCreatePrivateChannelCommandHandler(
+    public GetPrivateChannelCommandHandler(
         IChannelRepository channelRepository,
         IIdGenerator idGenerator,
         IUserRepository userRepository,
@@ -28,7 +28,7 @@ public class GetOrCreatePrivateChannelCommandHandler : IRequestHandler<GetOrCrea
         _clientInfo = clientInfo;
     }
 
-    public async Task<ErrorOr<ChannelSchema>> Handle(GetOrCreatePrivateChannelCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<ChannelSchema>> Handle(GetPrivateChannelCommand request, CancellationToken cancellationToken)
     {
         var existedDMChannel = await _channelRepository.GetPrivateChannelOrNullAsync(request.userId, _clientInfo.UserId);
         if (existedDMChannel is not null)

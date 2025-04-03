@@ -1,8 +1,7 @@
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
-using MessengerAPI.Application.Channels.Commands.GetOrCreatePrivateChannel;
+using MessengerAPI.Application.Channels.Commands.GetPrivateChannel;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
-using MessengerAPI.Application.Channels.Queries.GetMessagesPrivateChannel;
 using MessengerAPI.Application.Users.Commands;
 using MessengerAPI.Application.Users.Commands.RemoveAvatar;
 using MessengerAPI.Application.Users.Commands.RequestVerifyEmailCode;
@@ -130,10 +129,8 @@ public class UsersController : ApiController
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPrivateChannelAsync(long userId, CancellationToken cancellationToken)
     {
-        var command = new GetOrCreatePrivateChannelCommand(userId);
-
+        var command = new GetPrivateChannelCommand(userId);
         var result = await _mediator.Send(command, cancellationToken);
-
         return result.Match(onValue: Ok, onError: Problem);
     }
 
@@ -141,10 +138,8 @@ public class UsersController : ApiController
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSavedMessagesChannelAsync(CancellationToken cancellationToken)
     {
-        var command = new GetOrCreatePrivateChannelCommand(User.GetUserId());
-
+        var command = new GetPrivateChannelCommand(User.GetUserId());
         var result = await _mediator.Send(command, cancellationToken);
-
         return result.Match(onValue: Ok, onError: Problem);
     }
 
@@ -153,23 +148,6 @@ public class UsersController : ApiController
     public async Task<IActionResult> CreateChannelAsync(CreateChannelRequestSchema schema, CancellationToken cancellationToken)
     {
         var query = new CreateChannelCommand(schema.members, schema.title);
-
-        var result = await _mediator.Send(query, cancellationToken);
-
-        return result.Match(onValue: Ok, onError: Problem);
-    }
-
-    [HttpGet("{userId}/messages")]
-    [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetMessagesPrivateChannelAsync(
-        long userId,
-        long? before = null,
-        int limit = 50,
-        CancellationToken cancellationToken = default)
-    {
-        var actualBefore = before ?? long.MaxValue;
-
-        var query = new GetMessagesPrivateChannelQuery(userId, actualBefore, limit);
 
         var result = await _mediator.Send(query, cancellationToken);
 
