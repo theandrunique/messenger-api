@@ -1,9 +1,9 @@
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
-using MessengerAPI.Data.Channels;
 using MessengerAPI.Domain.Events;
 using MessengerAPI.Errors;
 using MessengerAPI.Domain.Entities;
+using MessengerAPI.Data.Interfaces.Channels;
 
 namespace MessengerAPI.Application.Channels.Commands.AckMessage;
 

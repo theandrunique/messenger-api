@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using MessengerAPI.Application.Common.Interfaces.S3;
 using MessengerAPI.Core;
-using MessengerAPI.Data.Channels;
+using MessengerAPI.Data.Interfaces.Channels;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
 using Microsoft.Extensions.Options;

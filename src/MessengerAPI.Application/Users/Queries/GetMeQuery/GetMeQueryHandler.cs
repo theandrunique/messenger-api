@@ -1,7 +1,7 @@
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Data.Users;
+using MessengerAPI.Data.Interfaces.Users;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Users.Queries.GetMeQuery;

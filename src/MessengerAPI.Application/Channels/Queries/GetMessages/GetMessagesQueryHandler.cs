@@ -2,7 +2,7 @@ using MediatR;
 using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
-using MessengerAPI.Data.Channels;
+using MessengerAPI.Data.Interfaces.Channels;
 using MessengerAPI.Errors;
 
 namespace MessengerAPI.Application.Channels.Queries.GetMessages;

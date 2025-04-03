@@ -8,7 +8,8 @@ WORKDIR /src
 COPY src/MessengerAPI.Contracts/*.csproj MessengerAPI.Contracts/
 COPY src/MessengerAPI.Core/*.csproj MessengerAPI.Core/
 COPY src/MessengerAPI.Errors/*.csproj MessengerAPI.Errors/
-COPY src/MessengerAPI.Data/*.csproj MessengerAPI.Data/
+COPY src/MessengerAPI.Data.Interfaces/*.csproj MessengerAPI.Data.Interfaces/
+COPY src/MessengerAPI.Data.Implementations/*.csproj MessengerAPI.Data.Implementations/
 COPY src/MessengerAPI.Gateway/*.csproj MessengerAPI.Gateway/
 COPY src/MessengerAPI.Presentation/*.csproj MessengerAPI.Presentation/
 COPY src/MessengerAPI.Infrastructure/*.csproj MessengerAPI.Infrastructure/

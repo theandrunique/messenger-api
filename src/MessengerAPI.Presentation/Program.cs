@@ -1,10 +1,9 @@
 using MessengerAPI.Application;
-using MessengerAPI.Contracts;
 using MessengerAPI.Core;
-using MessengerAPI.Data;
 using MessengerAPI.Gateway;
 using MessengerAPI.Infrastructure;
 using MessengerAPI.Infrastructure.Common.FileStorage;
+using MessengerAPI.Data.Implementations;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -7,12 +7,13 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Refit" Version="8.0.0" />
     <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MessengerAPI.Contracts\MessengerAPI.Contracts.csproj" />
-    <ProjectReference Include="..\MessengerAPI.Data\MessengerAPI.Data.csproj" />
+    <ProjectReference Include="..\MessengerAPI.Data.Interfaces\MessengerAPI.Data.Interfaces.csproj" />
     <ProjectReference Include="..\MessengerAPI.Errors\MessengerAPI.Errors.csproj" />
     <ProjectReference Include="..\MessengerAPI.Core\MessengerAPI.Core.csproj" />
   </ItemGroup>

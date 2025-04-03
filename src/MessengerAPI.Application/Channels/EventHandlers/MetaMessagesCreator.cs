@@ -1,6 +1,6 @@
 using MediatR;
 using MessengerAPI.Core;
-using MessengerAPI.Data.Channels;
+using MessengerAPI.Data.Interfaces.Channels;
 using MessengerAPI.Domain.Channels.MessageMetadataTypes;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.Events;

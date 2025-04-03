@@ -23,4 +23,3 @@ public class ApiError
         Metadata = metadata;
     }
 }
-

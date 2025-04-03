@@ -1,7 +1,6 @@
-using System.IO.Pipelines;
 using System.Security.Cryptography;
 using MessengerAPI.Application.Auth.Common.Interfaces;
-using MessengerAPI.Data.VerificationCodes;
+using MessengerAPI.Data.Interfaces.VerificationCodes;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 

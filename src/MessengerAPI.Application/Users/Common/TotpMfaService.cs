@@ -1,8 +1,7 @@
-using System.Runtime.CompilerServices;
 using MediatR;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces;
-using MessengerAPI.Data.Users;
+using MessengerAPI.Data.Interfaces.Users;
 using MessengerAPI.Domain.ValueObjects;
 using MessengerAPI.Errors;
 

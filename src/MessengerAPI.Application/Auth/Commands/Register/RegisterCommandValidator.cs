@@ -1,5 +1,5 @@
 using FluentValidation;
-using MessengerAPI.Data.Users;
+using MessengerAPI.Data.Interfaces.Users;
 
 namespace MessengerAPI.Application.Auth.Commands.Register;
 

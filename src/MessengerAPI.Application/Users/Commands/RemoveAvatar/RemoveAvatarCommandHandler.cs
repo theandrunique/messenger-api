@@ -1,6 +1,6 @@
 using MediatR;
 using MessengerAPI.Application.Common.Interfaces;
-using MessengerAPI.Data.Users;
+using MessengerAPI.Data.Interfaces.Users;
 using MessengerAPI.Domain.Events;
 
 namespace MessengerAPI.Application.Users.Commands.RemoveAvatar;

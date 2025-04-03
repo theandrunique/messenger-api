@@ -3,7 +3,7 @@ using MessengerAPI.Application.Channels.Common;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Core;
-using MessengerAPI.Data.Channels;
+using MessengerAPI.Data.Interfaces.Channels;
 using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.Events;

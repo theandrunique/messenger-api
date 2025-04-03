@@ -3,7 +3,7 @@ using MessengerAPI.Application.Auth.Common;
 using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Core;
-using MessengerAPI.Data.Users;
+using MessengerAPI.Data.Interfaces.Users;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Errors;
 
