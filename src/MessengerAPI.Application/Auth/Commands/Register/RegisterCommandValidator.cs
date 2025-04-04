@@ -14,9 +14,9 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
             .NotEmpty()
             .Length(3, 50)
             .MustAsync(IsUsernameAvailable)
-            .WithMessage("Username already exists")
+            .WithMessage("Username already exists.")
             .Matches(@"^[a-zA-Z0-9]+$")
-            .WithMessage("Username must contain only letters and numbers");
+            .WithMessage("Username must contain only letters and numbers.");
 
         RuleFor(x => x.Password)
             .NotEmpty()
@@ -28,13 +28,13 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
             .NotEmpty()
             .Length(3, 50)
             .Matches(@"^[a-zA-Z0-9]+$")
-            .WithMessage("Global name must contain only letters and numbers");
+            .WithMessage("Global name must contain only letters and numbers.");
 
         RuleFor(x => x.Email)
             .NotEmpty()
             .EmailAddress()
             .MustAsync(IsEmailAvailable)
-            .WithMessage("Email is busy");
+            .WithMessage("Email is busy.");
     }
 
     private async Task<bool> IsUsernameAvailable(string username, CancellationToken token)
