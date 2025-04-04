@@ -9,7 +9,7 @@ public interface IChannelRepository
     Task<List<Channel>> GetUserChannelsAsync(long userId);
     Task<Channel?> GetByIdOrNullAsync(long channelId);
     Task<IEnumerable<long>> GetMemberIdsFromChannelByIdAsync(long channelId);
-    Task<Channel?> GetPrivateChannelOrNullAsync(long userId1, long userId2);
+    Task<Channel?> GetDMChannelOrNullAsync(long userId1, long userId2);
     Task UpsertChannelMemberAsync(long channelId, ChannelMemberInfo member);
     Task UpdateIsLeaveStatus(long userId, long channelId, bool isLeave);
     Task UpdateChannelInfo(long channelId, string title, string? image);

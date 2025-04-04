@@ -30,7 +30,7 @@ public class GetDMChannelCommandHandler : IRequestHandler<GetDMChannelCommand, E
 
     public async Task<ErrorOr<ChannelSchema>> Handle(GetDMChannelCommand request, CancellationToken cancellationToken)
     {
-        var existedDMChannel = await _channelRepository.GetPrivateChannelOrNullAsync(request.userId, _clientInfo.UserId);
+        var existedDMChannel = await _channelRepository.GetDMChannelOrNullAsync(request.userId, _clientInfo.UserId);
         if (existedDMChannel is not null)
         {
             return ChannelSchema.From(existedDMChannel);

@@ -79,7 +79,7 @@ internal class ChannelRepository : IChannelRepository
         return result.Select(row => row.GetValue<long>("userid"));
     }
 
-    public async Task<Channel?> GetPrivateChannelOrNullAsync(long userId1, long userId2)
+    public async Task<Channel?> GetDMChannelOrNullAsync(long userId1, long userId2)
     {
         var query = _privateChannels.SelectByUserIds(userId1, userId2);
         var result = await _session.ExecuteAsync(query);
