@@ -1,6 +1,6 @@
 using MediatR;
 using MessengerAPI.Application.Channels.Commands;
-using MessengerAPI.Application.Channels.Commands.GetPrivateChannel;
+using MessengerAPI.Application.Channels.Commands.GetDMChannel;
 using MessengerAPI.Application.Channels.Queries.GetChannels;
 using MessengerAPI.Application.Users.Commands;
 using MessengerAPI.Application.Users.Commands.RemoveAvatar;
@@ -125,20 +125,20 @@ public class UsersController : ApiController
         return result.Match(onValue: Ok, onError: Problem);
     }
 
-    [HttpGet("@me/private-channel/{userId}")]
+    [HttpGet("@me/dms/{userId}")]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPrivateChannelAsync(long userId, CancellationToken cancellationToken)
     {
-        var command = new GetPrivateChannelCommand(userId);
+        var command = new GetDMChannelCommand(userId);
         var result = await _mediator.Send(command, cancellationToken);
         return result.Match(onValue: Ok, onError: Problem);
     }
 
-    [HttpGet("@me/private-channel/me")]
+    [HttpGet("@me/dms/me")]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSavedMessagesChannelAsync(CancellationToken cancellationToken)
     {
-        var command = new GetPrivateChannelCommand(User.GetUserId());
+        var command = new GetDMChannelCommand(User.GetUserId());
         var result = await _mediator.Send(command, cancellationToken);
         return result.Match(onValue: Ok, onError: Problem);
     }

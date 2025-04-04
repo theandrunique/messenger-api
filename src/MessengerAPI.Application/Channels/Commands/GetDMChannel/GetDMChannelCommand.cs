@@ -2,8 +2,8 @@ using MediatR;
 using MessengerAPI.Contracts.Common;
 using MessengerAPI.Errors;
 
-namespace MessengerAPI.Application.Channels.Commands.GetPrivateChannel;
+namespace MessengerAPI.Application.Channels.Commands.GetDMChannel;
 
-public record GetPrivateChannelCommand(
+public record GetDMChannelCommand(
     long userId
 ) : IRequest<ErrorOr<ChannelSchema>>;
