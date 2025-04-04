@@ -1,9 +1,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using IdGen;
+using MessengerAPI.Core;
 using Microsoft.Extensions.Logging;
 
-namespace MessengerAPI.Core;
+namespace MessengerAPI.Infrastructure.Common;
 
 internal class IdGenerator : IIdGenerator
 {

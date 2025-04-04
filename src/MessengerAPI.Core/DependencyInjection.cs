@@ -7,8 +7,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
-        services.AddSingleton<IIdGenerator, IdGenerator>();
-
         return services;
     }
 

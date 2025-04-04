@@ -6,6 +6,7 @@ using MessengerAPI.Application.Auth.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces;
 using MessengerAPI.Application.Common.Interfaces.S3;
 using MessengerAPI.Application.Users.Common;
+using MessengerAPI.Core;
 using MessengerAPI.Domain.Users;
 using MessengerAPI.Infrastructure.Auth;
 using MessengerAPI.Infrastructure.Common;
@@ -33,6 +34,7 @@ public static class DependencyInjection
         services.AddS3Services(config);
         services.AddRedis(config);
         services.AddElasticsearch();
+        services.AddSingleton<IIdGenerator, IdGenerator>();
 
         services.AddScoped<IImageProcessor, ImageProcessor>();
 
