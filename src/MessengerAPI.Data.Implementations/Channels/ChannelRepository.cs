@@ -37,7 +37,7 @@ internal class ChannelRepository : IChannelRepository
             batch.Add(_channelUsers.Insert(channel.Id, member));
         }
 
-        if (channel.Type == ChannelType.PRIVATE)
+        if (channel.Type == ChannelType.DM)
         {
             batch.Add(_privateChannels.Insert(channel));
         }

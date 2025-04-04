@@ -28,7 +28,7 @@ public class Channel
                 user,
                 ChannelPermissions.PRIVATE_CHANNEL)).ToList();
 
-        var channel = new Channel(id, null, null, null, ChannelType.PRIVATE, null, null, membersInfo);
+        var channel = new Channel(id, null, null, null, ChannelType.DM, null, null, membersInfo);
         return channel;
     }
 
@@ -48,7 +48,7 @@ public class Channel
             })
             .ToList();
 
-        var channel = new Channel(id, ownerId, title, null, ChannelType.GROUP, null, null, membersInfo);
+        var channel = new Channel(id, ownerId, title, null, ChannelType.GROUP_DM, null, null, membersInfo);
         return channel;
     }
 
@@ -101,7 +101,7 @@ public class Channel
 
     public void UpdateChannelTitle(string title)
     {
-        if (Type == ChannelType.PRIVATE)
+        if (Type == ChannelType.DM)
         {
             throw new InvalidOperationException("Cannot update channel of type Private");
         }

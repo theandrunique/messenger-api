@@ -41,7 +41,7 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
-        if (channel.Type == ChannelType.PRIVATE)
+        if (channel.Type == ChannelType.DM)
         {
             return ApiErrors.Channel.InvalidOperationForThisChannelType;
         }

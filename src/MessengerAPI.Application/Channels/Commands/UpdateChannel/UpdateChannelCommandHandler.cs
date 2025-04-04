@@ -32,7 +32,7 @@ public class UpdateChannelCommandHandler : IRequestHandler<UpdateChannelCommand,
         {
             return ApiErrors.Channel.NotFound(request.ChannelId);
         }
-        if (channel.Type != ChannelType.GROUP)
+        if (channel.Type != ChannelType.GROUP_DM)
         {
             return ApiErrors.Channel.InvalidOperationForThisChannelType;
         }
