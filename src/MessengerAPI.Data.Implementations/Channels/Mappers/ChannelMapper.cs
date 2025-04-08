@@ -17,7 +17,7 @@ public static class ChannelMapper
             Image = row.GetValue<string?>("image"),
             Type = (ChannelType)row.GetValue<int>("channeltype"),
             LastMessageTimestamp = row.GetValue<DateTimeOffset?>("lastmessagetimestamp"),
-            LastMessage = row.GetValue<MessageInfo?>("lastmessage")
+            LastMessage = row.GetValue<MessageInfoDto?>("lastmessage")
         };
     }
 

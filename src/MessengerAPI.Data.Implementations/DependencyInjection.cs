@@ -1,5 +1,6 @@
 using Cassandra;
 using MessengerAPI.Data.Implementations.Channels;
+using MessengerAPI.Data.Implementations.Channels.Dto;
 using MessengerAPI.Data.Implementations.Channels.Queries;
 using MessengerAPI.Data.Implementations.Messages;
 using MessengerAPI.Data.Implementations.Messages.Queries;
@@ -10,7 +11,6 @@ using MessengerAPI.Data.Implementations.VerificationCodes.Queries;
 using MessengerAPI.Data.Interfaces.Channels;
 using MessengerAPI.Data.Interfaces.Users;
 using MessengerAPI.Data.Interfaces.VerificationCodes;
-using MessengerAPI.Domain.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,8 +33,7 @@ public static class DependencyInjection
         var session = cluster.Connect();
 
         session.UserDefinedTypes.Define(
-            UdtMap.For<MessageInfo>("messageinfo")
-        );
+            UdtMap.For<MessageInfoDto>("messageinfo"));
 
         services.AddSingleton<ISession>(s => session);
 

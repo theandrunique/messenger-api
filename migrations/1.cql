@@ -8,14 +8,13 @@ USE messenger;
 CREATE TYPE messenger.messageinfo (
     id bigint,
     authorid bigint,
-    authorusername text,
-    authorglobalname text,
+    targetuserid bigint,
     content text,
     timestamp timestamp,
     editedtimestamp timestamp,
     attachmentscount int,
     type int,
-
+    metadata text
 );
 
 -- TABLES

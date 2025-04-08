@@ -11,7 +11,7 @@ public struct ChannelData
     public string? Image { get; set; }
     public ChannelType Type { get; set; }
     public DateTimeOffset? LastMessageTimestamp { get; set; }
-    public MessageInfo? LastMessage { get; set; }
+    public MessageInfoDto? LastMessage { get; set; }
     public List<ChannelMemberInfo>? Members { get; set; }
 
     public Channel ToEntity()
@@ -28,7 +28,7 @@ public struct ChannelData
             image: Image,
             type: Type,
             lastMessageTimestamp: LastMessageTimestamp,
-            lastMessage: LastMessage,
+            lastMessage: LastMessage.HasValue ? LastMessage.Value.ToValue() : null,
             members: Members
         );
     }

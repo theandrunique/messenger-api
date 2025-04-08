@@ -1,8 +1,7 @@
 using Cassandra;
+using MessengerAPI.Data.Implementations.Common;
 using MessengerAPI.Data.Implementations.Messages.Dto;
-using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.ValueObjects;
-using Newtonsoft.Json;
 
 namespace MessengerAPI.Data.Implementations.Messages.Mappers;
 
@@ -20,12 +19,6 @@ public static class MessageMapper
 
     public static MessageData Map(Row row)
     {
-        var metadataJson = row.GetValue<string?>("metadata");
-        var metadata = JsonConvert.DeserializeObject<IMessageMetadata?>(metadataJson, new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto
-        });
-
         return new MessageData()
         {
             Id = row.GetValue<long>("id"),
@@ -37,7 +30,7 @@ public static class MessageMapper
             EditedTimestamp = row.GetValue<DateTimeOffset?>("editedtimestamp"),
             Pinned = row.GetValue<bool>("pinned"),
             Type = (MessageType)row.GetValue<int>("type"),
-            Metadata = metadata,
+            Metadata = MessageMetadataConverter.ToValue(row.GetValue<string?>("metadata")),
         };
     }
 }

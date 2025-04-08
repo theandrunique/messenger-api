@@ -1,4 +1,5 @@
 using Cassandra;
+using MessengerAPI.Data.Implementations.Channels.Dto;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
@@ -56,6 +57,10 @@ public class ChannelByIdQueries
     public BoundStatement UpdateLastMessageInfo(Message message)
     {
         var messageInfo = new MessageInfo(message);
-        return _updateLastMessageInfo.Bind(messageInfo.Timestamp, messageInfo, message.ChannelId);
+
+        return _updateLastMessageInfo.Bind(
+            messageInfo.Timestamp,
+            MessageInfoDto.From(messageInfo),
+            message.ChannelId);
     }
 }

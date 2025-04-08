@@ -1,3 +1,4 @@
+using System.Net;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
@@ -15,7 +16,6 @@ public record ChannelSchema
     public ChannelType Type { get; init; }
     public string? ReadAt { get; init; }
     public string? MaxReadAt { get; init; }
-    public DateTimeOffset? LastMessageTimestamp { get; init; }
     public MessageInfoSchema? LastMessage { get; init; }
     public List<UserPublicSchema> Members { get; init; }
 
@@ -26,10 +26,22 @@ public record ChannelSchema
         Title = channel.Title;
         Image = channel.Image;
         Type = channel.Type;
-        LastMessageTimestamp = channel.LastMessageTimestamp;
         if (channel.LastMessage.HasValue)
         {
-            LastMessage = MessageInfoSchema.From(channel.LastMessage.Value);
+            var author = channel.AllMembers
+                .First(m => m.UserId == channel.LastMessage.Value.AuthorId);
+
+            ChannelMemberInfo? targetUser = null;
+            if (channel.LastMessage.Value.TargetUserId.HasValue)
+            {
+                targetUser = channel.AllMembers
+                    .FirstOrDefault(m => m.UserId == channel.LastMessage.Value.TargetUserId);
+            }
+
+            LastMessage = MessageInfoSchema.From(
+                channel.LastMessage.Value,
+                UserPublicSchema.From(author),
+                targetUser == null ? null : UserPublicSchema.From(targetUser));
         }
         Members = channel.ActiveMembers.Where(m => !m.IsLeave).Select(UserPublicSchema.From).ToList();
         if (userId != null)
