@@ -9,7 +9,7 @@ using MessengerAPI.Domain.ValueObjects;
 namespace MessengerAPI.Application.Channels.EventHandlers;
 
 public class MetaMessagesCreator
-    : INotificationHandler<ChannelTitleUpdateDomainEvent>,
+    : INotificationHandler<ChannelNameUpdateDomainEvent>,
       INotificationHandler<ChannelMemberAddDomainEvent>,
       INotificationHandler<ChannelMemberRemoveDomainEvent>
 {
@@ -53,17 +53,17 @@ public class MetaMessagesCreator
         }
     }
 
-    public async Task Handle(ChannelTitleUpdateDomainEvent @event, CancellationToken cancellationToken)
+    public async Task Handle(ChannelNameUpdateDomainEvent @event, CancellationToken cancellationToken)
     {
         var actionInitiatorInfo = @event.Channel.ActiveMembers.First(m => m.UserId == @event.InitiatorId);
 
         var metaMessage = new Message(
-            type: MessageType.CHANNEL_TITLE_CHANGE,
+            type: MessageType.CHANNEL_NAME_CHANGE,
             id: _idGenerator.CreateId(),
             channelId: @event.Channel.Id,
             author: actionInitiatorInfo,
             content: "",
-            metadata: new ChannelTitleChangeMetadata(@event.Channel.Title));
+            metadata: new ChannelNameChangeMetadata(@event.Channel.Name));
 
         await _messageRepository.UpsertAsync(metaMessage);
         await _mediator.Publish(new MessageCreateDomainEvent(@event.Channel, metaMessage, actionInitiatorInfo));

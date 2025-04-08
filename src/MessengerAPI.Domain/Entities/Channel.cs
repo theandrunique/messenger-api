@@ -9,7 +9,7 @@ public class Channel
 
     public long Id { get; private set; }
     public long? OwnerId { get; private set; }
-    public string? Title { get; private set; }
+    public string? Name { get; private set; }
     public string? Image { get; private set; }
     public ChannelType Type { get; private set; }
     public DateTimeOffset? LastMessageTimestamp { get; private set; }
@@ -32,11 +32,11 @@ public class Channel
         return channel;
     }
 
-    public static Channel CreateGroup(long id, long ownerId, string? title, User[] members)
+    public static Channel CreateGroup(long id, long ownerId, string? name, User[] members)
     {
-        if (string.IsNullOrEmpty(title))
+        if (string.IsNullOrEmpty(name))
         {
-            title = null;
+            name = null;
         }
         var membersInfo = members
             .Select(user =>
@@ -48,14 +48,14 @@ public class Channel
             })
             .ToList();
 
-        var channel = new Channel(id, ownerId, title, null, ChannelType.GROUP_DM, null, null, membersInfo);
+        var channel = new Channel(id, ownerId, name, null, ChannelType.GROUP_DM, null, null, membersInfo);
         return channel;
     }
 
     public Channel(
         long id,
         long? ownerId,
-        string? title,
+        string? name,
         string? image,
         ChannelType type,
         DateTimeOffset? lastMessageTimestamp,
@@ -64,7 +64,7 @@ public class Channel
     {
         Id = id;
         OwnerId = ownerId;
-        Title = title;
+        Name = name;
         Image = image;
         Type = type;
         LastMessageTimestamp = lastMessageTimestamp;
@@ -99,13 +99,13 @@ public class Channel
         return _members.Any(m => m.UserId == userId && m.Permissions.HasPermission(permissions));
     }
 
-    public void UpdateChannelTitle(string title)
+    public void UpdateChannelName(string name)
     {
         if (Type == ChannelType.DM)
         {
-            throw new InvalidOperationException("Cannot update channel of type Private");
+            throw new InvalidOperationException($"Cannot update channel of type ${Type}");
         }
 
-        Title = title;
+        Name = name;
     }
 }

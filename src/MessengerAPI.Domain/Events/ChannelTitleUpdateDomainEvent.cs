@@ -2,7 +2,7 @@ using MessengerAPI.Domain.Entities;
 
 namespace MessengerAPI.Domain.Events;
 
-public record ChannelTitleUpdateDomainEvent(
+public record ChannelNameUpdateDomainEvent(
     Channel Channel,
-    string NewTitle,
+    string NewName,
     long InitiatorId) : IDomainEvent;

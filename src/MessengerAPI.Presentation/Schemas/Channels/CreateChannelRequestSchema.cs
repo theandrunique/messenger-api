@@ -1,5 +1,5 @@
 namespace MessengerAPI.Presentation.Schemas.Channels;
 
 public record CreateChannelRequestSchema(
-    string? title,
+    string? name,
     List<long> members);

@@ -1,3 +1,3 @@
 namespace MessengerAPI.Presentation.Schemas.Channels;
 
-public record UpdateChannelRequestSchema(string title);
+public record UpdateChannelRequestSchema(string name);

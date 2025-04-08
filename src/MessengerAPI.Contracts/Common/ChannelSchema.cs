@@ -10,7 +10,7 @@ public record ChannelSchema
 {
     public string Id { get; init; }
     public string? OwnerId { get; init; }
-    public string? Title { get; init; }
+    public string? Name { get; init; }
     public string? Image { get; init; }
     public ChannelType Type { get; init; }
     public string? LastReadMessageId { get; init; }
@@ -22,7 +22,7 @@ public record ChannelSchema
     {
         Id = channel.Id.ToString();
         OwnerId = channel.OwnerId?.ToString();
-        Title = channel.Title;
+        Name = channel.Name;
         Image = channel.Image;
         Type = channel.Type;
         if (channel.LastMessage.HasValue)

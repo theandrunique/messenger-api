@@ -7,7 +7,7 @@ public struct ChannelData
 {
     public long Id { get; set; }
     public long? OwnerId { get; set; }
-    public string? Title { get; set; }
+    public string? Name { get; set; }
     public string? Image { get; set; }
     public ChannelType Type { get; set; }
     public DateTimeOffset? LastMessageTimestamp { get; set; }
@@ -24,7 +24,7 @@ public struct ChannelData
         return new Channel(
             id: Id,
             ownerId: OwnerId,
-            title: Title,
+            name: Name,
             image: Image,
             type: Type,
             lastMessageTimestamp: LastMessageTimestamp,

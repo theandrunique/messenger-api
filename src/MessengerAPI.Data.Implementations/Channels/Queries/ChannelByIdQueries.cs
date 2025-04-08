@@ -16,13 +16,13 @@ public class ChannelByIdQueries
 
     public ChannelByIdQueries(ISession session)
     {
-        _insert = session.Prepare("INSERT INTO channels_by_id (channelid, channeltype, title, ownerid, image) VALUES (?, ?, ?, ?, ?)");
+        _insert = session.Prepare("INSERT INTO channels_by_id (channelid, channeltype, name, ownerid, image) VALUES (?, ?, ?, ?, ?)");
 
         _selectById = session.Prepare("SELECT * FROM channels_by_id WHERE channelid = ?");
 
         _selectByIds = session.Prepare("SELECT * FROM channels_by_id WHERE channelid IN ?");
 
-        _updateChannelInfo = session.Prepare("UPDATE channels_by_id SET title = ?, image = ? WHERE channelid = ?");
+        _updateChannelInfo = session.Prepare("UPDATE channels_by_id SET name = ?, image = ? WHERE channelid = ?");
 
         _updateOwnerId = session.Prepare("UPDATE channels_by_id SET ownerid = ? WHERE channelid = ?");
 
@@ -31,7 +31,7 @@ public class ChannelByIdQueries
 
     public BoundStatement Insert(Channel channel)
     {
-        return _insert.Bind(channel.Id, (int)channel.Type, channel.Title, channel.OwnerId, channel.Image);
+        return _insert.Bind(channel.Id, (int)channel.Type, channel.Name, channel.OwnerId, channel.Image);
     }
 
     public BoundStatement SelectById(long channelId)
@@ -44,9 +44,9 @@ public class ChannelByIdQueries
         return _selectByIds.Bind(channelIds);
     }
 
-    public BoundStatement UpdateChannelInfo(long channelId, string title, string? image)
+    public BoundStatement UpdateChannelInfo(long channelId, string name, string? image)
     {
-        return _updateChannelInfo.Bind(title, image, channelId);
+        return _updateChannelInfo.Bind(name, image, channelId);
     }
 
     public BoundStatement UpdateOwnerId(long channelId, long ownerId)

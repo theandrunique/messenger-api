@@ -86,7 +86,7 @@ CREATE TABLE messenger.channels_by_id (
     lastmessage messageinfo,
     lastmessagetimestamp timestamp,
     ownerid bigint,
-    title text,
+    name text,
 
     PRIMARY KEY ((channelid))
 );

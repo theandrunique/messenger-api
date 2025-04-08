@@ -13,7 +13,7 @@ public static class ChannelMapper
         {
             Id = row.GetValue<long>("channelid"),
             OwnerId = row.GetValue<long?>("ownerid"),
-            Title = row.GetValue<string?>("title"),
+            Name = row.GetValue<string?>("name"),
             Image = row.GetValue<string?>("image"),
             Type = (ChannelType)row.GetValue<int>("channeltype"),
             LastMessageTimestamp = row.GetValue<DateTimeOffset?>("lastmessagetimestamp"),

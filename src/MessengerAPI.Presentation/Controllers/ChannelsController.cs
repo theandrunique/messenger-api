@@ -42,7 +42,7 @@ public class ChannelsController : ApiController
         UpdateChannelRequestSchema schema,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateChannelCommand(channelId, schema.title);
+        var command = new UpdateChannelCommand(channelId, schema.name);
         var result = await _mediator.Send(command, cancellationToken);
         return result.Match(onValue: Ok, onError: Problem);
     }

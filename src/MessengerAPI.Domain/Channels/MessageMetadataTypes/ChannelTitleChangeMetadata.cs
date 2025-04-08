@@ -1,8 +1,8 @@
 namespace MessengerAPI.Domain.Channels.MessageMetadataTypes;
 
-public class ChannelTitleChangeMetadata : IMessageMetadata
+public class ChannelNameChangeMetadata : IMessageMetadata
 {
-    public string NewTitle { get; set; }
+    public string NewName { get; set; }
 
-    public ChannelTitleChangeMetadata(string newTitle) => NewTitle = newTitle;
+    public ChannelNameChangeMetadata(string newName) => NewName = newName;
 }

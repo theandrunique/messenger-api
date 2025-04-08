@@ -144,9 +144,9 @@ internal class ChannelRepository : IChannelRepository
         return channelsData.Select(c => c.ToEntity()).ToList();
     }
 
-    public Task UpdateChannelInfo(long channelId, string title, string? image)
+    public Task UpdateChannelInfo(long channelId, string name, string? image)
     {
-        var query = _channelsById.UpdateChannelInfo(channelId, title, image);
+        var query = _channelsById.UpdateChannelInfo(channelId, name, image);
         return _session.ExecuteAsync(query);
     }
 
