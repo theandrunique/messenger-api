@@ -1,4 +1,3 @@
-using System.Net;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
@@ -14,8 +13,8 @@ public record ChannelSchema
     public string? Title { get; init; }
     public string? Image { get; init; }
     public ChannelType Type { get; init; }
-    public string? ReadAt { get; init; }
-    public string? MaxReadAt { get; init; }
+    public string? LastReadMessageId { get; init; }
+    public string? MaxReadMessageId { get; init; }
     public MessageInfoSchema? LastMessage { get; init; }
     public List<UserPublicSchema> Members { get; init; }
 
@@ -47,9 +46,9 @@ public record ChannelSchema
         if (userId != null)
         {
             var currentMember = channel.ActiveMembers.First(m => m.UserId == userId);
-            ReadAt = currentMember.ReadAt.ToString();
+            LastReadMessageId = currentMember.ReadAt.ToString();
 
-            MaxReadAt = channel.ActiveMembers
+            MaxReadMessageId = channel.ActiveMembers
                 .Where(m => m.UserId != userId)
                 .Select(m => (long?)m.ReadAt)
                 .Max()?.ToString();
