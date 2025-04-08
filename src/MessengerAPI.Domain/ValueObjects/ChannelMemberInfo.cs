@@ -6,7 +6,7 @@ namespace MessengerAPI.Domain.ValueObjects;
 public class ChannelMemberInfo
 {
     public long UserId { get; set; }
-    public long ReadAt { get; set; }
+    public long LastReadMessageId { get; set; }
     public ChannelPermissionSet Permissions { get; set; }
     public string Username { get; set; }
     public string GlobalName { get; set; }
@@ -20,7 +20,7 @@ public class ChannelMemberInfo
         GlobalName = user.GlobalName;
         Permissions = new ChannelPermissionSet(permissions);
         Image = user.Image;
-        ReadAt = 0;
+        LastReadMessageId = 0;
         IsLeave = false;
     }
 
@@ -29,7 +29,7 @@ public class ChannelMemberInfo
         string username,
         string globalName,
         string? image,
-        long readAt,
+        long lastReadMessageId,
         ChannelPermissionSet permissions,
         bool isLeave)
     {
@@ -37,7 +37,7 @@ public class ChannelMemberInfo
         Username = username;
         GlobalName = globalName;
         Image = image;
-        ReadAt = readAt;
+        LastReadMessageId = lastReadMessageId;
         Permissions = permissions;
         IsLeave = isLeave;
     }

@@ -31,7 +31,7 @@ public class UpdateReadStatusHandler : INotificationHandler<MessageCreateDomainE
             throw new InvalidOperationException("Member was expected to be found here.");
         }
 
-        if (memberInfo.ReadAt >= @event.Message.Id)
+        if (memberInfo.LastReadMessageId >= @event.Message.Id)
         {
             return;
         }

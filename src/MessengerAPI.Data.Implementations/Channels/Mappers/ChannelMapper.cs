@@ -28,7 +28,7 @@ public static class ChannelMapper
             username: row.GetValue<string>("username"),
             globalName: row.GetValue<string>("globalname"),
             image: row.GetValue<string?>("image"),
-            readAt: row.GetValue<long>("readat"),
+            lastReadMessageId: row.GetValue<long>("lastreadmessageid"),
             permissions: new ChannelPermissionSet((ulong)row.GetValue<long>("permissions")),
             isLeave: row.GetValue<bool>("isleave"));
     }

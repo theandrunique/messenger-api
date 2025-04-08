@@ -46,11 +46,11 @@ public record ChannelSchema
         if (userId != null)
         {
             var currentMember = channel.ActiveMembers.First(m => m.UserId == userId);
-            LastReadMessageId = currentMember.ReadAt.ToString();
+            LastReadMessageId = currentMember.LastReadMessageId.ToString();
 
             MaxReadMessageId = channel.ActiveMembers
                 .Where(m => m.UserId != userId)
-                .Select(m => (long?)m.ReadAt)
+                .Select(m => (long?)m.LastReadMessageId)
                 .Max()?.ToString();
         }
     }

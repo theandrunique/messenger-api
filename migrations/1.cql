@@ -63,7 +63,7 @@ CREATE MATERIALIZED VIEW attachments_by_id AS
 CREATE TABLE messenger.channel_users_by_user_id (
     userid bigint,
     channelid bigint,
-    readat bigint,
+    lastreadmessageid bigint,
     username text,
     globalname text,
     image text,
@@ -74,7 +74,7 @@ CREATE TABLE messenger.channel_users_by_user_id (
 );
 
 CREATE MATERIALIZED VIEW messenger.channel_users_by_channel_id AS
-    SELECT userid, channelid, readat, username, globalname, image, permissions, isleave
+    SELECT userid, channelid, lastreadmessageid, username, globalname, image, permissions, isleave
     FROM messenger.channel_users_by_user_id
     WHERE channelid IS NOT NULL AND userid IS NOT NULL
     PRIMARY KEY(channelid, userid);

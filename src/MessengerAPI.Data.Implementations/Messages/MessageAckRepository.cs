@@ -31,7 +31,7 @@ internal class MessageAckRepository : IMessageAckRepository
     {
         var batch = new BatchStatement();
         batch.Add(_queries.Insert(messageAck));
-        batch.Add(_channelUser.UpdateReadAt(messageAck.UserId, messageAck.ChannelId, messageAck.LastReadMessageId));
+        batch.Add(_channelUser.UpdateLastReadMessageId(messageAck.UserId, messageAck.ChannelId, messageAck.LastReadMessageId));
 
         return _session.ExecuteAsync(batch);
     }

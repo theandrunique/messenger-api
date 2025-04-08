@@ -12,7 +12,7 @@ public class ChannelUserQueries
     private readonly PreparedStatement _selectByUserId;
     private readonly PreparedStatement _selectByChannelIdAndUserIds;
     private readonly PreparedStatement _selectChannelIdsByUserId;
-    private readonly PreparedStatement _updateReadAt;
+    private readonly PreparedStatement _updateLastReadMessageId;
     private readonly PreparedStatement _updateUserInfo;
     private readonly PreparedStatement _updateIsLeave;
 
@@ -22,7 +22,7 @@ public class ChannelUserQueries
             INSERT INTO channel_users_by_user_id (
                 userid,
                 channelid,
-                readat,
+                lastreadmessageid,
                 username,
                 globalname,
                 image,
@@ -41,10 +41,10 @@ public class ChannelUserQueries
 
         _selectChannelIdsByUserId = session.Prepare("SELECT channelid FROM channel_users_by_user_id WHERE userid = ?");
 
-        _updateReadAt = session.Prepare("UPDATE channel_users_by_user_id SET readat = ? WHERE userid = ? AND channelid = ?");
+        _updateLastReadMessageId = session.Prepare("UPDATE channel_users_by_user_id SET lastreadmessageid = ? WHERE userid = ? AND channelid = ?");
 
         _updateUserInfo = session.Prepare("UPDATE channel_users_by_user_id SET globalname = ?, image = ? WHERE userid = ? AND channelid IN ?");
-        
+
         _updateIsLeave = session.Prepare("UPDATE channel_users_by_user_id SET isleave = ? WHERE userid = ? AND channelid = ?");
     }
 
@@ -53,7 +53,7 @@ public class ChannelUserQueries
         return _insert.Bind(
             member.UserId,
             channelId,
-            member.ReadAt,
+            member.LastReadMessageId,
             member.Username,
             member.GlobalName,
             member.Image,
@@ -86,9 +86,9 @@ public class ChannelUserQueries
         return _selectChannelIdsByUserId.Bind(userId);
     }
 
-    public BoundStatement UpdateReadAt(long userId, long channelId, long readAt)
+    public BoundStatement UpdateLastReadMessageId(long userId, long channelId, long lastReadMessageId)
     {
-        return _updateReadAt.Bind(readAt, userId, channelId);
+        return _updateLastReadMessageId.Bind(lastReadMessageId, userId, channelId);
     }
 
     public BoundStatement UpdateUserInfo(User user, IEnumerable<long> channelIds)
