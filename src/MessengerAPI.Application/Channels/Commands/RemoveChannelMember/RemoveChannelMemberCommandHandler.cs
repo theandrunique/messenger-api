@@ -39,9 +39,9 @@ public class RemoveChannelMemberCommandHandler : IRequestHandler<RemoveChannelMe
             return ApiErrors.Channel.InvalidOperationForThisChannelType;
         }
 
-        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermissions.MANAGE_MEMBERS))
+        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.MANAGE_MEMBERS))
         {
-            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermissions.MANAGE_MEMBERS);
+            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_MEMBERS);
         }
 
         var memberToRemove = channel.FindMember(request.UserId);

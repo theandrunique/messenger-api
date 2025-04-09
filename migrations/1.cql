@@ -67,14 +67,14 @@ CREATE TABLE messenger.channel_users_by_user_id (
     username text,
     globalname text,
     image text,
-    permissions bigint,
+    permissionoverwrites bigint,
     isleave boolean,
 
     PRIMARY KEY (userid, channelid)
 );
 
 CREATE MATERIALIZED VIEW messenger.channel_users_by_channel_id AS
-    SELECT userid, channelid, lastreadmessageid, username, globalname, image, permissions, isleave
+    SELECT userid, channelid, lastreadmessageid, username, globalname, image, permissionoverwrites, isleave
     FROM messenger.channel_users_by_user_id
     WHERE channelid IS NOT NULL AND userid IS NOT NULL
     PRIMARY KEY(channelid, userid);
@@ -82,11 +82,12 @@ CREATE MATERIALIZED VIEW messenger.channel_users_by_channel_id AS
 CREATE TABLE messenger.channels_by_id (
     channelid bigint,
     channeltype int,
+    name text,
+    ownerid bigint,
     image text,
     lastmessage messageinfo,
     lastmessagetimestamp timestamp,
-    ownerid bigint,
-    name text,
+    permissionoverwrites bigint,
 
     PRIMARY KEY ((channelid))
 );

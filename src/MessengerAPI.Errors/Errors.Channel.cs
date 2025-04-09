@@ -26,7 +26,7 @@ public static partial class ApiErrors
                 ErrorCode.CHANNEL_INVALID_OPERATION_FOR_TYPE,
                 $"Operation not allowed for this channel type");
 
-        public static ApiError InsufficientPermissions(long channelId, ChannelPermissions permission)
+        public static ApiError InsufficientPermissions(long channelId, ChannelPermission permission)
             => new ApiError(
                 ErrorCode.CHANNEL_INSUFFICIENT_PERMISSIONS,
                 $"Requires '{permission}' permission for channel '{channelId}'");

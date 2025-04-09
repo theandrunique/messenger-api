@@ -6,5 +6,5 @@ namespace MessengerAPI.Application.Channels.Commands;
 
 public record CreateChannelCommand(
     List<long> Members,
-    string? Name
+    string Name
 ) : IRequest<ErrorOr<ChannelSchema>>;

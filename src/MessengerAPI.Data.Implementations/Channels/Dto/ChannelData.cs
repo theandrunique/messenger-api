@@ -1,3 +1,4 @@
+using MessengerAPI.Domain.Channels;
 using MessengerAPI.Domain.Entities;
 using MessengerAPI.Domain.ValueObjects;
 
@@ -12,6 +13,7 @@ public struct ChannelData
     public ChannelType Type { get; set; }
     public DateTimeOffset? LastMessageTimestamp { get; set; }
     public MessageInfoDto? LastMessage { get; set; }
+    public ChannelPermissionSet? PermissionOverwrites { get; set; }
     public List<ChannelMemberInfo>? Members { get; set; }
 
     public Channel ToEntity()
@@ -29,6 +31,7 @@ public struct ChannelData
             type: Type,
             lastMessageTimestamp: LastMessageTimestamp,
             lastMessage: LastMessage.HasValue ? LastMessage.Value.ToValue() : null,
+            permissionOverwrites: PermissionOverwrites,
             members: Members
         );
     }

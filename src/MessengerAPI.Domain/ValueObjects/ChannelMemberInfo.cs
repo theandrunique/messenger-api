@@ -7,18 +7,17 @@ public class ChannelMemberInfo
 {
     public long UserId { get; set; }
     public long LastReadMessageId { get; set; }
-    public ChannelPermissionSet Permissions { get; set; }
+    public ChannelPermissionSet? PermissionOverwrites { get; set; }
     public string Username { get; set; }
     public string GlobalName { get; set; }
     public string? Image { get; set; }
     public bool IsLeave { get; set; }
 
-    public ChannelMemberInfo(User user, ChannelPermissions permissions)
+    public ChannelMemberInfo(User user)
     {
         UserId = user.Id;
         Username = user.Username;
         GlobalName = user.GlobalName;
-        Permissions = new ChannelPermissionSet(permissions);
         Image = user.Image;
         LastReadMessageId = 0;
         IsLeave = false;
@@ -30,7 +29,7 @@ public class ChannelMemberInfo
         string globalName,
         string? image,
         long lastReadMessageId,
-        ChannelPermissionSet permissions,
+        ChannelPermissionSet? permissionOverwrites,
         bool isLeave)
     {
         UserId = userId;
@@ -38,7 +37,7 @@ public class ChannelMemberInfo
         GlobalName = globalName;
         Image = image;
         LastReadMessageId = lastReadMessageId;
-        Permissions = permissions;
+        PermissionOverwrites = permissionOverwrites;
         IsLeave = isLeave;
     }
 
@@ -46,7 +45,7 @@ public class ChannelMemberInfo
     {
         if (IsLeave == newStatus)
         {
-            throw new InvalidOperationException($"Status '{newStatus}' (IsLeave) of user {UserId} already set.");
+            throw new InvalidOperationException($"Status '{newStatus}' (IsLeave) of user id{UserId} already set.");
         }
 
         IsLeave = newStatus;

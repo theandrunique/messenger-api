@@ -26,7 +26,7 @@ public class ChannelUserQueries
                 username,
                 globalname,
                 image,
-                permissions,
+                permissionoverwrites,
                 isleave
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """);
@@ -57,7 +57,9 @@ public class ChannelUserQueries
             member.Username,
             member.GlobalName,
             member.Image,
-            (long)member.Permissions.ToValue(),
+            member.PermissionOverwrites.HasValue
+                ? (long)member.PermissionOverwrites.Value.ToValue()
+                : null,
             member.IsLeave);
     }
 

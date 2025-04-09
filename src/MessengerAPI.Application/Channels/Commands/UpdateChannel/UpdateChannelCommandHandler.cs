@@ -40,9 +40,9 @@ public class UpdateChannelCommandHandler : IRequestHandler<UpdateChannelCommand,
         {
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
-        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermissions.MANAGE_CHANNEL))
+        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.MANAGE_CHANNEL))
         {
-            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermissions.MANAGE_CHANNEL);
+            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_CHANNEL);
         }
 
         channel.UpdateChannelName(request.Name);

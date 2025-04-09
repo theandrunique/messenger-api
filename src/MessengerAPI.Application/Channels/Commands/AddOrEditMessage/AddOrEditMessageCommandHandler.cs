@@ -49,9 +49,9 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         {
             return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
-        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermissions.SEND_MESSAGES))
+        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.SEND_MESSAGES))
         {
-            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermissions.SEND_MESSAGES);
+            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.SEND_MESSAGES);
         }
 
         var initiator = channel.ActiveMembers.First(m => m.UserId == _clientInfo.UserId);

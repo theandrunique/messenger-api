@@ -16,7 +16,7 @@ public class ChannelByIdQueries
 
     public ChannelByIdQueries(ISession session)
     {
-        _insert = session.Prepare("INSERT INTO channels_by_id (channelid, channeltype, name, ownerid, image) VALUES (?, ?, ?, ?, ?)");
+        _insert = session.Prepare("INSERT INTO channels_by_id (channelid, channeltype, name, ownerid, image, permissionoverwrites) VALUES (?, ?, ?, ?, ?, ?)");
 
         _selectById = session.Prepare("SELECT * FROM channels_by_id WHERE channelid = ?");
 
@@ -31,7 +31,15 @@ public class ChannelByIdQueries
 
     public BoundStatement Insert(Channel channel)
     {
-        return _insert.Bind(channel.Id, (int)channel.Type, channel.Name, channel.OwnerId, channel.Image);
+        return _insert.Bind(
+            channel.Id,
+            (int)channel.Type,
+            channel.Name,
+            channel.OwnerId,
+            channel.Image,
+            channel.PermissionOverwrites.HasValue
+                ? channel.PermissionOverwrites.Value.ToValue()
+                : null);
     }
 
     public BoundStatement SelectById(long channelId)

@@ -7,11 +7,11 @@ public struct ChannelPermissionSet
     public ChannelPermissionSet(ulong value)
         => _permissionsValue = value;
 
-    public ChannelPermissionSet(ChannelPermissions permissions)
+    public ChannelPermissionSet(ChannelPermission permissions)
         => _permissionsValue = (ulong)permissions;
 
-    public bool HasPermission(ChannelPermissions permission)
-        => (_permissionsValue & (ulong)permission) != 0;
+    public bool HasPermission(ChannelPermission permission)
+        => (_permissionsValue & (ulong)permission) == (ulong)permission;
 
     public ulong ToValue() => _permissionsValue;
 }

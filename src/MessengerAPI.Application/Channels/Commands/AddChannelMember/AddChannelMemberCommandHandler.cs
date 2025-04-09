@@ -46,9 +46,9 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             return ApiErrors.Channel.InvalidOperationForThisChannelType;
         }
 
-        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermissions.MANAGE_MEMBERS))
+        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.MANAGE_MEMBERS))
         {
-            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermissions.MANAGE_MEMBERS);
+            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_MEMBERS);
         }
 
         var memberToReturn = channel.FindMember(request.UserId);
@@ -72,7 +72,7 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             {
                 return ApiErrors.User.NotFound(request.UserId);
             }
-            var memberInfo = channel.AddNewMember(newMember, ChannelPermissions.DEFAULT_MEMBER);
+            var memberInfo = channel.AddNewMember(newMember);
 
             await _channelRepository.UpsertChannelMemberAsync(channel.Id, memberInfo);
             await _publisher.Publish(new ChannelMemberAddDomainEvent(channel, memberInfo, _clientInfo.UserId));

@@ -145,12 +145,12 @@ public class UsersController : ApiController
 
     [HttpPost("@me/channels")]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateChannelAsync(CreateChannelRequestSchema schema, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateChannelAsync(
+        CreateChannelRequestSchema schema,
+        CancellationToken cancellationToken)
     {
         var query = new CreateChannelCommand(schema.members, schema.name);
-
         var result = await _mediator.Send(query, cancellationToken);
-
         return result.Match(onValue: Ok, onError: Problem);
     }
 }

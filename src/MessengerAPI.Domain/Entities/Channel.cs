@@ -14,6 +14,7 @@ public class Channel
     public ChannelType Type { get; private set; }
     public DateTimeOffset? LastMessageTimestamp { get; private set; }
     public MessageInfo? LastMessage { get; private set; }
+    public ChannelPermissionSet? PermissionOverwrites { get; private set; }
     public List<ChannelMemberInfo> AllMembers => _members.ToList();
     public List<ChannelMemberInfo> ActiveMembers => _members.Where(m => !m.IsLeave).ToList();
 
@@ -23,32 +24,19 @@ public class Channel
         {
             throw new ArgumentException($"Private channel must have exactly two or one member but was given {members.Length}.");
         }
-        var membersInfo = members.Select(user =>
-            new ChannelMemberInfo(
-                user,
-                ChannelPermissions.PRIVATE_CHANNEL)).ToList();
+        var membersInfo = members.Select(user => new ChannelMemberInfo(user)).ToList();
 
-        var channel = new Channel(id, null, null, null, ChannelType.DM, null, null, membersInfo);
+        var channel = new Channel(id, null, null, null, ChannelType.DM, null, null, null, membersInfo);
         return channel;
     }
 
-    public static Channel CreateGroup(long id, long ownerId, string? name, User[] members)
+    public static Channel CreateGroup(long id, long ownerId, string name, User[] members)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            name = null;
-        }
         var membersInfo = members
-            .Select(user =>
-            {
-                if (user.Id == ownerId)
-                    return new ChannelMemberInfo(user, ChannelPermissions.OWNER);
-
-                return new ChannelMemberInfo(user, ChannelPermissions.DEFAULT_MEMBER);
-            })
+            .Select(user => new ChannelMemberInfo(user))
             .ToList();
 
-        var channel = new Channel(id, ownerId, name, null, ChannelType.GROUP_DM, null, null, membersInfo);
+        var channel = new Channel(id, ownerId, name, null, ChannelType.GROUP_DM, null, null, null, membersInfo);
         return channel;
     }
 
@@ -60,6 +48,7 @@ public class Channel
         ChannelType type,
         DateTimeOffset? lastMessageTimestamp,
         MessageInfo? lastMessage,
+        ChannelPermissionSet? permissionOverwrites,
         List<ChannelMemberInfo> members)
     {
         Id = id;
@@ -69,17 +58,18 @@ public class Channel
         Type = type;
         LastMessageTimestamp = lastMessageTimestamp;
         LastMessage = lastMessage;
+        PermissionOverwrites = permissionOverwrites;
         _members = members;
     }
 
-    public ChannelMemberInfo AddNewMember(User user, ChannelPermissions permissions)
+    public ChannelMemberInfo AddNewMember(User user)
     {
         if (HasMember(user.Id))
         {
-            throw new Exception($"User {user.Id} already in the channel");
+            throw new InvalidOperationException($"User id{user.Id} already in the channel({Id})");
         }
 
-        var member = new ChannelMemberInfo(user, permissions);
+        var member = new ChannelMemberInfo(user);
         _members.Add(member);
         return member;
     }
@@ -94,9 +84,10 @@ public class Channel
         return _members.Any(m => m.UserId == userId && !m.IsLeave);
     }
 
-    public bool HasPermission(long userId, ChannelPermissions permissions)
+    public bool HasPermission(long userId, ChannelPermission permissions)
     {
-        return _members.Any(m => m.UserId == userId && m.Permissions.HasPermission(permissions));
+        return _members.Any(m => m.UserId == userId
+            && CalculatePermissions(m).HasPermission(permissions));
     }
 
     public void UpdateChannelName(string name)
@@ -107,5 +98,27 @@ public class Channel
         }
 
         Name = name;
+    }
+
+    private ChannelPermissionSet CalculatePermissions(ChannelMemberInfo member)
+    {
+        if (Type == ChannelType.DM)
+        {
+            return new ChannelPermissionSet(ChannelPermission.DM_CHANNEL);
+        }
+        if (member.UserId == OwnerId)
+        {
+            return new ChannelPermissionSet(ChannelPermission.OWNER);
+        }
+        if (member.PermissionOverwrites.HasValue)
+        {
+            return member.PermissionOverwrites.Value;
+        }
+        if (PermissionOverwrites.HasValue)
+        {
+            return PermissionOverwrites.Value;
+        }
+
+        return new ChannelPermissionSet(ChannelPermission.DEFAULT_DM_GROUP_MEMBER);
     }
 }
