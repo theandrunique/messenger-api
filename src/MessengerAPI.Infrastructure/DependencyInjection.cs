@@ -80,10 +80,6 @@ public static class DependencyInjection
     {
         var settings = new ElasticsearchClientSettings(new Uri("http://elasticsearch:9200"))
             .DefaultMappingFor<UserIndexModel>(i => i.IndexName("users"))
-            .OnRequestCompleted(r =>
-            {
-                Console.WriteLine($"{r.DebugInformation}");
-            })
             .EnableDebugMode();
 
         var client = new ElasticsearchClient(settings);
@@ -93,6 +89,7 @@ public static class DependencyInjection
 
         return services;
     }
+
     public static IServiceCollection AddAuthServices(this IServiceCollection services)
     {
         services.AddSingleton<IHashHelper, BCryptHelper>();

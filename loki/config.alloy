@@ -1,0 +1,31 @@
+discovery.docker "linux" {
+    host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "filter_containers" {
+    targets = discovery.docker.linux.targets
+
+    rule {
+        source_labels = ["__meta_docker_container_name"]
+        regex = "/.*(app|gateway).*"
+        action = "keep"
+    }
+
+    rule {
+        source_labels = ["__meta_docker_container_name"]
+        regex = "/(.*)"
+        target_label = "service_name"
+    }
+}
+
+loki.source.docker "default" {
+    host = "unix:///var/run/docker.sock"
+    targets = discovery.relabel.filter_containers.output
+    forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+    endpoint {
+        url = "http://loki:3100/loki/api/v1/push"
+    }
+}
