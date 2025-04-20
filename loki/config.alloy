@@ -21,7 +21,22 @@ discovery.relabel "filter_containers" {
 loki.source.docker "default" {
     host = "unix:///var/run/docker.sock"
     targets = discovery.relabel.filter_containers.output
+    forward_to = [loki.process.parse_logs.receiver]
+}
+
+loki.process "parse_logs" {
     forward_to = [loki.write.local.receiver]
+
+    stage.json {
+        expressions = {
+            extracted_timestamp = "Timestamp",
+        }
+    }
+
+    stage.timestamp {
+        source = "extracted_timestamp"
+        format = "RFC3339"
+    }
 }
 
 loki.write "local" {
