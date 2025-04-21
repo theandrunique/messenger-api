@@ -62,15 +62,21 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
 
                         if (await _revokedTokenStore.IsTokenRevokedAsync(userIdentity.TokenId))
                         {
+                            _logger.LogWarning("Revoked token attempted: {TokenId}", userIdentity.TokenId);
                             context.Fail("Token revoked");
                             return;
                         }
 
                         context.Principal.AddIdentity(userIdentity);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        context.Fail("Invalid payload");
+                        _logger.LogError(
+                            ex,
+                            "Error during parsing token payload {Claims}",
+                            context.Principal?.Claims.Select(c => new { c.Type, c.Value }));
+
+                        context.Fail("Invalid token payload");
                     }
                 }
             },

@@ -1,0 +1,48 @@
+apiVersion: 1
+
+datasources:
+- name: Loki
+  uid: loki
+  type: loki
+  access: proxy
+  orgId: 1
+  url: http://loki:3100
+  basicAuth: false
+  isDefault: false
+
+  jsonData:
+    derivedFields:
+      - name: Trace
+        matcherRegex: '"TraceId"\s*:\s*"([a-fA-F0-9]+)"'
+        url: '$${__value.raw}'
+        datasourceUid: tempo
+
+  editable: true
+
+- name: Tempo
+  uid: tempo
+  type: tempo
+  access: proxy
+  orgId: 1
+  url: http://tempo:3200
+  basicAuth: false
+  isDefault: false
+
+  jsonData:
+    nodeGraph:
+      enabled: true
+    search:
+      hide: false
+    lokiSearch:
+      datasourceUid: loki
+    tracesToLogsV2:
+      datasourceUid: loki
+      spanStartTimeShift: -1h
+      spanEndTimeShift: 1h
+      filterBySpanID: false
+      filterByTraceID: false
+      mapTagNamesEnabled: false
+      customQuery: true
+      query: '{service_name="$${__span.tags["service.name"]}"} | json | line_format "[{{ .detected_level | upper }}] {{ .Message }}" | TraceId="$${__trace.traceId}" | SpanId="$${__span.spanId}"'
+
+  editable: true

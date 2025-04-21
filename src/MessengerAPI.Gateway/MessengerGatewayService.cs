@@ -37,11 +37,15 @@ internal class MessengerGatewayService : IGatewayService
             };
 
             var result = await db.StreamAddAsync(_streamName, eventData);
-            _logger.LogInformation("Published event {Id} ({EventType}) to {Stream}", result, @event.EventType, _streamName);
+            _logger.LogInformation(
+                "Published event {StreamMessageId} ({GatewayEventType}) to {Stream}",
+                result,
+                @event.EventType,
+                _streamName);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to publish event {eventType}", @event.EventType);
+            _logger.LogError(ex, "Failed to publish event {GatewayEventType}", @event.EventType);
             throw;
         }
     }

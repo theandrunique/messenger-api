@@ -5,6 +5,11 @@ using MessengerAPI.Infrastructure;
 using MessengerAPI.Infrastructure.Common.FileStorage;
 using MessengerAPI.Data.Implementations;
 using Serilog;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using Cassandra.OpenTelemetry;
+using OpenTelemetry.Resources;
+using MessengerAPI.Presentation.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,10 +21,21 @@ builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication(builder.Configuration);
 
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r => r.AddService("messenger-api-ddd-app-1"))
+    .WithTracing(tracing =>
+    {
+        tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddSource(CassandraActivitySourceHelper.ActivitySourceName)
+            .AddOtlpExporter(options =>
+            {
+                options.Endpoint = new Uri("http://tempo:4317");
+            });
+    });
 
 var app = builder.Build();
-
-app.UseSerilogRequestLogging();
 
 app.UseCors(MessengerConstants.Cors.PolicyName);
 
@@ -30,6 +46,9 @@ app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<LoggingEnrichmentMiddleware>();
+app.UseSerilogRequestLogging();
 
 app.MapControllers();
 

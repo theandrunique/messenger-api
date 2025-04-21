@@ -1,4 +1,5 @@
 using Cassandra;
+using Cassandra.OpenTelemetry;
 using MessengerAPI.Data.Implementations.Channels;
 using MessengerAPI.Data.Implementations.Channels.Dto;
 using MessengerAPI.Data.Implementations.Channels.Queries;
@@ -13,6 +14,7 @@ using MessengerAPI.Data.Interfaces.Users;
 using MessengerAPI.Data.Interfaces.VerificationCodes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry;
 
 namespace MessengerAPI.Data.Implementations;
 
@@ -22,6 +24,11 @@ public static class DependencyInjection
     {
         var cluster = Cluster.Builder()
             .AddContactPoint("scylla")
+            .WithOpenTelemetryInstrumentation(o =>
+            {
+                o.BatchChildStatementLimit = 10;
+                o.IncludeDatabaseStatement = true;
+            })
             .WithPort(9042)
             .WithPoolingOptions(new PoolingOptions()
                 .SetCoreConnectionsPerHost(HostDistance.Local, 2)
