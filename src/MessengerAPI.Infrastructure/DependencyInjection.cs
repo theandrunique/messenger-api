@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Trace;
 using StackExchange.Redis;
 
 namespace MessengerAPI.Infrastructure;
@@ -106,5 +107,16 @@ public static class DependencyInjection
             .AddJwtBearer();
 
         return services;
+    }
+
+    public static TracerProviderBuilder AddInfrastructureInstrumentation(this TracerProviderBuilder builder)
+    {
+        builder
+            .AddHttpClientInstrumentation()
+            .AddAWSInstrumentation()
+            .AddElasticsearchClientInstrumentation()
+            .AddRedisInstrumentation();
+
+        return builder;
     }
 }

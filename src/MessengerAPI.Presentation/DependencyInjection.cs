@@ -1,11 +1,14 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using FluentValidation.AspNetCore;
+using MessengerAPI.Data.Implementations;
 using MessengerAPI.Core;
 using MessengerAPI.Presentation.Common;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
+using OpenTelemetry.Exporter;
 
 namespace MessengerAPI.Infrastructure.Common.FileStorage;
 
@@ -23,6 +26,27 @@ public static class DependencyInjection
         services.AddCorsPolicy(config);
         services.AddControllersWithJsonOptions();
         services.AddSwagger();
+        services.AddMonitoring(config);
+
+        return services;
+    }
+
+    public static IServiceCollection AddMonitoring(this IServiceCollection services, ConfigurationManager _)
+    {
+        services.AddOpenTelemetry()
+            .ConfigureResource(r => r.AddService("messenger-api-ddd-app-1"))
+            .WithTracing(tracing =>
+            {
+                tracing
+                    .AddAspNetCoreInstrumentation()
+                    .AddInfrastructureInstrumentation()
+                    .AddDataServicesInstrumentation()
+                    .AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = new Uri("http://tempo:4317");
+                        options.Protocol = OtlpExportProtocol.Grpc;
+                    });
+            });
 
         return services;
     }
