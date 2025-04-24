@@ -37,6 +37,12 @@ loki.process "parse_logs" {
         source = "extracted_timestamp"
         format = "RFC3339"
     }
+
+    stage.static_labels {
+        values = {
+            system_name = "messenger-api",
+        }
+    }
 }
 
 loki.write "local" {

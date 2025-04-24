@@ -1,0 +1,40 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  batch:
+
+  resource/add_system_name:
+    attributes:
+      - key: system_name
+        value: messenger-api
+        action: insert
+
+  resource/remove_unnecessary:
+    attributes:
+      - key: service.instance.id
+        action: delete
+
+exporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889
+
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [resource/add_system_name, resource/remove_unnecessary, batch]
+      exporters: [prometheus]
+
+    traces:
+      receivers: [otlp]
+      processors: [resource/add_system_name, batch]
+      exporters: [otlp/tempo]

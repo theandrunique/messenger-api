@@ -9,6 +9,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
 
 namespace MessengerAPI.Infrastructure.Common.FileStorage;
 
@@ -33,8 +34,11 @@ public static class DependencyInjection
 
     public static IServiceCollection AddMonitoring(this IServiceCollection services, ConfigurationManager _)
     {
+        const string ServiceName = "app";
+        const string OtlpExporterEndpoint = "http://otel-collector:4317";
+
         services.AddOpenTelemetry()
-            .ConfigureResource(r => r.AddService("messenger-api-ddd-app-1"))
+            .ConfigureResource(r => r.AddService(ServiceName))
             .WithTracing(tracing =>
             {
                 tracing
@@ -43,8 +47,16 @@ public static class DependencyInjection
                     .AddDataServicesInstrumentation()
                     .AddOtlpExporter(options =>
                     {
-                        options.Endpoint = new Uri("http://tempo:4317");
-                        options.Protocol = OtlpExportProtocol.Grpc;
+                        options.Endpoint = new Uri(OtlpExporterEndpoint);
+                    });
+            })
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = new Uri(OtlpExporterEndpoint);
                     });
             });
 
