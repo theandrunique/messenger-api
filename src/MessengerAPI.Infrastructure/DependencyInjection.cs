@@ -13,9 +13,11 @@ using MessengerAPI.Infrastructure.Common;
 using MessengerAPI.Infrastructure.Common.Files;
 using MessengerAPI.Infrastructure.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using StackExchange.Redis;
 
@@ -114,8 +116,23 @@ public static class DependencyInjection
         builder
             .AddHttpClientInstrumentation()
             .AddAWSInstrumentation()
-            .AddElasticsearchClientInstrumentation()
-            .AddRedisInstrumentation();
+            .AddElasticsearchClientInstrumentation(options =>
+            {
+                options.SetDbStatementForRequest = true;
+            })
+            .AddRedisInstrumentation(options =>
+            {
+                options.SetVerboseDatabaseStatements = true;
+            });
+
+        return builder;
+    }
+
+    public static MeterProviderBuilder AddInfrastructureInstrumentation(this MeterProviderBuilder builder)
+    {
+        builder
+            .AddHttpClientInstrumentation()
+            .AddAWSInstrumentation();
 
         return builder;
     }

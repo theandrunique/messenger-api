@@ -42,7 +42,21 @@ public static class DependencyInjection
             .WithTracing(tracing =>
             {
                 tracing
-                    .AddAspNetCoreInstrumentation()
+                    .AddAspNetCoreInstrumentation(options =>
+                    {
+                        options.EnrichWithHttpResponse = (activity, response) =>
+                        {
+                            activity.DisplayName = $"{response.HttpContext.Request.Method} {response.HttpContext.Request.Path} {response.StatusCode}";
+                        };
+
+                        options.Filter = (httpContext) =>
+                        {
+                            if (httpContext.Request.Method == "OPTIONS") return false;
+                            if (httpContext.Request.Path.Value?.StartsWith("/swagger") == true) return false;
+                            return true;
+                        };
+
+                    })
                     .AddInfrastructureInstrumentation()
                     .AddDataServicesInstrumentation()
                     .AddOtlpExporter(options =>
@@ -54,6 +68,10 @@ public static class DependencyInjection
             {
                 metrics
                     .AddAspNetCoreInstrumentation()
+                    .AddProcessInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddInfrastructureInstrumentation()
+                    .AddDataServicesInstrumentation()
                     .AddOtlpExporter(options =>
                     {
                         options.Endpoint = new Uri(OtlpExporterEndpoint);

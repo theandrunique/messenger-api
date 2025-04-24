@@ -15,6 +15,7 @@ using MessengerAPI.Data.Interfaces.VerificationCodes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
 namespace MessengerAPI.Data.Implementations;
@@ -72,5 +73,10 @@ public static class DependencyInjection
     public static TracerProviderBuilder AddDataServicesInstrumentation(this TracerProviderBuilder builder)
     {
         return builder.AddSource(CassandraActivitySourceHelper.ActivitySourceName);
+    }
+
+    public static MeterProviderBuilder AddDataServicesInstrumentation(this MeterProviderBuilder builder)
+    {
+        return builder.AddCassandraInstrumentation();
     }
 }
