@@ -13,10 +13,13 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
         RuleFor(x => x.Username)
             .NotEmpty()
             .Length(3, 50)
-            .MustAsync(IsUsernameAvailable)
-            .WithMessage("Username already exists.")
             .Matches(@"^[a-zA-Z0-9]+$")
-            .WithMessage("Username must contain only letters and numbers.");
+            .WithMessage("Username must contain only letters and numbers.")
+            .MustAsync(async (value, _) =>
+            {
+                return !await _userRepository.IsExistsByUsernameAsync(value);
+            })
+            .WithMessage("Username already exists.");
 
         RuleFor(x => x.Password)
             .NotEmpty()
@@ -33,19 +36,10 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
         RuleFor(x => x.Email)
             .NotEmpty()
             .EmailAddress()
-            .MustAsync(IsEmailAvailable)
+            .MustAsync(async (value, _) =>
+            {
+                return !await _userRepository.IsExistsByEmailAsync(value);
+            })
             .WithMessage("Email is busy.");
-    }
-
-    private async Task<bool> IsUsernameAvailable(string username, CancellationToken token)
-    {
-        var user = await _userRepository.GetByUsernameOrNullAsync(username);
-        return user is null;
-    }
-
-    private async Task<bool> IsEmailAvailable(string email, CancellationToken token)
-    {
-        var user = await _userRepository.GetByEmailOrNullAsync(email);
-        return user is null;
     }
 }
