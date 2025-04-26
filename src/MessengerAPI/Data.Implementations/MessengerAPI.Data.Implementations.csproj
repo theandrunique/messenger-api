@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\MessengerAPI.Data.Interfaces\MessengerAPI.Data.Interfaces.csproj" />
+    <ProjectReference Include="..\..\MessengerAPI\Data.Interfaces\MessengerAPI.Data.Interfaces.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

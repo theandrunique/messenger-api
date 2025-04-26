@@ -12,9 +12,9 @@
     <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MessengerAPI.Contracts\MessengerAPI.Contracts.csproj" />
-    <ProjectReference Include="..\MessengerAPI.Data.Interfaces\MessengerAPI.Data.Interfaces.csproj" />
-    <ProjectReference Include="..\MessengerAPI.Errors\MessengerAPI.Errors.csproj" />
-    <ProjectReference Include="..\MessengerAPI.Core\MessengerAPI.Core.csproj" />
+    <ProjectReference Include="..\..\MessengerAPI\Contracts\MessengerAPI.Contracts.csproj" />
+    <ProjectReference Include="..\..\MessengerAPI\Data.Interfaces\MessengerAPI.Data.Interfaces.csproj" />
+    <ProjectReference Include="..\..\MessengerAPI\Errors\MessengerAPI.Errors.csproj" />
+    <ProjectReference Include="..\..\MessengerAPI\Core\MessengerAPI.Core.csproj" />
   </ItemGroup>
 </Project>

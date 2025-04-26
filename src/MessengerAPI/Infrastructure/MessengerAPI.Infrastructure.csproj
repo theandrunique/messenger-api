@@ -22,7 +22,7 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.2"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MessengerAPI.Application\MessengerAPI.Application.csproj"/>
-    <ProjectReference Include="..\MessengerAPI.Contracts\MessengerAPI.Contracts.csproj"/>
+    <ProjectReference Include="..\..\MessengerAPI\Application\MessengerAPI.Application.csproj"/>
+    <ProjectReference Include="..\..\MessengerAPI\Contracts\MessengerAPI.Contracts.csproj"/>
   </ItemGroup>
 </Project>
