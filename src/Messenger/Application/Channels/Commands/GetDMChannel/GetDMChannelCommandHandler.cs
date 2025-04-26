@@ -5,7 +5,7 @@ using Messenger.Core;
 using Messenger.Data.Interfaces.Channels;
 using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.Entities;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Channels.Commands.GetDMChannel;
 
@@ -45,7 +45,7 @@ public class GetDMChannelCommandHandler : IRequestHandler<GetDMChannelCommand, E
         if (members.Count != userIdsToFind.Count)
         {
             var membersWasNotFound = userIdsToFind.Except(members.Select(x => x.Id)).ToList();
-            return ApiErrors.User.NotFound(membersWasNotFound);
+            return Errors.User.NotFound(membersWasNotFound);
         }
 
         var newChannel = Channel.CreatePrivate(_idGenerator.CreateId(), members.ToArray());

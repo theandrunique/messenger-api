@@ -1,6 +1,6 @@
 using MediatR;
 using Messenger.Application.Channels.Common;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Channels.Commands.DeleteCloudAttachment;
 
@@ -17,13 +17,13 @@ public class DeleteCloudAttachmentCommandHandler : IRequestHandler<DeleteCloudAt
     {
         if (!await _attachmentService.IsObjectExistsAsync(request.uploadFilename, cancellationToken))
         {
-            return ApiErrors.Attachment.NotFoundInObjectStorage(request.uploadFilename);
+            return Errors.Attachment.NotFoundInObjectStorage(request.uploadFilename);
         }
 
         var attachment = await _attachmentService.FindAttachmentByUploadFilename(request.uploadFilename);
         if (attachment is not null)
         {
-            return ApiErrors.Attachment.ObjectInUse(request.uploadFilename, attachment.Id);
+            return Errors.Attachment.ObjectInUse(request.uploadFilename, attachment.Id);
         }
 
         await _attachmentService.DeleteObjectAsync(request.uploadFilename, cancellationToken);

@@ -1,4 +1,4 @@
-namespace Messenger.Errors;
+namespace Messenger.ApiErrors;
 
 public readonly struct ErrorOr<TValue>
 {

@@ -1,5 +1,5 @@
 using MediatR;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Channels.Commands.AddChannelMember;
 

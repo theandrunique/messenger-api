@@ -3,7 +3,7 @@ using Messenger.Application.Channels.Common;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Channels.Queries.GetMessages;
 
@@ -31,11 +31,11 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, ErrorOr
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null)
         {
-            return ApiErrors.Channel.NotFound(request.ChannelId);
+            return Errors.Channel.NotFound(request.ChannelId);
         }
         if (!channel.HasMember(_clientInfo.UserId))
         {
-            return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
+            return Errors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
         var messages = await _messageRepository

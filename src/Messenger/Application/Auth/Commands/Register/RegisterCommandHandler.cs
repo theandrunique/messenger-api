@@ -5,7 +5,7 @@ using Messenger.Core;
 using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.Entities;
 using Messenger.Domain.Events;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Auth.Commands.Register;
 
@@ -40,7 +40,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
         var isSuccess = await _userRepository.AddAsync(newUser);
         if (!isSuccess)
         {
-            return ApiErrors.Auth.UsernameOrEmailJustTaken;
+            return Errors.Auth.UsernameOrEmailJustTaken;
         }
 
         await _mediator.Publish(new UserCreateDomainEvent(newUser));

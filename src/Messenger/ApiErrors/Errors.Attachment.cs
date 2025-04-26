@@ -1,6 +1,6 @@
-namespace Messenger.Errors;
+namespace Messenger.ApiErrors;
 
-public static partial class ApiErrors
+public static partial class Errors
 {
     public static class Attachment
     {

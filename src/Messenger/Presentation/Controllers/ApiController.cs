@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

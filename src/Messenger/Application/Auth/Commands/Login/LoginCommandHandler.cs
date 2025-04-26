@@ -5,7 +5,7 @@ using Messenger.Application.Common.Interfaces;
 using Messenger.Core;
 using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.Entities;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Auth.Commands.Login;
 
@@ -48,18 +48,18 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         {
             user = await _userRepository.GetByUsernameOrNullAsync(request.Login);
         }
-        if (user is null) return ApiErrors.Auth.InvalidCredentials;
+        if (user is null) return Errors.Auth.InvalidCredentials;
 
         if (!_hashHelper.Verify(user.PasswordHash, request.Password))
         {
-            return ApiErrors.Auth.InvalidCredentials;
+            return Errors.Auth.InvalidCredentials;
         }
 
         if (user.TwoFactorAuthentication)
         {
             if (request.Totp is null)
             {
-                return ApiErrors.Auth.TotpRequired(user);
+                return Errors.Auth.TotpRequired(user);
             }
             if (user.TOTPKey is null)
             {
@@ -68,7 +68,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
 
             if (!_totpHelper.Verify(request.Totp, user.TOTPKey, 30, 6))
             {
-                return ApiErrors.Auth.InvalidTotp;
+                return Errors.Auth.InvalidTotp;
             }
         }
 

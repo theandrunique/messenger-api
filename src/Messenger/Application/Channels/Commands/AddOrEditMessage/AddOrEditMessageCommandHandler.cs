@@ -8,7 +8,7 @@ using Messenger.Domain.Channels;
 using Messenger.Domain.Entities;
 using Messenger.Domain.Events;
 using Messenger.Domain.ValueObjects;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Channels.Commands.AddOrEditMessage;
 
@@ -42,16 +42,16 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null)
         {
-            return ApiErrors.Channel.NotFound(request.ChannelId);
+            return Errors.Channel.NotFound(request.ChannelId);
         }
 
         if (!channel.HasMember(_clientInfo.UserId))
         {
-            return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
+            return Errors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
         if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.SEND_MESSAGES))
         {
-            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.SEND_MESSAGES);
+            return Errors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.SEND_MESSAGES);
         }
 
         var initiator = channel.ActiveMembers.First(m => m.UserId == _clientInfo.UserId);
@@ -84,12 +84,12 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
             message = await _messageRepository.GetMessageByIdOrNullAsync(request.ChannelId, request.MessageId.Value);
             if (message is null)
             {
-                return ApiErrors.Channel.MessageNotFound(request.MessageId.Value);
+                return Errors.Channel.MessageNotFound(request.MessageId.Value);
             }
 
             if (message.AuthorId != initiator.UserId)
             {
-                return ApiErrors.Channel.MessageWasSentByAnotherUser(request.MessageId.Value);
+                return Errors.Channel.MessageWasSentByAnotherUser(request.MessageId.Value);
             }
 
             message.Edit(request.Content, attachments);

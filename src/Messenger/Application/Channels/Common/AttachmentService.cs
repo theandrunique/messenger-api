@@ -3,7 +3,7 @@ using Messenger.Application.Common.Interfaces.S3;
 using Messenger.Core;
 using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Entities;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 using Microsoft.Extensions.Options;
 
 namespace Messenger.Application.Channels.Common;
@@ -68,7 +68,7 @@ public class AttachmentService
         var parsedFilename = ParseUploadedFilename(uploadedFilename);
         if (parsedFilename == null)
         {
-            return ApiErrors.Attachment.InvalidUploadFilename(uploadedFilename);
+            return Errors.Attachment.InvalidUploadFilename(uploadedFilename);
         }
 
         var objectMetadata = await _s3Service.GetObjectMetadataAsync(
@@ -78,7 +78,7 @@ public class AttachmentService
 
         if (objectMetadata is null)
         {
-            return ApiErrors.Attachment.NotFoundInObjectStorage(uploadedFilename);
+            return Errors.Attachment.NotFoundInObjectStorage(uploadedFilename);
         }
 
         var expires = DateTimeOffset.UtcNow.Add(_options.DownloadUrlExpiration);

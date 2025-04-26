@@ -3,7 +3,7 @@ using Messenger.Application.Common.Interfaces;
 using Messenger.Application.Users.Common;
 using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.ValueObjects;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Users.Commands.VerifyEmail;
 
@@ -32,7 +32,7 @@ public class VerifyEmailCommandHandler : IRequestHandler<VerifyEmailCommand, Err
 
         if (!isCodeValid)
         {
-            return ApiErrors.User.InvalidEmailVerificationCode;
+            return Errors.User.InvalidEmailVerificationCode;
         }
 
         await _userRepository.UpdateIsEmailVerifiedAsync(_clientInfo.UserId, isEmailVerified: true);

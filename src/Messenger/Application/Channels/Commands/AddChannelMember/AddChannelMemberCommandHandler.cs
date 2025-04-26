@@ -5,7 +5,7 @@ using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.Channels;
 using Messenger.Domain.Events;
 using Messenger.Domain.ValueObjects;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Channels.Commands.AddChannelMember;
 
@@ -33,22 +33,22 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null)
         {
-            return ApiErrors.Channel.NotFound(request.ChannelId);
+            return Errors.Channel.NotFound(request.ChannelId);
         }
 
         if (!channel.HasMember(_clientInfo.UserId))
         {
-            return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
+            return Errors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
         if (channel.Type == ChannelType.DM)
         {
-            return ApiErrors.Channel.InvalidOperationForThisChannelType;
+            return Errors.Channel.InvalidOperationForThisChannelType;
         }
 
         if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.MANAGE_MEMBERS))
         {
-            return ApiErrors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_MEMBERS);
+            return Errors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_MEMBERS);
         }
 
         var memberToReturn = channel.FindMember(request.UserId);
@@ -57,7 +57,7 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             // Member was in channel before
             if (!memberToReturn.IsLeave)
             {
-                return ApiErrors.Channel.MemberAlreadyInChannel(memberToReturn.UserId);
+                return Errors.Channel.MemberAlreadyInChannel(memberToReturn.UserId);
             }
 
             memberToReturn.SetLeaveStatus(false);
@@ -70,7 +70,7 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             var newMember = await _userRepository.GetByIdOrNullAsync(request.UserId);
             if (newMember is null)
             {
-                return ApiErrors.User.NotFound(request.UserId);
+                return Errors.User.NotFound(request.UserId);
             }
             var memberInfo = channel.AddNewMember(newMember);
 

@@ -3,7 +3,7 @@ using Messenger.Application.Auth.Common.Interfaces;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.ValueObjects;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Users.Common;
 
@@ -45,17 +45,17 @@ public class TotpMfaService
 
         if (!user.IsEmailVerified)
         {
-            return ApiErrors.Auth.EmailVerificationRequired;
+            return Errors.Auth.EmailVerificationRequired;
         }
 
         if (!_hashHelper.Verify(user.PasswordHash, password))
         {
-            return ApiErrors.Auth.InvalidCredentials;
+            return Errors.Auth.InvalidCredentials;
         }
 
         if (user.TwoFactorAuthentication)
         {
-            return ApiErrors.Auth.TotpMfaAlreadyEnabled;
+            return Errors.Auth.TotpMfaAlreadyEnabled;
         }
 
         if (emailCode == null)
@@ -70,7 +70,7 @@ public class TotpMfaService
                 "TOTP MFA Enable Code",
                 _emailTemplateService.GenerateEmailTotpMfaEnableCode(user, otp));
 
-            return ApiErrors.Auth.EmailCodeRequired;
+            return Errors.Auth.EmailCodeRequired;
         }
 
         if (!await _verificationCodeService.VerifyAsync(
@@ -78,7 +78,7 @@ public class TotpMfaService
             user.Id,
             VerificationCodeScenario.TOTP_MFA_ENABLE))
         {
-            return ApiErrors.Auth.InvalidEmailCode;
+            return Errors.Auth.InvalidEmailCode;
         }
 
         user.EnableTotp2FA(_totpHelper.GenerateSecretKey(20));
@@ -108,17 +108,17 @@ public class TotpMfaService
 
         if (!user.IsEmailVerified)
         {
-            return ApiErrors.Auth.EmailVerificationRequired;
+            return Errors.Auth.EmailVerificationRequired;
         }
 
         if (!_hashHelper.Verify(user.PasswordHash, password))
         {
-            return ApiErrors.Auth.InvalidCredentials;
+            return Errors.Auth.InvalidCredentials;
         }
 
         if (!user.TwoFactorAuthentication)
         {
-            return ApiErrors.Auth.TotpMfaAlreadyDisabled;
+            return Errors.Auth.TotpMfaAlreadyDisabled;
         }
 
         if (emailCode == null)
@@ -133,7 +133,7 @@ public class TotpMfaService
                 "TOTP MFA Disable Code",
                 _emailTemplateService.GenerateEmailTotpMfaDisableCode(user, otp));
 
-            return ApiErrors.Auth.EmailCodeRequired;
+            return Errors.Auth.EmailCodeRequired;
         }
 
         if (!await _verificationCodeService.VerifyAsync(
@@ -141,7 +141,7 @@ public class TotpMfaService
             user.Id,
             VerificationCodeScenario.TOTP_MFA_DISABLE))
         {
-            return ApiErrors.Auth.InvalidEmailCode;
+            return Errors.Auth.InvalidEmailCode;
         }
 
         user.DisableTotp2FA();

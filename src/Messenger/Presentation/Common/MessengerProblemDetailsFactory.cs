@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

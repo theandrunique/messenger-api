@@ -2,7 +2,7 @@ using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Errors;
+using Messenger.ApiErrors;
 
 namespace Messenger.Application.Channels.Queries.GetChannel;
 
@@ -22,11 +22,11 @@ public class GetChannelQueryHandler : IRequestHandler<GetChannelQuery, ErrorOr<C
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null)
         {
-            return ApiErrors.Channel.NotFound(request.ChannelId);
+            return Errors.Channel.NotFound(request.ChannelId);
         }
         if (!channel.HasMember(_clientInfo.UserId))
         {
-            return ApiErrors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
+            return Errors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
         return ChannelSchema.From(channel, _clientInfo.UserId);
