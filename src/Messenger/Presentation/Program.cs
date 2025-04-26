@@ -4,8 +4,8 @@ using Messenger.Gateway;
 using Messenger.Infrastructure;
 using Messenger.Infrastructure.Common.FileStorage;
 using Messenger.Data.Scylla;
-using Messenger.Presentation.Common;
 using Serilog;
+using Messenger.Presentation.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +21,12 @@ var app = builder.Build();
 
 app.UseCors(MessengerConstants.Cors.PolicyName);
 
+app.UseSerilogRequestLogging(options =>
+{
+    options.IncludeQueryInRequestPath = true;
+    options.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
+});
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -28,9 +34,6 @@ app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseMiddleware<LoggingEnrichmentMiddleware>();
-app.UseSerilogRequestLogging();
 
 app.MapControllers();
 
