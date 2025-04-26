@@ -5,6 +5,7 @@ using MessengerAPI.Data.Implementations.Users.Mappers;
 using MessengerAPI.Data.Implementations.Users.Queries;
 using MessengerAPI.Data.Interfaces.Users;
 using MessengerAPI.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace MessengerAPI.Data.Implementations.Users;
 
@@ -13,73 +14,185 @@ public class UserRepository : IUserRepository
     private readonly ISession _session;
     private readonly UserQueries _users;
     private readonly ChannelUserQueries _channelUsers;
+    private readonly UsersByEmailQueries _usersByEmail;
+    private readonly UsersByUsernameQueries _usersByUsername;
+    private readonly ILogger<UserRepository> _logger;
 
-    public UserRepository(ISession session, UserQueries users, ChannelUserQueries channelUsers)
+    public UserRepository(
+        ISession session,
+        UserQueries users,
+        ChannelUserQueries channelUsers,
+        UsersByEmailQueries usersByEmail,
+        UsersByUsernameQueries usersByUsername,
+        ILogger<UserRepository> logger)
     {
         _session = session;
         _users = users;
         _channelUsers = channelUsers;
+        _usersByEmail = usersByEmail;
+        _usersByUsername = usersByUsername;
+        _logger = logger;
     }
 
-    public Task AddAsync(User user)
+    public async Task<bool> AddAsync(User user)
     {
-        return _session.ExecuteAsync(_users.Insert(user));
+        var result1 = (await _session.ExecuteAsync(_usersByUsername.InsertIfNotExists(user.Username, user.Id)))
+            .First()
+            .GetValue<bool>("[applied]");
+
+        if (!result1) return false;
+
+        var result2 = (await _session.ExecuteAsync(_usersByEmail.InsertIfNotExists(user.Email, user.Id)))
+            .First()
+            .GetValue<bool>("[applied]");
+
+        if (!result2)
+        {
+            await _session.ExecuteAsync(_usersByEmail.Delete(user.Email));
+            return false;
+        }
+
+        try
+        {
+            await _session.ExecuteAsync(_users.Insert(user));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error inserting user {UserId}", user.Id);
+
+            await _session.ExecuteAsync(_usersByUsername.Delete(user.Username));
+            await _session.ExecuteAsync(_usersByEmail.Delete(user.Email));
+            return false;
+        }
+
+        return true;
     }
 
-    public async Task<User?> GetByEmailOrNullAsync(string email)
+    public async Task<User?> GetByIdOrNullAsync(long userId)
     {
-        var result = (await _session.ExecuteAsync(_users.SelectByEmail(email)))
+        var result = (await _session.ExecuteAsync(_users.SelectById(userId)))
             .FirstOrDefault();
-        return MapOrDefault(result);
-    }
 
-    public async Task<User?> GetByIdOrNullAsync(long id)
-    {
-        var result = (await _session.ExecuteAsync(_users.SelectById(id)))
-            .FirstOrDefault();
-        return MapOrDefault(result);
-    }
-
-    public async Task<User?> GetByUsernameOrNullAsync(string username)
-    {
-        var result = (await _session.ExecuteAsync(_users.SelectByUsername(username)))
-            .FirstOrDefault();
         return MapOrDefault(result);
     }
 
     public async Task<IEnumerable<User>> GetByIdsAsync(List<long> userIds)
     {
-        var result = await _session.ExecuteAsync(_users.SelectByIds(userIds));
-        return result.Select(UserMapper.Map);
+        return (await _session.ExecuteAsync(_users.SelectByIds(userIds)))
+            .Select(UserMapper.Map);
     }
 
-    public Task UpdateEmailAsync(
-        long userId,
-        string email,
-        DateTimeOffset emailUpdatedTimestamp,
-        bool isEmailVerified)
+    public async Task<User?> GetByEmailOrNullAsync(string email)
     {
-        return _session.ExecuteAsync(_users.UpdateEmail(userId, email, emailUpdatedTimestamp, isEmailVerified));
+        var userId = (await _session.ExecuteAsync(_usersByEmail.Select(email)))
+            .FirstOrDefault()
+            ?.GetValue<long>("userid");
+
+        if (userId == null) return null;
+
+        var result = (await _session.ExecuteAsync(_users.SelectById(userId.Value)))
+            .First();
+
+        return UserMapper.Map(result);
     }
 
-    public Task SetEmailVerifiedAsync(long userId)
+    public async Task<User?> GetByUsernameOrNullAsync(string username)
     {
-        return _session.ExecuteAsync(_users.UpdateEmailVerified(userId, true));
+        var userId = (await _session.ExecuteAsync(_usersByUsername.Select(username)))
+            .FirstOrDefault()
+            ?.GetValue<long>("userid");
+
+        if (userId == null) return null;
+
+        var result = (await _session.ExecuteAsync(_users.SelectById(userId.Value)))
+            .First();
+
+        return UserMapper.Map(result);
     }
 
-    public Task UpdateMfaStatusAsync(User user)
+    public async Task<bool> IsExistsByEmailAsync(string email)
     {
-        return _session.ExecuteAsync(_users.UpdateMfaStatus(user));
+        var userId = (await _session.ExecuteAsync(_usersByEmail.Select(email)))
+            .FirstOrDefault()
+            ?.GetValue<long>("userid");
+
+        return userId != null;
+    }
+
+    public async Task<bool> IsExistsByUsernameAsync(string username)
+    {
+        var userId = (await _session.ExecuteAsync(_usersByUsername.Select(username)))
+            .FirstOrDefault()
+            ?.GetValue<long>("userid");
+
+        return userId != null;
     }
 
     public async Task UpdateAvatarAsync(User user)
     {
-        await _session.ExecuteAsync(_users.UpdateAvatar(user.Id, user.Image));
-
         var channelIds = (await _session.ExecuteAsync(_channelUsers.SelectChannelIdsByUserId(user.Id)))
             .Select(row => row.GetValue<long>("channelid"));
 
-        await _session.ExecuteAsync(_channelUsers.UpdateUserInfo(user, channelIds));
+        var batch = new BatchStatement()
+            .Add(_users.UpdateAvatar(user.Id, user.Image))
+            .Add(_channelUsers.UpdateUserInfo(user, channelIds));
+
+        await _session.ExecuteAsync(batch);
+    }
+
+    public async Task<bool> UpdateEmailAsync(
+        long userId,
+        string email,
+        string oldEmail,
+        DateTimeOffset emailUpdatedTimestamp,
+        bool isEmailVerified)
+    {
+        var isSuccess = (await _session.ExecuteAsync(_usersByEmail.InsertIfNotExists(email, userId)))
+            .First()
+            .GetValue<bool>("[applied]");
+
+        if (!isSuccess) return false;
+
+        var batch = new BatchStatement()
+            .Add(_usersByEmail.Delete(oldEmail))
+            .Add(_users.UpdateEmail(userId, email, emailUpdatedTimestamp, isEmailVerified));
+
+        await _session.ExecuteAsync(batch);
+        return true;
+    }
+
+    public Task UpdateIsEmailVerifiedAsync(long userId, bool isEmailVerified)
+    {
+        return _session.ExecuteAsync(_users.UpdateIsEmailVerified(userId, isEmailVerified));
+    }
+
+    public Task UpdateTotpMfaInfoAsync(User user)
+    {
+        return _session.ExecuteAsync(_users.UpdateTotpMfaStatus(user));
+    }
+
+    public async Task<bool> UpdateUsernameAsync(
+        long userId,
+        string username,
+        string oldUsername,
+        DateTimeOffset usernameUpdatedTimestamp)
+    {
+        var isSuccess = (await _session.ExecuteAsync(_usersByUsername.InsertIfNotExists(username, userId)))
+            .First()
+            .GetValue<bool>("[applied]");
+
+        if (!isSuccess) return false;
+
+        var channelIds = (await _session.ExecuteAsync(_channelUsers.SelectChannelIdsByUserId(userId)))
+            .Select(row => row.GetValue<long>("channelid"));
+
+        var batch = new BatchStatement()
+            .Add(_usersByUsername.Delete(oldUsername))
+            .Add(_users.UpdateUsernameInfo(username, usernameUpdatedTimestamp, userId))
+            .Add(_channelUsers.UpdateUsername(username, channelIds));
+
+        await _session.ExecuteAsync(batch);
+        return true;
     }
 
     private User? MapOrDefault(Row? row)

@@ -93,7 +93,7 @@ public class TotpMfaService
             issuer: "Messenger",
             accountName: user.Username);
 
-        await _userRepository.UpdateMfaStatusAsync(user);
+        await _userRepository.UpdateTotpMfaInfoAsync(user);
 
         return otpAuthUrl;
     }
@@ -146,7 +146,7 @@ public class TotpMfaService
 
         user.DisableTotp2FA();
 
-        await _userRepository.UpdateMfaStatusAsync(user);
+        await _userRepository.UpdateTotpMfaInfoAsync(user);
 
         return Unit.Value;
     }

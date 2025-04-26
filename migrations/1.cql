@@ -1,6 +1,10 @@
 CREATE KEYSPACE messenger
 WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': 1};
 
+CREATE KEYSPACE auth
+WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor': 1}
+AND tablets = {'enabled': false};
+
 USE messenger;
 
 -- TYPES
@@ -124,7 +128,7 @@ CREATE TABLE messenger.private_channels (
     PRIMARY KEY ((userid1, userid2))
 );
 
-CREATE TABLE messenger.sessions (
+CREATE TABLE auth.sessions (
     userid bigint,
     id bigint,
     clientname text,
@@ -137,10 +141,10 @@ CREATE TABLE messenger.sessions (
     PRIMARY KEY ((userid), id)
 );
 
-CREATE INDEX sessions_tokenid_idx ON messenger.sessions(tokenid);
+CREATE INDEX sessions_tokenid_idx ON auth.sessions(tokenid);
 
 
-CREATE TABLE messenger.users (
+CREATE TABLE auth.users (
     id bigint,
     bio text,
     timestamp timestamp,
@@ -161,12 +165,23 @@ CREATE TABLE messenger.users (
     PRIMARY KEY ((id))
 );
 
-CREATE INDEX users_email_idx ON messenger.users(email);
 
-CREATE INDEX users_username_idx ON messenger.users(username);
+CREATE TABLE auth.users_by_username (
+    username text,
+    userid bigint,
+
+    PRIMARY KEY ((username))
+);
+
+CREATE TABLE auth.users_by_email (
+    email text,
+    userid bigint,
+
+    PRIMARY KEY ((email))
+);
 
 
-CREATE TABLE messenger.verification_codes (
+CREATE TABLE auth.verification_codes (
     identifier text, -- email, phone, etc
     scenario int,   -- (enum) reset_password, verify_email, etc
     codehash text,

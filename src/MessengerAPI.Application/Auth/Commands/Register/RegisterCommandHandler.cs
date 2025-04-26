@@ -37,7 +37,11 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<U
             _hashHelper.Hash(request.Password),
             request.GlobalName);
 
-        await _userRepository.AddAsync(newUser);
+        var isSuccess = await _userRepository.AddAsync(newUser);
+        if (!isSuccess)
+        {
+            return ApiErrors.Auth.UsernameOrEmailJustTaken;
+        }
 
         await _mediator.Publish(new UserCreateDomainEvent(newUser));
 

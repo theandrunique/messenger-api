@@ -8,9 +8,8 @@ public class UserQueries
     private readonly PreparedStatement _insert;
     private readonly PreparedStatement _selectById;
     private readonly PreparedStatement _selectByIds;
-    private readonly PreparedStatement _selectByEmail;
-    private readonly PreparedStatement _selectByUsername;
     private readonly PreparedStatement _updateEmailInfo;
+    private readonly PreparedStatement _updateUsernameInfo;
     private readonly PreparedStatement _updateMfaStatusKey;
     private readonly PreparedStatement _updateEmailVerified;
     private readonly PreparedStatement _updateAvatar;
@@ -18,7 +17,7 @@ public class UserQueries
     public UserQueries(ISession session)
     {
         _insert = session.Prepare("""
-            INSERT INTO users (
+            INSERT INTO auth.users (
                 id,
                 bio,
                 timestamp,
@@ -37,21 +36,19 @@ public class UserQueries
                 image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """);
 
-        _selectById = session.Prepare("SELECT * FROM users WHERE id = ?");
+        _selectById = session.Prepare("SELECT * FROM auth.users WHERE id = ?");
 
-        _selectByIds = session.Prepare("SELECT * FROM users WHERE id IN ?");
+        _selectByIds = session.Prepare("SELECT * FROM auth.users WHERE id IN ?");
 
-        _selectByEmail = session.Prepare("SELECT * FROM users WHERE email = ?");
+        _updateEmailInfo = session.Prepare("UPDATE auth.users SET email = ?, emailupdatedtimestamp = ?, isemailverified = ? WHERE id = ?");
 
-        _selectByUsername = session.Prepare("SELECT * FROM users WHERE username = ?");
+        _updateUsernameInfo = session.Prepare("UPDATE auth.users SET username = ?, usernameupdatedtimestamp = ? WHERE id = ?");
 
-        _updateEmailInfo = session.Prepare("UPDATE users SET email = ?, emailupdatedtimestamp = ?, isemailverified = ? WHERE id = ?");
+        _updateMfaStatusKey = session.Prepare("UPDATE auth.users SET totpkey = ?, twofactorauthentication = ? WHERE id = ?");
 
-        _updateMfaStatusKey = session.Prepare("UPDATE users SET totpkey = ?, twofactorauthentication = ? WHERE id = ?");
+        _updateEmailVerified = session.Prepare("UPDATE auth.users SET isemailverified = ? WHERE id = ?");
 
-        _updateEmailVerified = session.Prepare("UPDATE users SET isemailverified = ? WHERE id = ?");
-
-        _updateAvatar = session.Prepare("UPDATE users SET image = ? WHERE id = ?");
+        _updateAvatar = session.Prepare("UPDATE auth.users SET image = ? WHERE id = ?");
     }
 
     public BoundStatement Insert(User user)
@@ -85,16 +82,6 @@ public class UserQueries
         return _selectByIds.Bind(ids);
     }
 
-    public BoundStatement SelectByEmail(string email)
-    {
-        return _selectByEmail.Bind(email);
-    }
-
-    public BoundStatement SelectByUsername(string username)
-    {
-        return _selectByUsername.Bind(username);
-    }
-
     public BoundStatement UpdateEmail(
         long userId,
         string email,
@@ -104,12 +91,17 @@ public class UserQueries
         return _updateEmailInfo.Bind(email, emailUpdatedTimestamp, isEmailVerified, userId);
     }
 
-    public BoundStatement UpdateEmailVerified(long userId, bool status)
+    public BoundStatement UpdateUsernameInfo(string username, DateTimeOffset usernameUpdatedAt, long userId)
+    {
+        return _updateUsernameInfo.Bind(username, usernameUpdatedAt, userId);
+    }
+
+    public BoundStatement UpdateIsEmailVerified(long userId, bool status)
     {
         return _updateEmailVerified.Bind(status, userId);
     }
 
-    public BoundStatement UpdateMfaStatus(User user)
+    public BoundStatement UpdateTotpMfaStatus(User user)
     {
         return _updateMfaStatusKey.Bind(user.TOTPKey, user.TwoFactorAuthentication, user.Id);
     }

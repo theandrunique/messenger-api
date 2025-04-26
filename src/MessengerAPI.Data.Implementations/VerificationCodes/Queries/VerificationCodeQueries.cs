@@ -14,7 +14,7 @@ public class VerificationCodeQueries
     public VerificationCodeQueries(ISession session)
     {
         _insert = session.Prepare("""
-            INSERT INTO verification_codes (
+            INSERT INTO auth.verification_codes (
                 identifier,
                 scenario,
                 codehash,
@@ -25,7 +25,7 @@ public class VerificationCodeQueries
             """);
 
         _updateAttempts = session.Prepare("""
-            UPDATE verification_codes
+            UPDATE auth.verification_codes
             USING TTL ?
             SET attempts = ?
             WHERE identifier = ? AND scenario = ?
@@ -33,12 +33,12 @@ public class VerificationCodeQueries
 
         _selectByIdentifierAndScenario = session.Prepare("""
             SELECT *
-            FROM verification_codes
+            FROM auth.verification_codes
             WHERE identifier = ? AND scenario = ?
         """);
 
         _removeByIdentifierAndScenario = session.Prepare("""
-            DELETE FROM verification_codes
+            DELETE FROM auth.verification_codes
             WHERE identifier = ? AND scenario = ?
         """);
     }

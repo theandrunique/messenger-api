@@ -45,5 +45,10 @@ public static partial class ApiErrors
                     { "username", user.Username },
                     { "globalName", user.GlobalName }
                 });
+        
+        public static ApiError UsernameOrEmailJustTaken
+            => new ApiError(
+                ErrorCode.AUTH_USERNAME_OR_EMAIL_JUST_TAKEN,
+                "Oops! Someone just beat you to the username or email!");
     }
 }

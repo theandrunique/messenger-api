@@ -66,6 +66,8 @@ public static class DependencyInjection
         services.AddSingleton<SessionQueries>();
         services.AddSingleton<VerificationCodeQueries>();
         services.AddSingleton<MessageAckQueries>();
+        services.AddSingleton<UsersByEmailQueries>();
+        services.AddSingleton<UsersByUsernameQueries>();
 
         return services;
     }

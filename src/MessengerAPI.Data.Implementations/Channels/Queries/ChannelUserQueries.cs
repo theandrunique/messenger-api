@@ -14,6 +14,7 @@ public class ChannelUserQueries
     private readonly PreparedStatement _selectChannelIdsByUserId;
     private readonly PreparedStatement _updateLastReadMessageId;
     private readonly PreparedStatement _updateUserInfo;
+    private readonly PreparedStatement _updateUsername;
     private readonly PreparedStatement _updateIsLeave;
 
     public ChannelUserQueries(ISession session)
@@ -44,6 +45,8 @@ public class ChannelUserQueries
         _updateLastReadMessageId = session.Prepare("UPDATE channel_users_by_user_id SET lastreadmessageid = ? WHERE userid = ? AND channelid = ?");
 
         _updateUserInfo = session.Prepare("UPDATE channel_users_by_user_id SET globalname = ?, image = ? WHERE userid = ? AND channelid IN ?");
+
+        _updateUsername = session.Prepare("UPDATE channel_users_by_user_id SET username = ? WHERE userid = ? AND channelid IN ?");
 
         _updateIsLeave = session.Prepare("UPDATE channel_users_by_user_id SET isleave = ? WHERE userid = ? AND channelid = ?");
     }
@@ -96,6 +99,11 @@ public class ChannelUserQueries
     public BoundStatement UpdateUserInfo(User user, IEnumerable<long> channelIds)
     {
         return _updateUserInfo.Bind(user.GlobalName, user.Image, user.Id, channelIds);
+    }
+
+    public BoundStatement UpdateUsername(string username, IEnumerable<long> channelIds)
+    {
+        return _updateUsername.Bind(username, channelIds);
     }
 
     public BoundStatement UpdateIsLeave(long userId, long channelId, bool isLeave)

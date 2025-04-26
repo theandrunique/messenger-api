@@ -94,7 +94,7 @@ public class MfaTotpEnableCommandHandler : IRequestHandler<MfaTotpEnableCommand,
             issuer: "Messenger",
             accountName: user.Username);
 
-        await _userRepository.UpdateMfaStatusAsync(user);
+        await _userRepository.UpdateTotpMfaInfoAsync(user);
 
         return new MfaTotpEnableCommandResult(otpAuthUrl);
     }

@@ -15,7 +15,7 @@ public class SessionQueries
     public SessionQueries(ISession session)
     {
         _insert = session.Prepare("""
-            INSERT INTO sessions (
+            INSERT INTO auth.sessions (
                 userid,
                 id,
                 clientname,
@@ -26,11 +26,11 @@ public class SessionQueries
                 tokenid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """);
 
-        _selectByUserIdAndId = session.Prepare("SELECT * FROM sessions WHERE userid = ? AND id = ?");
-        _selectByTokenId = session.Prepare("SELECT * FROM sessions WHERE tokenid = ?");
-        _selectByUserId = session.Prepare("SELECT * FROM sessions WHERE userid = ?");
-        _updateTokenId = session.Prepare("UPDATE sessions SET lastusedtimestamp = ?, tokenid = ? WHERE userid = ? AND id = ?");
-        _deleteByTokenId = session.Prepare("DELETE FROM sessions WHERE userid = ? AND id = ?");
+        _selectByUserIdAndId = session.Prepare("SELECT * FROM auth.sessions WHERE userid = ? AND id = ?");
+        _selectByTokenId = session.Prepare("SELECT * FROM auth.sessions WHERE tokenid = ?");
+        _selectByUserId = session.Prepare("SELECT * FROM auth.sessions WHERE userid = ?");
+        _updateTokenId = session.Prepare("UPDATE auth.sessions SET lastusedtimestamp = ?, tokenid = ? WHERE userid = ? AND id = ?");
+        _deleteByTokenId = session.Prepare("DELETE FROM auth.sessions WHERE userid = ? AND id = ?");
     }
 
     public BoundStatement Insert(Session session)

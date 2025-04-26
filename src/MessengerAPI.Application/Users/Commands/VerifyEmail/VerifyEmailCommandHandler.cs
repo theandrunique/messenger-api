@@ -35,7 +35,7 @@ public class VerifyEmailCommandHandler : IRequestHandler<VerifyEmailCommand, Err
             return ApiErrors.User.InvalidEmailVerificationCode;
         }
 
-        await _userRepository.SetEmailVerifiedAsync(_clientInfo.UserId);
+        await _userRepository.UpdateIsEmailVerifiedAsync(_clientInfo.UserId, isEmailVerified: true);
 
         return Unit.Value;
     }
