@@ -3,7 +3,7 @@ using Messenger.Core;
 using Messenger.Gateway;
 using Messenger.Infrastructure;
 using Messenger.Infrastructure.Common.FileStorage;
-using Messenger.Data.Implementations;
+using Messenger.Data.Scylla;
 using Messenger.Presentation.Common;
 using Serilog;
 

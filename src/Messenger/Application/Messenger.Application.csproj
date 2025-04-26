@@ -13,7 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Messenger\Contracts\Messenger.Contracts.csproj"/>
-    <ProjectReference Include="..\..\Messenger\Data.Interfaces\Messenger.Data.Interfaces.csproj"/>
+    <ProjectReference Include="..\..\Messenger\Data\Interfaces\Messenger.Data.Interfaces.csproj"/>
     <ProjectReference Include="..\..\Messenger\Errors\Messenger.Errors.csproj"/>
     <ProjectReference Include="..\..\Messenger\Core\Messenger.Core.csproj"/>
   </ItemGroup>

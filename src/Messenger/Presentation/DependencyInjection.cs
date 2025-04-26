@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Messenger.Data.Implementations;
+using Messenger.Data.Scylla;
 using Messenger.Core;
 using Messenger.Presentation.Common;
 using Microsoft.AspNetCore.Mvc.Infrastructure;

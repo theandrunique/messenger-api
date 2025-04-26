@@ -21,6 +21,6 @@
     <ProjectReference Include="..\..\Messenger\Errors\Messenger.Errors.csproj"/>
     <ProjectReference Include="..\..\Messenger\Core\Messenger.Core.csproj"/>
     <ProjectReference Include="..\..\Messenger\Gateway\Messenger.Gateway.csproj"/>
-    <ProjectReference Include="..\..\Messenger\Data.Implementations\Messenger.Data.Implementations.csproj"/>
+    <ProjectReference Include="..\..\Messenger\Data\Scylla\Messenger.Data.Scylla.csproj"/>
   </ItemGroup>
 </Project>

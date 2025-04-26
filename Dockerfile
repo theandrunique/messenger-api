@@ -8,8 +8,8 @@ WORKDIR /src
 COPY src/Messenger/Contracts/*.csproj Messenger/Contracts/
 COPY src/Messenger/Core/*.csproj Messenger/Core/
 COPY src/Messenger/Errors/*.csproj Messenger/Errors/
-COPY src/Messenger/Data.Interfaces/*.csproj Messenger/Data/Interfaces/
-COPY src/Messenger/Data.Implementations/*.csproj Messenger/Data/Implementations/
+COPY src/Messenger/Data/Interfaces/*.csproj Messenger/Data/Interfaces/
+COPY src/Messenger/Data/Scylla/*.csproj Messenger/Data/Implementations/
 COPY src/Messenger/Gateway/*.csproj Messenger/Gateway/
 COPY src/Messenger/Presentation/*.csproj Messenger/Presentation/
 COPY src/Messenger/Infrastructure/*.csproj Messenger/Infrastructure/
