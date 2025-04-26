@@ -5,23 +5,23 @@ EXPOSE 8000
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY src/MessengerAPI/Contracts/*.csproj MessengerAPI/Contracts/
-COPY src/MessengerAPI/Core/*.csproj MessengerAPI/Core/
-COPY src/MessengerAPI/Errors/*.csproj MessengerAPI/Errors/
-COPY src/MessengerAPI/Data.Interfaces/*.csproj MessengerAPI/Data/Interfaces/
-COPY src/MessengerAPI/Data.Implementations/*.csproj MessengerAPI/Data/Implementations/
-COPY src/MessengerAPI/Gateway/*.csproj MessengerAPI/Gateway/
-COPY src/MessengerAPI/Presentation/*.csproj MessengerAPI/Presentation/
-COPY src/MessengerAPI/Infrastructure/*.csproj MessengerAPI/Infrastructure/
-COPY src/MessengerAPI/Domain/*.csproj MessengerAPI/Domain/
-COPY src/MessengerAPI/Application/*.csproj MessengerAPI/Application/
+COPY src/Messenger/Contracts/*.csproj Messenger/Contracts/
+COPY src/Messenger/Core/*.csproj Messenger/Core/
+COPY src/Messenger/Errors/*.csproj Messenger/Errors/
+COPY src/Messenger/Data.Interfaces/*.csproj Messenger/Data/Interfaces/
+COPY src/Messenger/Data.Implementations/*.csproj Messenger/Data/Implementations/
+COPY src/Messenger/Gateway/*.csproj Messenger/Gateway/
+COPY src/Messenger/Presentation/*.csproj Messenger/Presentation/
+COPY src/Messenger/Infrastructure/*.csproj Messenger/Infrastructure/
+COPY src/Messenger/Domain/*.csproj Messenger/Domain/
+COPY src/Messenger/Application/*.csproj Messenger/Application/
 
-RUN dotnet restore MessengerAPI/Presentation/MessengerAPI.Presentation.csproj
+RUN dotnet restore Messenger/Presentation/Messenger.Presentation.csproj
 
 COPY src .
-WORKDIR /src/MessengerAPI/Presentation
+WORKDIR /src/Messenger/Presentation
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS production
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "MessengerAPI.Presentation.dll"]
+ENTRYPOINT ["dotnet", "Messenger.Presentation.dll"]
