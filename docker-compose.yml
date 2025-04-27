@@ -18,6 +18,11 @@ services:
       - 9042:9042
     volumes:
       - scylla_data:/var/lib/scylla
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'DESCRIBE keyspaces' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redisinsight:
     image: redislabs/redisinsight
@@ -37,7 +42,8 @@ services:
     volumes:
       - ./keys:/app/keys
     depends_on:
-      - scylla
+      scylla:
+        condition: service_healthy
 
   gateway:
     container_name: gateway
