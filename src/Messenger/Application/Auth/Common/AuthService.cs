@@ -13,17 +13,37 @@ public class AuthService
     private readonly IJweHelper _jweHelper;
     private readonly AuthOptions _options;
     private readonly IKeyManagementService _keyManagementService;
+    private readonly IRevokedTokenService _revokedTokenService;
 
     public AuthService(
         IJweHelper jweHelper,
         IJwtHelper jwtHelper,
         IOptions<AuthOptions> options,
-        IKeyManagementService keyManagementService)
+        IKeyManagementService keyManagementService,
+        IRevokedTokenService revokedTokenService)
     {
         _options = options.Value;
         _jweHelper = jweHelper;
         _jwtHelper = jwtHelper;
         _keyManagementService = keyManagementService;
+        _revokedTokenService = revokedTokenService;
+    }
+
+    public Task RevokeAccessToken(Guid tokenId, DateTimeOffset lastRefreshTimestamp)
+    {
+        var elapsed = DateTimeOffset.UtcNow - lastRefreshTimestamp;
+        var totalLifetime = TimeSpan.FromMinutes(_options.AccessTokenExpiryMinutes);
+        var remaining = totalLifetime - elapsed;
+
+        const int offset = 10 * 60;
+
+        if (remaining > TimeSpan.Zero)
+        {
+            return _revokedTokenService.RevokeTokenAsync(
+                tokenId,
+                remaining.Add(TimeSpan.FromSeconds(offset)));
+        }
+        return Task.CompletedTask;
     }
 
     public string GenerateRefreshToken(RefreshTokenPayload payload)

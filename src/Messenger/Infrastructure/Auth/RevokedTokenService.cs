@@ -21,9 +21,9 @@ public class RevokedTokenService : IRevokedTokenService
         return $"{key}:{tokenId}";
     }
 
-    public async Task RevokeTokenAsync(Guid tokenId, int expirationInSeconds)
+    public async Task RevokeTokenAsync(Guid tokenId, TimeSpan expiry)
     {
-        await _redis.StringSetAsync(GetKey(tokenId), "true", expiry: TimeSpan.FromSeconds(expirationInSeconds));
+        await _redis.StringSetAsync(GetKey(tokenId), "1", expiry: expiry);
     }
 
     public async Task<bool> IsTokenRevokedAsync(Guid tokenId)

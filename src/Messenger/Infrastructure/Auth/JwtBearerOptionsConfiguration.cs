@@ -62,12 +62,12 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
 
                         if (await _revokedTokenStore.IsTokenRevokedAsync(userIdentity.TokenId))
                         {
-                            _logger.LogWarning("Revoked token attempted: {TokenId}", userIdentity.TokenId);
+                            _logger.LogInformation("Revoked token attempted: {TokenId}", userIdentity.TokenId);
                             context.Fail("Token revoked");
                             return;
                         }
 
-                        context.Principal.AddIdentity(userIdentity);
+                        context.Principal?.AddIdentity(userIdentity);
                     }
                     catch (Exception ex)
                     {

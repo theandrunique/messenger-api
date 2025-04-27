@@ -2,6 +2,7 @@ using MediatR;
 using Messenger.Application.Auth.Common;
 using Messenger.Data.Interfaces.Users;
 using Messenger.ApiErrors;
+using Messenger.Application.Auth.Common.Interfaces;
 
 namespace Messenger.Application.Auth.Commands.RefreshToken;
 
@@ -11,7 +12,10 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
     private readonly AuthService _authService;
     private readonly ISessionRepository _sessionRepository;
 
-    public RefreshTokenCommandHandler(IUserRepository userRepository, AuthService authService, ISessionRepository sessionRepository)
+    public RefreshTokenCommandHandler(
+        IUserRepository userRepository,
+        AuthService authService,
+        ISessionRepository sessionRepository)
     {
         _userRepository = userRepository;
         _authService = authService;
@@ -37,9 +41,13 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
             return Errors.Auth.InvalidToken;
         }
 
+        var prevTokenId = session.TokenId;
+        var prevLastUsedTimestamp = session.LastUsedTimestamp;
         session.UpdateTokenId();
 
         await _sessionRepository.UpdateTokenIdAsync(session);
+
+        await _authService.RevokeAccessToken(prevTokenId, prevLastUsedTimestamp);
 
         return _authService.GenerateTokenPairResponse(user, session);
     }
