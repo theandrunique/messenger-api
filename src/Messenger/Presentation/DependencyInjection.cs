@@ -8,10 +8,10 @@ using Microsoft.OpenApi.Models;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
+using Messenger.Infrastructure;
 
-namespace Messenger.Infrastructure.Common.FileStorage;
+namespace Messenger.Presentation;
 
 public static class DependencyInjection
 {

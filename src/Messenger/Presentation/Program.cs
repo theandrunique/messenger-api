@@ -2,39 +2,54 @@ using Messenger.Application;
 using Messenger.Core;
 using Messenger.Gateway;
 using Messenger.Infrastructure;
-using Messenger.Infrastructure.Common.FileStorage;
 using Messenger.Data.Scylla;
-using Serilog;
+using Messenger.Presentation;
 using Messenger.Presentation.Common;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services
-    .AddCoreServices()
-    .AddGatewayServices()
-    .AddDataServices(builder.Configuration)
-    .AddPresentation(builder.Configuration)
-    .AddInfrastructure(builder.Configuration)
-    .AddApplication(builder.Configuration);
-
-var app = builder.Build();
-
-app.UseCors(MessengerConstants.Cors.PolicyName);
-
-app.UseSerilogRequestLogging(options =>
+try
 {
-    options.IncludeQueryInRequestPath = true;
-    options.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-app.UseSwagger();
-app.UseSwaggerUI();
+    Log.Logger = new LoggerConfiguration()
+        .ReadFrom.Configuration(builder.Configuration)
+        .CreateBootstrapLogger();
 
-app.UseExceptionHandler();
+    builder.Services
+        .AddCoreServices()
+        .AddGatewayServices()
+        .AddDataServices(builder.Configuration)
+        .AddPresentation(builder.Configuration)
+        .AddInfrastructure(builder.Configuration)
+        .AddApplication(builder.Configuration);
 
-app.UseAuthentication();
-app.UseAuthorization();
+    var app = builder.Build();
 
-app.MapControllers();
+    app.UseCors(MessengerConstants.Cors.PolicyName);
 
-app.Run();
+    app.UseSerilogRequestLogging(options =>
+    {
+        options.IncludeQueryInRequestPath = true;
+        options.EnrichDiagnosticContext = LogHelper.EnrichFromRequest;
+    });
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    app.UseExceptionHandler();
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application start-up failed");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
