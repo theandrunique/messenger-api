@@ -5,6 +5,7 @@ using Messenger.Data.Scylla.Channels.Queries;
 using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Entities;
 using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Events;
 
 namespace Messenger.Data.Scylla.Channels;
 
@@ -144,10 +145,26 @@ internal class ChannelRepository : IChannelRepository
         return channelsData.Select(c => c.ToEntity()).ToList();
     }
 
-    public Task UpdateChannelInfo(long channelId, string name, string? image)
+    public Task UpdateChannelInfo(long channelId, ChannelUpdateDomainEvent @event)
     {
-        var query = _channelsById.UpdateChannelInfo(channelId, name, image);
-        return _session.ExecuteAsync(query);
+        bool shouldRun = false;
+        var batch = new BatchStatement();
+
+        if (@event.NewName != null)
+        {
+            batch.Add(_channelsById.UpdateName(channelId, @event.NewName));
+            shouldRun = true;
+        }
+        if (@event.NewImage != null)
+        {
+            batch.Add(_channelsById.UpdateImage(channelId, @event.NewImage));
+            shouldRun = true;
+        }
+
+        if (shouldRun)
+            return _session.ExecuteAsync(batch);
+
+        return Task.CompletedTask;
     }
 
     public Task UpdateOwnerId(long channelId, long ownerId)

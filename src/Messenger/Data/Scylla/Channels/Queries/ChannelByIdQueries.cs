@@ -1,3 +1,4 @@
+using System.Resources;
 using Cassandra;
 using Messenger.Data.Scylla.Channels.Dto;
 using Messenger.Domain.Entities;
@@ -10,7 +11,8 @@ public class ChannelByIdQueries
     private readonly PreparedStatement _insert;
     private readonly PreparedStatement _selectById;
     private readonly PreparedStatement _selectByIds;
-    private readonly PreparedStatement _updateChannelInfo;
+    private readonly PreparedStatement _updateName;
+    private readonly PreparedStatement _updateImage;
     private readonly PreparedStatement _updateOwnerId;
     private readonly PreparedStatement _updateLastMessageInfo;
 
@@ -22,7 +24,9 @@ public class ChannelByIdQueries
 
         _selectByIds = session.Prepare("SELECT * FROM channels_by_id WHERE channelid IN ?");
 
-        _updateChannelInfo = session.Prepare("UPDATE channels_by_id SET name = ?, image = ? WHERE channelid = ?");
+        _updateName = session.Prepare("UPDATE channels_by_id SET name = ? WHERE channelid = ?");
+
+        _updateImage = session.Prepare("UPDATE channels_by_id SET image = ? WHERE channelid = ?");
 
         _updateOwnerId = session.Prepare("UPDATE channels_by_id SET ownerid = ? WHERE channelid = ?");
 
@@ -52,9 +56,14 @@ public class ChannelByIdQueries
         return _selectByIds.Bind(channelIds);
     }
 
-    public BoundStatement UpdateChannelInfo(long channelId, string name, string? image)
+    public BoundStatement UpdateName(long channelId, string name)
     {
-        return _updateChannelInfo.Bind(name, image, channelId);
+        return _updateName.Bind(name, channelId);
+    }
+
+    public BoundStatement UpdateImage(long channelId, string image)
+    {
+        return _updateImage.Bind(image, channelId);
     }
 
     public BoundStatement UpdateOwnerId(long channelId, long ownerId)

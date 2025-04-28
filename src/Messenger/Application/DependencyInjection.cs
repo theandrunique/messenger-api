@@ -68,6 +68,8 @@ public static class DependencyInjection
     {
         services.AddScoped<AttachmentService>();
         services.Configure<AttachmentOptions>(config.GetSection(nameof(AttachmentOptions)));
+        services.AddScoped<ChannelImageService>();
+        services.Configure<ChannelImageServiceOptions>(config.GetSection(nameof(ChannelImageServiceOptions)));
 
         return services;
     }

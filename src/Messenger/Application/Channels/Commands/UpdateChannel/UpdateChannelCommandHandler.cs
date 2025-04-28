@@ -6,6 +6,7 @@ using Messenger.Domain.Channels;
 using Messenger.Domain.Events;
 using Messenger.Domain.ValueObjects;
 using Messenger.ApiErrors;
+using Messenger.Application.Channels.Common;
 
 namespace Messenger.Application.Channels.Commands.UpdateChannel;
 
@@ -14,15 +15,18 @@ public class UpdateChannelCommandHandler : IRequestHandler<UpdateChannelCommand,
     private readonly IChannelRepository _channelRepository;
     private readonly IClientInfoProvider _clientInfo;
     private readonly IMediator _mediator;
+    private readonly ChannelImageService _channelImageService;
 
     public UpdateChannelCommandHandler(
         IChannelRepository channelRepository,
         IClientInfoProvider clientInfo,
-        IMediator mediator)
+        IMediator mediator,
+        ChannelImageService channelImageService)
     {
         _channelRepository = channelRepository;
         _clientInfo = clientInfo;
         _mediator = mediator;
+        _channelImageService = channelImageService;
     }
 
     public async Task<ErrorOr<ChannelSchema>> Handle(UpdateChannelCommand request, CancellationToken cancellationToken)
@@ -45,11 +49,23 @@ public class UpdateChannelCommandHandler : IRequestHandler<UpdateChannelCommand,
             return Errors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_CHANNEL);
         }
 
-        channel.UpdateChannelName(request.Name);
+        var domainEvent = new ChannelUpdateDomainEvent(channel, _clientInfo.UserId);
 
-        await _channelRepository.UpdateChannelInfo(channel.Id, request.Name, channel.Image);
+        if (request.Name != null)
+        {
+            channel.UpdateName(request.Name);
+            domainEvent.NewName = channel.Name;
+        }
+        if (request.Image != null)
+        {
+            var imageHash = await _channelImageService.UploadImage(request.Image, channel.Id, cancellationToken);
+            channel.UpdateImage(imageHash);
+            domainEvent.NewImage = imageHash;
+        }
 
-        await _mediator.Publish(new ChannelNameUpdateDomainEvent(channel, request.Name, _clientInfo.UserId));
+        await _channelRepository.UpdateChannelInfo(channel.Id, domainEvent);
+
+        await _mediator.Publish(domainEvent);
 
         return ChannelSchema.From(channel);
     }

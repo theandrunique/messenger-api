@@ -35,14 +35,14 @@ public class ChannelsController : ApiController
         return result.Match(onValue: Ok, onError: Problem);
     }
 
-    [HttpPost("{channelId}")]
+    [HttpPatch("{channelId}")]
     [ProducesResponseType(typeof(ChannelSchema), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateChannelAsync(
         long channelId,
-        UpdateChannelRequestSchema schema,
+        [FromForm] UpdateChannelRequestSchema schema,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateChannelCommand(channelId, schema.name);
+        var command = new UpdateChannelCommand(channelId, schema.name, schema.image);
         var result = await _mediator.Send(command, cancellationToken);
         return result.Match(onValue: Ok, onError: Problem);
     }

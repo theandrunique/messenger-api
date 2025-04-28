@@ -1,4 +1,5 @@
 using Messenger.Domain.Entities;
+using Messenger.Domain.Events;
 using Messenger.Domain.ValueObjects;
 
 namespace Messenger.Data.Interfaces.Channels;
@@ -12,6 +13,6 @@ public interface IChannelRepository
     Task<Channel?> GetDMChannelOrNullAsync(long userId1, long userId2);
     Task UpsertChannelMemberAsync(long channelId, ChannelMemberInfo member);
     Task UpdateIsLeaveStatus(long userId, long channelId, bool isLeave);
-    Task UpdateChannelInfo(long channelId, string name, string? image);
+    Task UpdateChannelInfo(long channelId, ChannelUpdateDomainEvent @event);
     Task UpdateOwnerId(long channelId, long ownerId);
 }

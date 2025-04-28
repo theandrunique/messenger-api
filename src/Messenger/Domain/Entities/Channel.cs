@@ -90,14 +90,20 @@ public class Channel
             && CalculatePermissions(m).HasPermission(permissions));
     }
 
-    public void UpdateChannelName(string name)
+    public void UpdateName(string name)
     {
         if (Type == ChannelType.DM)
-        {
             throw new InvalidOperationException($"Cannot update channel of type ${Type}");
-        }
 
         Name = name;
+    }
+
+    public void UpdateImage(string image)
+    {
+        if (Type == ChannelType.DM)
+            throw new InvalidOperationException($"Cannot update channel of type ${Type}");
+
+        Image = image;
     }
 
     private ChannelPermissionSet CalculatePermissions(ChannelMemberInfo member)

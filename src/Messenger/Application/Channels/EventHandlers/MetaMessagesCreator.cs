@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace Messenger.Application.Channels.EventHandlers;
 
 public class MetaMessagesCreator
-    : INotificationHandler<ChannelNameUpdateDomainEvent>,
+    : INotificationHandler<ChannelUpdateDomainEvent>,
       INotificationHandler<ChannelMemberAddDomainEvent>,
       INotificationHandler<ChannelMemberRemoveDomainEvent>,
       INotificationHandler<ChannelCreateDomainEvent>
@@ -59,16 +59,8 @@ public class MetaMessagesCreator
         }
     }
 
-    public async Task Handle(ChannelNameUpdateDomainEvent @event, CancellationToken cancellationToken)
+    public async Task Handle(ChannelUpdateDomainEvent @event, CancellationToken cancellationToken)
     {
-        if (@event.Channel.Type != ChannelType.GROUP_DM) return;
-
-        if (@event.Channel.Name == null)
-        {
-            _logger.LogWarning("Channel name was null for channel {ChannelId}. Skipping creating meta message.", @event.Channel.Id);
-            return;
-        }
-
         var actionInitiatorInfo = @event.Channel.ActiveMembers.FirstOrDefault(m => m.UserId == @event.InitiatorId);
         if (actionInitiatorInfo == null)
         {
@@ -76,11 +68,22 @@ public class MetaMessagesCreator
             return;
         }
 
-        await CreateAndPublishMetaMessageAsync(
-            type: MessageType.CHANNEL_NAME_CHANGE,
-            channel: @event.Channel,
-            author: actionInitiatorInfo,
-            metadata: new ChannelNameChangeMessageMetadata(@event.Channel.Name));
+        if (@event.NewName != null)
+        {
+            await CreateAndPublishMetaMessageAsync(
+                type: MessageType.CHANNEL_NAME_CHANGE,
+                channel: @event.Channel,
+                author: actionInitiatorInfo,
+                metadata: new ChannelNameChangeMessageMetadata(@event.NewName));
+        }
+        if (@event.NewImage != null)
+        {
+            await CreateAndPublishMetaMessageAsync(
+                type: MessageType.CHANNEL_IMAGE_CHANGE,
+                channel: @event.Channel,
+                author: actionInitiatorInfo,
+                metadata: new ChannelImageChangeMessageMetadata(@event.NewImage));
+        }
     }
 
     public async Task Handle(ChannelMemberAddDomainEvent @event, CancellationToken cancellationToken)

@@ -8,7 +8,7 @@ namespace Messenger.Gateway.EventPublishers;
 
 public class ChannelGatewayEventsPublisher
     : INotificationHandler<ChannelCreateDomainEvent>,
-      INotificationHandler<ChannelNameUpdateDomainEvent>,
+      INotificationHandler<ChannelUpdateDomainEvent>,
       INotificationHandler<ChannelMemberAddDomainEvent>,
       INotificationHandler<ChannelMemberRemoveDomainEvent>
 {
@@ -28,7 +28,7 @@ public class ChannelGatewayEventsPublisher
             @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 
-    public Task Handle(ChannelNameUpdateDomainEvent @event, CancellationToken cancellationToken)
+    public Task Handle(ChannelUpdateDomainEvent @event, CancellationToken cancellationToken)
     {
         return _gateway.PublishAsync(new GatewayEvent<ChannelUpdateGatewayEvent>(
             new ChannelUpdateGatewayEvent(ChannelSchema.From(@event.Channel)),
