@@ -52,6 +52,6 @@ public class GetDMChannelCommandHandler : IRequestHandler<GetDMChannelCommand, E
 
         await _channelRepository.UpsertAsync(newChannel);
 
-        return ChannelSchema.From(newChannel);
+        return ChannelSchema.From(newChannel, _clientInfo.UserId);
     }
 }
