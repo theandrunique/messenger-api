@@ -47,7 +47,11 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
             return Errors.User.NotFound(membersWasNotFound);
         }
 
-        Channel channel = Channel.CreateGroup(_idGenerator.CreateId(), _clientInfo.UserId, request.Name, members.ToArray());
+        Channel channel = Channel.CreateGroup(
+            id: _idGenerator.CreateId(),
+            ownerId: _clientInfo.UserId,
+            name: request.Name,
+            members: members.ToArray());
 
         await _channelRepository.UpsertAsync(channel);
 
