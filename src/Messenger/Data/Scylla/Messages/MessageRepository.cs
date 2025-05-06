@@ -66,23 +66,24 @@ internal class MessageRepository : IMessageRepository
 
         await Task.WhenAll(userInfosTask, attachmentsTask);
 
-        var userInfos = await userInfosTask;
+        var channelUsersDictionary = (await userInfosTask)
+            .Select(MessageMapper.MapMessageAuthorInfo)
+            .ToDictionary(c => c.Id);
 
-        var authorInfo = userInfos.FirstOrDefault(m => m.GetValue<long>("userid") == messageData.AuthorId);
-        if (authorInfo == null)
+        if (!channelUsersDictionary.TryGetValue(messageData.AuthorId, out var authorInfo))
         {
             throw new Exception($"Message author({messageData.AuthorId}) not found in the channel {messageData.ChannelId}.");
         }
-        messageData.Author = MessageMapper.MapMessageAuthorInfo(authorInfo);
+        messageData.Author = authorInfo;
+
 
         if (messageData.TargetUserId is long targetUserId)
         {
-            var targetUser = userInfos.FirstOrDefault(m => m.GetValue<long>("userid") == targetUserId);
-            if (targetUser is null)
+            if (!channelUsersDictionary.TryGetValue(targetUserId, out var targetUser))
             {
                 throw new Exception($"Message targetUser({targetUserId}) not found in the channel {messageData.ChannelId}.");
             }
-            messageData.TargetUser = MessageMapper.MapMessageAuthorInfo(targetUser);
+            messageData.TargetUser = targetUser;
         }
 
         messageData.Attachments = (await attachmentsTask).Select(AttachmentMapper.Map).ToList();
@@ -147,5 +148,11 @@ internal class MessageRepository : IMessageRepository
         }
 
         return messagesData.Select(m => m.ToEntity());
+    }
+
+    public async Task DeleteMessageByIdAsync(long channelId, long messageId)
+    {
+        await _session.ExecuteAsync(_messages.DeleteById(channelId, messageId));
+        await _session.ExecuteAsync(_attachments.RemoveByChannelIdAndMessageId(channelId, messageId));
     }
 }

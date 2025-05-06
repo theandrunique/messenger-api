@@ -10,6 +10,7 @@ public class MessageQueries
     private readonly PreparedStatement _insert;
     private readonly PreparedStatement _selectById;
     private readonly PreparedStatement _selectByChannelId;
+    private readonly PreparedStatement _deleteById;
 
     public MessageQueries(ISession session)
     {
@@ -30,6 +31,8 @@ public class MessageQueries
         _selectById = session.Prepare("SELECT * FROM messages WHERE channelid = ? AND id = ?");
 
         _selectByChannelId = session.Prepare("SELECT * FROM messages WHERE channelid = ? AND id < ? ORDER BY id DESC LIMIT ?");
+
+        _deleteById = session.Prepare("DELETE FROM messages WHERE channelid = ? AND id = ?");
     }
 
     public BoundStatement Insert(Message message)
@@ -55,5 +58,10 @@ public class MessageQueries
     public BoundStatement SelectByChannelId(long channelId, long before, int limit)
     {
         return _selectByChannelId.Bind(channelId, before, limit);
+    }
+
+    public BoundStatement DeleteById(long channelId, long messageId)
+    {
+        return _deleteById.Bind(channelId, messageId);
     }
 }
