@@ -1,0 +1,17 @@
+using Messenger.Domain.Entities;
+
+namespace Messenger.Domain.Events;
+
+public class MessageDeleteDomainEvent : IDomainEvent
+{
+    public Channel Channel { get; init; }
+    public long MessageId { get; init; }
+    public long InitiatorId { get; init; }
+
+    public MessageDeleteDomainEvent(Channel channel, long messageId, long initiatorId)
+    {
+        Channel = channel;
+        MessageId = messageId;
+        InitiatorId = initiatorId;
+    }
+}

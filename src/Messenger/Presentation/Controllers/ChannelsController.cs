@@ -4,6 +4,7 @@ using Messenger.Application.Channels.Commands.AddChannelMember;
 using Messenger.Application.Channels.Commands.AddOrEditMessage;
 using Messenger.Application.Channels.Commands.CreateCloudAttachments;
 using Messenger.Application.Channels.Commands.RemoveChannelMember;
+using Messenger.Application.Channels.Commands.DeleteMessage;
 using Messenger.Application.Channels.Commands.UpdateChannel;
 using Messenger.Application.Channels.Common;
 using Messenger.Application.Channels.Queries.GetAttachments;
@@ -63,6 +64,17 @@ public class ChannelsController : ApiController
         var result = await _mediator.Send(command, cancellationToken);
 
         return result.Match(onValue: Ok, onError: Problem);
+    }
+
+    [HttpDelete("{channelId}/messages/{messageId}")]
+    public async Task<IActionResult> DeleteMessageAsync(
+        long channelId,
+        long messageId,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new DeleteMessageCommand(channelId, messageId);
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.Match(onValue: (_) => NoContent(), onError: Problem);
     }
 
     [HttpGet("{channelId}/messages")]

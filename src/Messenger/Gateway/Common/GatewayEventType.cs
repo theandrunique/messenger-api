@@ -9,4 +9,5 @@ public enum GatewayEventType
     MESSAGE_CREATE,
     MESSAGE_UPDATE,
     MESSAGE_ACK,
+    MESSAGE_DELETE,
 }

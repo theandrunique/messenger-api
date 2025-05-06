@@ -13,6 +13,7 @@ public enum ChannelPermission : ulong
     MANAGE_CHANNEL = 1 << 7,
     AUDIT_LOG_VIEW = 1 << 8,
     CREATE_POLLS = 1 << 9,
+    MANAGE_MESSAGES = 1 << 10,
 
     DM_CHANNEL = SEND_MESSAGES | ATTACH_FILES | USE_REACTIONS
         | USE_VOICE_MESSAGES | PIN_MESSAGES | MENTION_EVERYONE,
