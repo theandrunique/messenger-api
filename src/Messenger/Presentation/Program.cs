@@ -6,6 +6,8 @@ using Messenger.Data.Scylla;
 using Messenger.Presentation;
 using Messenger.Presentation.Common;
 using Serilog;
+using Microsoft.Extensions.Options;
+using Messenger.Options;
 
 try
 {
@@ -16,6 +18,7 @@ try
         .CreateBootstrapLogger();
 
     builder.Services
+        .AddApplicationOptions(builder.Configuration)
         .AddCoreServices()
         .AddGatewayServices()
         .AddDataServices(builder.Configuration)
@@ -45,9 +48,15 @@ try
 
     app.Run();
 }
+catch (OptionsValidationException ex)
+{
+    Log.Fatal(ex, "Invalid configuration: {@Failures}", ex.Failures);
+    Environment.Exit(1);
+}
 catch (Exception ex)
 {
     Log.Fatal(ex, "Application start-up failed");
+    Environment.Exit(1);
 }
 finally
 {

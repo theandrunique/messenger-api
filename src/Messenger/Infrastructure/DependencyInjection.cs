@@ -61,6 +61,7 @@ public static class DependencyInjection
         services.AddSingleton<IAmazonS3, AmazonS3Client>(sp => s3Client);
 
         services.Configure<S3Options>(config.GetSection(nameof(S3Options)));
+
         services.AddScoped<IS3Service, S3Service>();
 
         return services;
