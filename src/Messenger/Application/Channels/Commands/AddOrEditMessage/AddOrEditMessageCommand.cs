@@ -7,6 +7,7 @@ namespace Messenger.Application.Channels.Commands.AddOrEditMessage;
 
 public record AddOrEditMessageCommand(
     long? MessageId,
+    long? ReferencedMessageId,
     long ChannelId,
     string Content,
     List<MessageAttachmentDto>? Attachments

@@ -7,4 +7,5 @@ namespace Messenger.Presentation.Schemas.Channels;
 /// </summary>
 public record CreateMessageRequestSchema(
     string content,
+    long? referencedMessageId,
     List<MessageAttachmentDto>? attachments);

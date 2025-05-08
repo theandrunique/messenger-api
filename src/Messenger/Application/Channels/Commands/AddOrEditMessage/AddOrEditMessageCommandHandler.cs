@@ -59,6 +59,11 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         List<Attachment>? attachments = null;
         if (request.Attachments?.Count > 0)
         {
+            if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.ATTACH_FILES))
+            {
+                return Errors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.ATTACH_FILES);
+            }
+
             var attachmentTasks = request.Attachments.Select(f =>
                 _attachmentService.ValidateAndCreateAttachmentAsync(
                     f.UploadedFilename,
@@ -79,6 +84,20 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         }
 
         Message? message;
+        Message? referencedMessage = null;
+
+        if (request.ReferencedMessageId != null)
+        {
+            referencedMessage = await _messageRepository.GetMessageByIdOrNullAsync(
+                request.ChannelId,
+                request.ReferencedMessageId.Value);
+            
+            if (referencedMessage == null)
+            {
+                return Errors.Channel.MessageNotFound(request.ReferencedMessageId.Value);
+            }
+        }
+
         if (request.MessageId.HasValue)
         {
             message = await _messageRepository.GetMessageByIdOrNullAsync(request.ChannelId, request.MessageId.Value);
@@ -99,12 +118,13 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         else
         {
             message = new Message(
-                type: MessageType.DEFAULT,
+                type: request.ReferencedMessageId.HasValue ? MessageType.REPLY : MessageType.DEFAULT,
                 id: _idGenerator.CreateId(),
                 channelId: request.ChannelId,
                 author: initiator,
                 content: request.Content,
-                attachments: attachments);
+                attachments: attachments,
+                referencedMessage: referencedMessage);
 
             await _messageRepository.UpsertAsync(message);
 

@@ -1,4 +1,5 @@
 using Messenger.Domain.Channels;
+using Messenger.Domain.Channels.MessageMetadataTypes;
 using Messenger.Domain.ValueObjects;
 
 namespace Messenger.Domain.Entities;
@@ -19,6 +20,8 @@ public class Message
     public List<Attachment> Attachments => _attachments.ToList();
     public bool Pinned { get; private set; }
     public MessageType Type { get; private set; }
+    public long? ReferencedMessageId { get; private set; }
+    public Message? ReferencedMessage { get; private set; }
     public IMessageMetadata? Metadata { get; private set; }
 
     public Message(
@@ -29,6 +32,7 @@ public class Message
         string content,
         ChannelMemberInfo? targetUser = null,
         List<Attachment>? attachments = null,
+        Message? referencedMessage = null,
         IMessageMetadata? metadata = null)
     {
         Id = id;
@@ -40,6 +44,8 @@ public class Message
         TargetUser = targetUser != null ? new MessageAuthorInfo(targetUser) : null;
         Content = content;
         Timestamp = DateTimeOffset.UtcNow;
+        ReferencedMessage = referencedMessage;
+        ReferencedMessageId = referencedMessage?.Id;
         Metadata = metadata;
 
         if (attachments is not null) _attachments = attachments;
@@ -57,7 +63,8 @@ public class Message
         bool pinned,
         MessageType type,
         IMessageMetadata? metadata,
-        List<Attachment>? attachments = null)
+        Message? referencedMessage,
+        List<Attachment>? attachments)
     {
         ChannelId = channelId;
         Id = id;
@@ -70,6 +77,8 @@ public class Message
         EditedTimestamp = editedTimestamp;
         Pinned = pinned;
         Type = type;
+        ReferencedMessage = referencedMessage;
+        ReferencedMessageId = referencedMessage?.Id;
         Metadata = metadata;
         _attachments = attachments ?? new();
     }
@@ -85,5 +94,30 @@ public class Message
             _attachments.AddRange(attachments);
         }
         foreach (var attachment in _attachments) attachment.SetMessageId(Id);
+    }
+
+    public void MakeForwarded(
+        ChannelMemberInfo author,
+        long channelId,
+        long messageId,
+        bool includeReferencedMessage,
+        bool includeOriginAuthorLink)
+    {
+        var forwardMetadata = new ForwardMessageMetadata(Timestamp);
+        if (includeOriginAuthorLink)
+        {
+            forwardMetadata.SetOriginAuthor(Author);
+        }
+        Metadata = forwardMetadata;
+
+        Author = new MessageAuthorInfo(author);
+        Timestamp = DateTimeOffset.UtcNow;
+        ChannelId = channelId;
+        Id = messageId;
+
+        if (!includeReferencedMessage)
+        {
+            ReferencedMessage = null;
+        }
     }
 }

@@ -106,6 +106,7 @@ CREATE TABLE messenger.messages (
     editedtimestamp timestamp,
     pinned boolean,
     type int,
+    referencedmessageid bigint,
     metadata text,
 
     PRIMARY KEY ((channelid), id)

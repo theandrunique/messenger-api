@@ -16,9 +16,14 @@ public record MessageSchema
     public DateTimeOffset Timestamp { get; init; }
     public DateTimeOffset? EditedTimestamp { get; init; }
     public UserPublicSchema Author { get; init; }
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public UserPublicSchema? TargetUser { get; init; }
     public List<AttachmentSchema> Attachments { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public MessageSchema? ReferencedMessage { get; init; }
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public object? Metadata { get; init; }
 
@@ -33,6 +38,7 @@ public record MessageSchema
         Author = UserPublicSchema.From(message.Author);
         TargetUser = message.TargetUser.HasValue ? UserPublicSchema.From(message.TargetUser.Value) : null;
         Attachments = AttachmentSchema.From(message.Attachments);
+        ReferencedMessage = message.ReferencedMessage != null ? From(message.ReferencedMessage) : null;
         Metadata = message.Metadata;
     }
 

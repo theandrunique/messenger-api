@@ -6,6 +6,8 @@ using Messenger.Data.Scylla.Messages.Mappers;
 using Messenger.Data.Scylla.Messages.Queries;
 using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Entities;
+using Messenger.Data.Scylla.Messages.Dto;
+using Messenger.Domain.ValueObjects;
 
 namespace Messenger.Data.Scylla.Messages;
 
@@ -57,62 +59,88 @@ internal class MessageRepository : IMessageRepository
         }
         var messageData = MessageMapper.Map(result);
 
+        if (messageData.ReferencedMessageId.HasValue)
+        {
+            var referencedMessageData = (await _session.ExecuteAsync(_messages.SelectById(channelId, messageData.ReferencedMessageId.Value)))
+                .FirstOrDefault();
+
+            if (referencedMessageData != null)
+                messageData.ReferencedMessage = MessageMapper.Map(referencedMessageData);
+        }
+
         var userIds = messageData.TargetUserId.HasValue
             ? new List<long> { messageData.AuthorId, messageData.TargetUserId.Value }
             : new List<long> { messageData.AuthorId };
+        if (messageData.ReferencedMessage != null)
+            userIds.Add(messageData.ReferencedMessage.AuthorId);
 
         var userInfosTask = _session.ExecuteAsync(_channelUsers.SelectByChannelIdAndUserIds(messageData.ChannelId, userIds));
-        var attachmentsTask = _session.ExecuteAsync(_attachments.SelectByChannelIdInMessageIds(messageData.ChannelId, [messageData.Id]));
+
+        var messageIds = new List<long>() { messageData.Id };
+        if (messageData.ReferencedMessage != null)
+            messageIds.Add(messageData.ReferencedMessage.Id);
+
+        var attachmentsTask = _session.ExecuteAsync(_attachments.SelectByChannelIdInMessageIds(messageData.ChannelId, messageIds));
 
         await Task.WhenAll(userInfosTask, attachmentsTask);
 
         var channelUsersDictionary = (await userInfosTask)
             .Select(MessageMapper.MapMessageAuthorInfo)
             .ToDictionary(c => c.Id);
+        
+        FillAuthorAndTargetUser(messageData, channelUsersDictionary);
 
-        if (!channelUsersDictionary.TryGetValue(messageData.AuthorId, out var authorInfo))
+        if (messageData.ReferencedMessage != null)
         {
-            throw new Exception($"Message author({messageData.AuthorId}) not found in the channel {messageData.ChannelId}.");
+            FillAuthorAndTargetUser(messageData.ReferencedMessage, channelUsersDictionary);
         }
-        messageData.Author = authorInfo;
+        var attachmentsByMessageId = (await attachmentsTask)
+            .Select(AttachmentMapper.Map)
+            .ToLookup(a => a.MessageId);
 
+        messageData.Attachments = attachmentsByMessageId[messageData.Id].ToList();
+        if (messageData.ReferencedMessage != null)
+            messageData.ReferencedMessage.Attachments = attachmentsByMessageId[messageData.ReferencedMessage.Id].ToList();
 
-        if (messageData.TargetUserId is long targetUserId)
-        {
-            if (!channelUsersDictionary.TryGetValue(targetUserId, out var targetUser))
-            {
-                throw new Exception($"Message targetUser({targetUserId}) not found in the channel {messageData.ChannelId}.");
-            }
-            messageData.TargetUser = targetUser;
-        }
-
-        messageData.Attachments = (await attachmentsTask).Select(AttachmentMapper.Map).ToList();
         return messageData.ToEntity();
     }
 
     public async Task<IEnumerable<Message>> GetMessagesAsync(long channelId, long before, int limit)
     {
-        var query = _messages.SelectByChannelId(channelId, before, limit);
-        var messagesData = (await _session.ExecuteAsync(query))
+        var messagesData = (await _session.ExecuteAsync(_messages.SelectByChannelId(channelId, before, limit)))
             .Select(MessageMapper.Map)
             .ToArray();
 
         if (!messagesData.Any())
-        {
             return Enumerable.Empty<Message>();
+
+        var referencedIds = messagesData
+            .Where(m => m.ReferencedMessageId.HasValue)
+            .Select(m => m.ReferencedMessageId!.Value)
+            .ToHashSet();
+        
+        var loadedMessageIds = messagesData.Select(m => m.Id).ToHashSet();
+        referencedIds.ExceptWith(loadedMessageIds);
+
+        MessageData[] referencedMessagesData = [];
+        if (referencedIds.Count > 0)
+        {
+            referencedMessagesData = (await _session.ExecuteAsync(_messages.SelectByIds(channelId, referencedIds)))
+                .Select(MessageMapper.Map)
+                .ToArray();
         }
+        
+        var allMessages = messagesData.Concat(referencedMessagesData).ToArray();
 
-        var userIds = messagesData
+        var userIds = allMessages
             .Select(m => m.AuthorId)
-            .Concat(messagesData.
-                Where(m => m.TargetUserId != null)
+            .Concat(allMessages
+                .Where(m => m.TargetUserId != null)
                 .Select(m => m.TargetUserId!.Value))
-                .Distinct();
+            .Distinct();
 
-        query = _channelUsers.SelectByChannelIdAndUserIds(channelId, userIds);
-        var channelUsersTask = _session.ExecuteAsync(query);
-        query = _attachments.SelectByChannelIdInMessageIds(channelId, messagesData.Select(m => m.Id));
-        var attachmentsTask = _session.ExecuteAsync(query);
+        var channelUsersTask = _session.ExecuteAsync(_channelUsers.SelectByChannelIdAndUserIds(channelId, userIds));
+        var attachmentsTask = _session.ExecuteAsync(_attachments.SelectByChannelIdInMessageIds(channelId, allMessages.Select(m => m.Id)));
 
         await Task.WhenAll(channelUsersTask, attachmentsTask);
 
@@ -120,34 +148,46 @@ internal class MessageRepository : IMessageRepository
             .Select(MessageMapper.MapMessageAuthorInfo)
             .ToDictionary(c => c.Id);
 
-        for (int i = 0; i < messagesData.Length; i++)
-        {
-            if (!channelUsersDictionary.TryGetValue(messagesData[i].AuthorId, out var author))
-            {
-                throw new Exception($"Author with ID {messagesData[i].AuthorId} not found in channel {channelId} for message {messagesData[i].Id}.");
-            }
-            messagesData[i].Author = author;
-
-            if (messagesData[i].TargetUserId is long targetUserId)
-            {
-                if (!channelUsersDictionary.TryGetValue(targetUserId, out var targetUser))
-                {
-                    throw new Exception($"TargetUser with ID {targetUserId} not found in channel {channelId} for message {messagesData[i].Id}.");
-                }
-                messagesData[i].TargetUser = targetUser;
-            }
-        }
+        foreach (var m in allMessages)
+            FillAuthorAndTargetUser(m, channelUsersDictionary);
 
         var attachmentsByMessageId = (await attachmentsTask)
             .Select(AttachmentMapper.Map)
             .ToLookup(a => a.MessageId);
 
-        for (int i = 0; i < messagesData.Length; i++)
+        foreach (var m in allMessages)
+            m.Attachments = attachmentsByMessageId[m.Id].ToList();
+        
+        var refDict = allMessages.ToDictionary(m => m.Id);
+
+        foreach (var m in messagesData)
         {
-            messagesData[i].Attachments = attachmentsByMessageId[messagesData[i].Id].ToList();
+            if (m.ReferencedMessageId.HasValue
+                && refDict.TryGetValue(m.ReferencedMessageId.Value, out var referenced))
+            {
+                m.ReferencedMessage = referenced;
+            }
         }
 
         return messagesData.Select(m => m.ToEntity());
+    }
+
+    private void FillAuthorAndTargetUser(MessageData md, Dictionary<long, MessageAuthorInfo> channelUsers)
+    {
+        if (!channelUsers.TryGetValue(md.AuthorId, out var authorInfo))
+        {
+            throw new Exception($"Message Author({md.AuthorId}) not found in the channel({md.ChannelId}) for message({md.Id}).");
+        }
+        md.Author = authorInfo;
+
+        if (md.TargetUserId is long targetUserId)
+        {
+            if (!channelUsers.TryGetValue(targetUserId, out var targetUser))
+            {
+                throw new Exception($"Message TargetUser({targetUserId}) not found in the channel({md.ChannelId}) for message({md.Id}).");
+            }
+            md.TargetUser = targetUser;
+        }
     }
 
     public async Task DeleteMessageByIdAsync(long channelId, long messageId)

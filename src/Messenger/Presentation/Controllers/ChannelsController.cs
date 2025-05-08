@@ -14,6 +14,7 @@ using Messenger.Application.Channels.Queries.GetMessages;
 using Messenger.Contracts.Common;
 using Messenger.Presentation.Schemas.Channels;
 using Microsoft.AspNetCore.Mvc;
+using Messenger.Application.Channels.Queries.GetMessage;
 
 namespace Messenger.Presentation.Controllers;
 
@@ -57,6 +58,7 @@ public class ChannelsController : ApiController
     {
         var command = new AddOrEditMessageCommand(
             null,
+            schema.referencedMessageId,
             channelId,
             schema.content,
             schema.attachments);
@@ -75,6 +77,18 @@ public class ChannelsController : ApiController
         var command = new DeleteMessageCommand(channelId, messageId);
         var result = await _mediator.Send(command, cancellationToken);
         return result.Match(onValue: (_) => NoContent(), onError: Problem);
+    }
+
+    [HttpGet("{channelId}/messages/{messageId}")]
+    [ProducesResponseType(typeof(List<MessageSchema>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMessagesAsync(
+        long channelId,
+        long messageId,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetMessageQuery(channelId, messageId);
+        var result = await _mediator.Send(query, cancellationToken);
+        return result.Match(onValue: Ok, onError: Problem);
     }
 
     [HttpGet("{channelId}/messages")]
@@ -119,6 +133,7 @@ public class ChannelsController : ApiController
     {
         var command = new AddOrEditMessageCommand(
             messageId,
+            schema.referencedMessageId,
             channelId,
             schema.content,
             schema.attachments);

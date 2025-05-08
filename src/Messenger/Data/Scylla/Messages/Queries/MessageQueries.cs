@@ -1,7 +1,6 @@
 using Cassandra;
 using Messenger.Data.Scylla.Common;
 using Messenger.Domain.Entities;
-using Newtonsoft.Json;
 
 namespace Messenger.Data.Scylla.Messages.Queries;
 
@@ -9,6 +8,7 @@ public class MessageQueries
 {
     private readonly PreparedStatement _insert;
     private readonly PreparedStatement _selectById;
+    private readonly PreparedStatement _selectByIds;
     private readonly PreparedStatement _selectByChannelId;
     private readonly PreparedStatement _deleteById;
 
@@ -24,11 +24,14 @@ public class MessageQueries
                 timestamp,
                 editedtimestamp,
                 pinned,
+                referencedmessageid,
                 type,
-                metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """);
 
         _selectById = session.Prepare("SELECT * FROM messages WHERE channelid = ? AND id = ?");
+
+        _selectByIds = session.Prepare("SELECT * FROM messages WHERE channelid = ? AND id IN ?");
 
         _selectByChannelId = session.Prepare("SELECT * FROM messages WHERE channelid = ? AND id < ? ORDER BY id DESC LIMIT ?");
 
@@ -46,6 +49,7 @@ public class MessageQueries
             message.Timestamp,
             message.EditedTimestamp,
             message.Pinned,
+            message.ReferencedMessageId,
             (int)message.Type,
             MessageMetadataConverter.ToJson(message.Metadata));
     }
@@ -53,6 +57,11 @@ public class MessageQueries
     public BoundStatement SelectById(long channelId, long messageId)
     {
         return _selectById.Bind(channelId, messageId);
+    }
+
+    public BoundStatement SelectByIds(long channelId, IEnumerable<long> messageIds)
+    {
+        return _selectByIds.Bind(channelId, messageIds);
     }
 
     public BoundStatement SelectByChannelId(long channelId, long before, int limit)

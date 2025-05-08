@@ -4,7 +4,7 @@ using Messenger.Domain.ValueObjects;
 
 namespace Messenger.Data.Scylla.Messages.Dto;
 
-public struct MessageData
+public class MessageData
 {
     public long Id { get; set; }
     public long ChannelId { get; set; }
@@ -18,6 +18,8 @@ public struct MessageData
     public List<Attachment>? Attachments { get; set; }
     public bool Pinned { get; set; }
     public MessageType Type { get; set; }
+    public long? ReferencedMessageId { get; set; }
+    public MessageData? ReferencedMessage { get; set; }
     public IMessageMetadata? Metadata { get; set; }
 
     public Message ToEntity()
@@ -47,6 +49,7 @@ public struct MessageData
             editedTimestamp: EditedTimestamp,
             pinned: Pinned,
             type: Type,
+            referencedMessage: ReferencedMessage?.ToEntity(),
             metadata: Metadata,
             attachments: Attachments
         );

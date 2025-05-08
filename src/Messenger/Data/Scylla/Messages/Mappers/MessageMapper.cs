@@ -30,6 +30,7 @@ public static class MessageMapper
             EditedTimestamp = row.GetValue<DateTimeOffset?>("editedtimestamp"),
             Pinned = row.GetValue<bool>("pinned"),
             Type = (MessageType)row.GetValue<int>("type"),
+            ReferencedMessageId = row.GetValue<long?>("referencedmessageid"),
             Metadata = MessageMetadataConverter.ToValue(row.GetValue<string?>("metadata")),
         };
     }
