@@ -75,4 +75,11 @@ public class Attachment
 
         MessageId = messageId;
     }
+
+    public void Forward(long newChannelId, long newId)
+    {
+        Id = newId;
+        ChannelId = newChannelId;
+        MessageId = null;
+    }
 }

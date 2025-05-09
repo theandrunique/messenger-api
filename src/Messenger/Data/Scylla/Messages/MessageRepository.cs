@@ -8,6 +8,7 @@ using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Entities;
 using Messenger.Data.Scylla.Messages.Dto;
 using Messenger.Domain.ValueObjects;
+using Messenger.Data.Scylla.Common;
 
 namespace Messenger.Data.Scylla.Messages;
 
@@ -45,6 +46,24 @@ internal class MessageRepository : IMessageRepository
         {
             batch.Add(_attachments.Insert(attachment));
         }
+
+        await _session.ExecuteAsync(batch);
+    }
+
+    public async Task BulkUpsertAsync(List<Message> messages)
+    {
+        var batch = new BatchStatement();
+        
+        foreach (var message in messages)
+        {
+            batch.Add(_messages.Insert(message));
+            foreach (var attachment in message.Attachments)
+            {
+                batch.Add(_attachments.Insert(attachment));
+            }
+        }
+
+        batch.Add(_channelsById.UpdateLastMessageInfo(messages.Last()));
 
         await _session.ExecuteAsync(batch);
     }
@@ -188,6 +207,41 @@ internal class MessageRepository : IMessageRepository
             }
             md.TargetUser = targetUser;
         }
+    }
+
+    public async Task<IEnumerable<Message>> GetMessagesByIdsAsync(long channelId, IEnumerable<long> messageIds)
+    {
+        var result = (await _session.ExecuteAsync(_messages.SelectByIds(channelId, messageIds)))
+            .Select(MessageMapper.Map)
+            .ToList();
+
+        var userIds = result
+            .Select(m => m.AuthorId)
+            .Concat(result
+                .Where(m => m.TargetUserId != null)
+                .Select(m => m.TargetUserId!.Value))
+            .Distinct();
+
+        var channelUsersTask = _session.ExecuteAsync(_channelUsers.SelectByChannelIdAndUserIds(channelId, userIds));
+        var attachmentsTask = _session.ExecuteAsync(_attachments.SelectByChannelIdInMessageIds(channelId, result.Select(m => m.Id)));
+
+        await Task.WhenAll(channelUsersTask, attachmentsTask);
+
+        var channelUsersDictionary = (await channelUsersTask)
+            .Select(MessageMapper.MapMessageAuthorInfo)
+            .ToDictionary(c => c.Id);
+
+        foreach (var m in result)
+            FillAuthorAndTargetUser(m, channelUsersDictionary);
+
+        var attachmentsByMessageId = (await attachmentsTask)
+            .Select(AttachmentMapper.Map)
+            .ToLookup(a => a.MessageId);
+
+        foreach (var m in result)
+            m.Attachments = attachmentsByMessageId[m.Id].ToList();
+
+        return result.Select(m => m.ToEntity());
     }
 
     public async Task DeleteMessageByIdAsync(long channelId, long messageId)

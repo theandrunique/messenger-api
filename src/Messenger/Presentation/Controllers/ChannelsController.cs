@@ -15,6 +15,7 @@ using Messenger.Contracts.Common;
 using Messenger.Presentation.Schemas.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Messenger.Application.Channels.Queries.GetMessage;
+using Messenger.Application.Channels.Commands.ForwardMessages;
 
 namespace Messenger.Presentation.Controllers;
 
@@ -65,6 +66,20 @@ public class ChannelsController : ApiController
 
         var result = await _mediator.Send(command, cancellationToken);
 
+        return result.Match(onValue: Ok, onError: Problem);
+    }
+
+    [HttpPost("{channelId}/messages/forward")]
+    public async Task<IActionResult> ForwardMessagesAsync(
+        long channelId,
+        ForwardMessagesSchema schema,
+        CancellationToken cancellationToken)
+    {
+        var command = new ForwardMessagesCommand(
+            channelId,
+            schema.messages,
+            schema.targetChannelId);
+        var result = await _mediator.Send(command, cancellationToken);
         return result.Match(onValue: Ok, onError: Problem);
     }
 

@@ -103,12 +103,28 @@ public class Message
         bool includeReferencedMessage,
         bool includeOriginAuthorLink)
     {
-        var forwardMetadata = new ForwardMessageMetadata(Timestamp);
+        Type = MessageType.FORWARD;
+
         if (includeOriginAuthorLink)
         {
-            forwardMetadata.SetOriginAuthor(Author);
+            var forwardMetadata = new ForwardMessageMetadata(
+                type: ForwardType.USER,
+                originAuthorGlobalName: null,
+                originAuthorId: Author.Id.ToString(),
+                originTimestamp: Timestamp
+            );
+            Metadata = forwardMetadata;
         }
-        Metadata = forwardMetadata;
+        else
+        {
+            var forwardMetadata = new ForwardMessageMetadata(
+                type: ForwardType.HIDDEN_USER,
+                originAuthorGlobalName: Author.GlobalName,
+                originAuthorId: null,
+                originTimestamp: Timestamp
+            );
+            Metadata = forwardMetadata;
+        }
 
         Author = new MessageAuthorInfo(author);
         Timestamp = DateTimeOffset.UtcNow;
@@ -117,7 +133,10 @@ public class Message
 
         if (!includeReferencedMessage)
         {
+            ReferencedMessageId = null;
             ReferencedMessage = null;
         }
+
+        foreach (var attachment in _attachments) attachment.SetMessageId(Id);
     }
 }

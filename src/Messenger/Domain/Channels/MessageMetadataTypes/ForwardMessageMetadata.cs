@@ -1,5 +1,3 @@
-using Messenger.Domain.ValueObjects;
-
 namespace Messenger.Domain.Channels.MessageMetadataTypes;
 
 public enum ForwardType
@@ -15,21 +13,20 @@ public class ForwardMessageMetadata : IMessageMetadata
     // HIDDEN_USER
     public string? OriginAuthorGlobalName { get; private set; }
     // USER
-    public long? OriginAuthorId { get; private set; }
+    public string? OriginAuthorId { get; private set; }
 
     // ALWAYS
     public DateTimeOffset OriginTimestamp { get; init; }
 
-    public ForwardMessageMetadata(DateTimeOffset originTimestamp)
+    public ForwardMessageMetadata(
+        ForwardType type,
+        string? originAuthorGlobalName,
+        string? originAuthorId,
+        DateTimeOffset originTimestamp)
     {
-        Type = ForwardType.HIDDEN_USER;
+        Type = type;
+        OriginAuthorGlobalName = originAuthorGlobalName;
+        OriginAuthorId = originAuthorId;
         OriginTimestamp = originTimestamp;
-    }
-
-    public void SetOriginAuthor(MessageAuthorInfo author)
-    {
-        Type = ForwardType.USER;
-
-        OriginAuthorId = author.Id;
     }
 }

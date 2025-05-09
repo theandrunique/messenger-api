@@ -12,4 +12,5 @@ public enum MessageType
     CHANNEL_PINNED_MESSAGE = 7,
     CHANNEL_UNPIN_MESSAGE = 8,
     CHANNEL_CREATE = 9,
+    FORWARD = 10,
 }
