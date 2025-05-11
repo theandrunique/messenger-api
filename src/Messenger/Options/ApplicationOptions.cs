@@ -44,4 +44,7 @@ public class ApplicationOptions
     [ValidateObjectMembers]
     [Required]
     public HCaptchaOptions HCaptchaOptions { get; init; } = null!;
+
+    [Required]
+    public bool MONITORING_ENABLED { get; init; }
 }

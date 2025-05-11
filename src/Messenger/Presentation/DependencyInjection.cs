@@ -10,6 +10,8 @@ using OpenTelemetry.Trace;
 using Serilog;
 using OpenTelemetry.Metrics;
 using Messenger.Infrastructure;
+using Messenger.Options;
+using Cassandra;
 
 namespace Messenger.Presentation;
 
@@ -27,13 +29,16 @@ public static class DependencyInjection
         services.AddCorsPolicy(config);
         services.AddControllersWithJsonOptions();
         services.AddSwagger();
-        services.AddMonitoring();
+        services.AddMonitoring(config);
 
         return services;
     }
 
-    public static IServiceCollection AddMonitoring(this IServiceCollection services)
+    public static IServiceCollection AddMonitoring(this IServiceCollection services, ConfigurationManager config)
     {
+        var enabled = config.GetValue<bool>(nameof(ApplicationOptions.MONITORING_ENABLED));
+        if (!enabled) return services;
+
         services.AddOpenTelemetry()
             .WithTracing(tracing =>
             {

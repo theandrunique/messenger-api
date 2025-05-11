@@ -25,6 +25,7 @@ services:
       retries: 5
 
   redisinsight:
+    profiles: ["dashboards"]
     image: redislabs/redisinsight
     ports:
       - "5540:5540"
@@ -73,11 +74,14 @@ services:
   elasticsearch:
     image: elasticsearch:8.17.3
     environment:
+      - "ES_JAVA_OPTS=-Xms256m -Xmx512m"
       - discovery.type=single-node
       - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
 
   kibana:
     image: kibana:8.17.3
+    profiles: ["dashboards"]
     depends_on: ["elasticsearch"]
     environment:
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
@@ -86,6 +90,7 @@ services:
 
   grafana:
     image: grafana/grafana:11.6.0
+    profiles: ["monitoring"]
     environment:
       GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
       GF_AUTH_ANONYMOUS_ENABLED: true
@@ -97,6 +102,7 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
+    profiles: ["monitoring"]
     command: --config.file=/etc/prometheus/prometheus.yml
     volumes:
       - ./grafana/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -105,6 +111,7 @@ services:
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
+    profiles: ["monitoring"]
     volumes:
       - ./grafana/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
     ports:
@@ -114,6 +121,7 @@ services:
 
   loki:
     image: grafana/loki:3.2.0
+    profiles: ["monitoring"]
     ports:
       []
       # - 3100:3100
@@ -123,6 +131,7 @@ services:
 
   alloy:
     image: grafana/alloy:v1.8.1
+    profiles: ["monitoring"]
     ports:
       - 12345:12345
     command: run --server.http.listen-addr=0.0.0.0:12345 /etc/alloy/config.alloy
@@ -132,6 +141,7 @@ services:
 
   tempo:
     image: grafana/tempo:latest
+    profiles: ["monitoring"]
     command: "-config.file=/etc/tempo.yaml"
     volumes:
       - ./grafana/tempo.yaml:/etc/tempo.yaml
