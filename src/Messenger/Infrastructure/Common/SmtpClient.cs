@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Mail;
-using Messenger.Application.Common;
 using Messenger.Application.Common.Interfaces;
+using Messenger.Options;
 using Microsoft.Extensions.Options;
 
 namespace Messenger.Infrastructure.Common;
@@ -10,9 +10,9 @@ public class SmtpClient : ISmtpClient
 {
     private readonly SmtpOptions _options;
 
-    public SmtpClient(IOptions<SmtpOptions> options)
+    public SmtpClient(IOptions<ApplicationOptions> options)
     {
-        _options = options.Value;
+        _options = options.Value.SmtpOptions;
     }
 
     public Task SendEmailAsync(string recipient, string subject, string body)

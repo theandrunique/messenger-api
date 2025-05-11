@@ -1,11 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
-using Messenger.Application.Auth.Common;
 using Messenger.Application.Auth.Common.Interfaces;
-using Messenger.Core;
+using Messenger.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 
 namespace Messenger.Infrastructure.Auth;
 
@@ -14,9 +12,9 @@ public class KeyManagementService : IKeyManagementService
     private readonly Dictionary<string, RSA> _keys = new();
     public IReadOnlyDictionary<string, RSA> Keys => _keys.AsReadOnly();
 
-    public KeyManagementService(IOptions<AuthOptions> options)
+    public KeyManagementService(IOptions<ApplicationOptions> options)
     {
-        LoadKeys(options.Value.KeysDirectory);
+        LoadKeys(options.Value.AuthOptions.KeysDirectory);
     }
 
     private void LoadKeys(string keysDirectory)

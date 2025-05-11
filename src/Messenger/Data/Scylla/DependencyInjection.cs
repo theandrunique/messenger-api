@@ -14,40 +14,43 @@ using Messenger.Data.Interfaces.Users;
 using Messenger.Data.Interfaces.VerificationCodes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using Messenger.Options;
+using Microsoft.Extensions.Options;
 
 namespace Messenger.Data.Scylla;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDataServices(this IServiceCollection services, ConfigurationManager config)
+    public static IServiceCollection AddDataServices(this IServiceCollection services)
     {
-        var cluster = Cluster.Builder()
-            .AddContactPoint("scylla")
-            .WithOpenTelemetryInstrumentation(o =>
-            {
-                o.BatchChildStatementLimit = 10;
-                o.IncludeDatabaseStatement = true;
-            })
-            .WithPort(9042)
-            .WithPoolingOptions(new PoolingOptions()
-                .SetCoreConnectionsPerHost(HostDistance.Local, 2)
-                .SetMaxConnectionsPerHost(HostDistance.Local, 10))
-            .WithDefaultKeyspace("messenger")
-            .WithRetryPolicy(new LoggingRetryPolicy(new DefaultRetryPolicy()))
-            .Build();
+        services.AddSingleton<ISession>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<ApplicationOptions>>().Value.ScyllaDBOptions;
 
-        var session = cluster.Connect();
+            var cluster = Cluster.Builder()
+                .AddContactPoints(options.ContactPoints)
+                .WithOpenTelemetryInstrumentation(o =>
+                {
+                    o.BatchChildStatementLimit = 10;
+                    o.IncludeDatabaseStatement = true;
+                })
+                .WithPort(options.Port)
+                .WithPoolingOptions(new PoolingOptions()
+                    .SetCoreConnectionsPerHost(HostDistance.Local, 2)
+                    .SetMaxConnectionsPerHost(HostDistance.Local, 10))
+                .WithDefaultKeyspace(options.DefaultKeyspace)
+                .WithRetryPolicy(new LoggingRetryPolicy(new DefaultRetryPolicy()))
+                .Build();
 
-        session.UserDefinedTypes.Define(
-            UdtMap.For<MessageInfoDto>("messageinfo"));
+            var session = cluster.Connect();
 
-        services.AddSingleton<ISession>(s => session);
+            session.UserDefinedTypes.Define(
+                UdtMap.For<MessageInfoDto>("messageinfo"));
 
-        // var cassandraSettings = new CassandraOptions();
-        // config.Bind(nameof(CassandraOptions), cassandraSettings);
+            return session;
+        });
 
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();

@@ -27,18 +27,14 @@ public static class DependencyInjection
         services.AddCorsPolicy(config);
         services.AddControllersWithJsonOptions();
         services.AddSwagger();
-        services.AddMonitoring(config);
+        services.AddMonitoring();
 
         return services;
     }
 
-    public static IServiceCollection AddMonitoring(this IServiceCollection services, ConfigurationManager _)
+    public static IServiceCollection AddMonitoring(this IServiceCollection services)
     {
-        const string ServiceName = "app";
-        const string OtlpExporterEndpoint = "http://otel-collector:4317";
-
         services.AddOpenTelemetry()
-            .ConfigureResource(r => r.AddService(ServiceName))
             .WithTracing(tracing =>
             {
                 tracing
@@ -59,10 +55,7 @@ public static class DependencyInjection
                     })
                     .AddInfrastructureInstrumentation()
                     .AddDataServicesInstrumentation()
-                    .AddOtlpExporter(options =>
-                    {
-                        options.Endpoint = new Uri(OtlpExporterEndpoint);
-                    });
+                    .AddOtlpExporter();
             })
             .WithMetrics(metrics =>
             {
@@ -72,10 +65,7 @@ public static class DependencyInjection
                     .AddRuntimeInstrumentation()
                     .AddInfrastructureInstrumentation()
                     .AddDataServicesInstrumentation()
-                    .AddOtlpExporter(options =>
-                    {
-                        options.Endpoint = new Uri(OtlpExporterEndpoint);
-                    });
+                    .AddOtlpExporter();
             });
 
         return services;
@@ -83,6 +73,8 @@ public static class DependencyInjection
 
     private static IServiceCollection AddCorsPolicy(this IServiceCollection services, ConfigurationManager config)
     {
+        var options = config.Get<CorsPolicy>();
+
         var corsOptions = new CorsPolicy();
         config.Bind(nameof(CorsPolicy), corsOptions);
 
@@ -90,7 +82,8 @@ public static class DependencyInjection
             {
                 options.AddPolicy(MessengerConstants.Cors.PolicyName, builder =>
                 {
-                    builder.WithOrigins(corsOptions.AllowedOrigins.ToArray())
+                    builder
+                        .WithOrigins(corsOptions.AllowedOrigins.ToArray())
                         .WithHeaders(corsOptions.AllowedHeaders.ToArray())
                         .WithMethods(corsOptions.AllowedMethods.ToArray())
                         .WithExposedHeaders(corsOptions.ExposedHeaders.ToArray())

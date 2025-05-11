@@ -1,5 +1,5 @@
-using Messenger.Application.Auth.Common;
 using Messenger.Application.Auth.Common.Interfaces;
+using Messenger.Options;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
@@ -10,10 +10,10 @@ public class RevokedTokenService : IRevokedTokenService
     private readonly IDatabase _redis;
     private readonly string key;
 
-    public RevokedTokenService(IConnectionMultiplexer redis, IOptions<AuthOptions> options)
+    public RevokedTokenService(IConnectionMultiplexer redis, IOptions<ApplicationOptions> options)
     {
         _redis = redis.GetDatabase();
-        key = options.Value.RevokedTokensCacheKeyPrefix;
+        key = options.Value.AuthOptions.RevokedTokensCacheKeyPrefix;
     }
 
     private string GetKey(Guid tokenId)

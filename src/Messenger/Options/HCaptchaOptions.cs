@@ -1,16 +1,20 @@
-namespace Messenger.Application.Common.Captcha;
+using System.ComponentModel.DataAnnotations;
+
+namespace Messenger.Options;
 
 public class HCaptchaOptions
 {
     /// <summary>
     /// hCaptcha Site Key
     /// </summary>
-    public string SiteKey { get; init; } = "";
+    [Required]
+    public string SiteKey { get; init; } = null!;
 
     /// <summary>
     /// hCaptcha Site Secret
     /// </summary>
-    public string Secret { get; init; } = "";
+    [Required]
+    public string Secret { get; init; } = null!;
 
     /// <summary>
     /// The HTTP Post Form Key to get the token from

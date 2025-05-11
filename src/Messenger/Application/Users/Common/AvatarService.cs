@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Application.Common.Interfaces.S3;
+using Messenger.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -16,12 +17,12 @@ public class AvatarService
     public AvatarService(
         IS3Service s3Service,
         IClientInfoProvider clientInfo,
-        IOptions<AvatarServiceOptions> options,
+        IOptions<ApplicationOptions> options,
         IImageProcessor imageProcessor)
     {
         _s3Service = s3Service;
         _clientInfo = clientInfo;
-        _options = options.Value;
+        _options = options.Value.AvatarServiceOptions;
         _imageProcessor = imageProcessor;
     }
 

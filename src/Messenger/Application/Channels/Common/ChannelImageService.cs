@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Application.Common.Interfaces.S3;
+using Messenger.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -14,11 +15,11 @@ public class ChannelImageService
 
     public ChannelImageService(
         IS3Service s3Service,
-        IOptions<ChannelImageServiceOptions> options,
+        IOptions<ApplicationOptions> options,
         IImageProcessor imageProcessor)
     {
         _s3Service = s3Service;
-        _options = options.Value;
+        _options = options.Value.ChannelImageServiceOptions;
         _imageProcessor = imageProcessor;
     }
 

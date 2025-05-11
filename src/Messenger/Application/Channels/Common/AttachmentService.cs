@@ -5,6 +5,7 @@ using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Entities;
 using Messenger.ApiErrors;
 using Microsoft.Extensions.Options;
+using Messenger.Options;
 
 namespace Messenger.Application.Channels.Common;
 
@@ -12,7 +13,7 @@ public class AttachmentService
 {
     private readonly IS3Service _s3Service;
     private readonly IIdGenerator _idGenerator;
-    private readonly AttachmentOptions _options;
+    private readonly AttachmentServiceOptions _options;
     private readonly IAttachmentRepository _attachmentRepository;
     private static readonly Regex _uploadFilenameRegex =
         new Regex(@"^attachments/(?<channelId>\d+)/(?<attachmentId>\d+)/(?<filename>.+)$", RegexOptions.Compiled);
@@ -21,12 +22,12 @@ public class AttachmentService
         IS3Service s3Service,
         IIdGenerator idGenerator,
         IAttachmentRepository attachmentRepository,
-        IOptions<AttachmentOptions> options)
+        IOptions<ApplicationOptions> options)
     {
         _s3Service = s3Service;
         _idGenerator = idGenerator;
         _attachmentRepository = attachmentRepository;
-        _options = options.Value;
+        _options = options.Value.AttachmentServiceOptions;
     }
 
     public Task UpdateUrlsAsync(long channelId, IEnumerable<Attachment> attachments)
@@ -53,7 +54,7 @@ public class AttachmentService
 
         var preSignedUrl = _s3Service.GenerateUploadUrl(
             key: uploadFilename,
-            bucket: _options.Bucket,
+            bucket: _options.BucketName,
             expires: DateTimeOffset.UtcNow.Add(_options.UploadUrlExpiration),
             size: size);
 
@@ -73,7 +74,7 @@ public class AttachmentService
 
         var objectMetadata = await _s3Service.GetObjectMetadataAsync(
             uploadedFilename,
-            _options.Bucket,
+            _options.BucketName,
             cancellationToken);
 
         if (objectMetadata is null)
@@ -97,18 +98,18 @@ public class AttachmentService
     public Task DeleteObjectAsync(
         string uploadedFilename,
         CancellationToken cancellationToken = default)
-        => _s3Service.DeleteObjectAsync(uploadedFilename, _options.Bucket, cancellationToken);
+        => _s3Service.DeleteObjectAsync(uploadedFilename, _options.BucketName, cancellationToken);
 
     private string GenerateDownloadUrl(string uploadedFilename, DateTimeOffset expires)
     {
         return _s3Service.GenerateDownloadUrl(
             key: uploadedFilename,
-            bucket: _options.Bucket,
+            bucket: _options.BucketName,
             expires: expires);
     }
 
     public Task<bool> IsObjectExistsAsync(string uploadedFilename, CancellationToken cancellationToken = default)
-        => _s3Service.IsObjectExistsAsync(uploadedFilename, _options.Bucket, cancellationToken);
+        => _s3Service.IsObjectExistsAsync(uploadedFilename, _options.BucketName, cancellationToken);
 
     public async Task<Attachment?> FindAttachmentByUploadFilename(string uploadFilename)
     {

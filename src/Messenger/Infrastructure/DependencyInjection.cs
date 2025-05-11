@@ -10,11 +10,9 @@ using Messenger.Core;
 using Messenger.Domain.Users;
 using Messenger.Infrastructure.Auth;
 using Messenger.Infrastructure.Common;
-using Messenger.Infrastructure.Common.Files;
 using Messenger.Infrastructure.Users;
+using Messenger.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
@@ -25,17 +23,15 @@ namespace Messenger.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,
-        ConfigurationManager config)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddScoped<ISmtpClient, SmtpClient>();
 
         services.AddHttpContextAccessor();
 
         services.AddAuthServices();
-        services.AddS3Services(config);
-        services.AddRedis(config);
+        services.AddS3Services();
+        services.AddRedisClient();
         services.AddElasticsearch();
         services.AddSingleton<IIdGenerator, IdGenerator>();
 
@@ -44,57 +40,57 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddS3Services(this IServiceCollection services, IConfigurationManager config)
+    private static IServiceCollection AddS3Services(this IServiceCollection services)
     {
         AWSConfigsS3.UseSignatureVersion4 = true;
 
-        var options = new S3Options();
-        config.Bind(nameof(S3Options), options);
-
-        var s3Client = new AmazonS3Client(
-            credentials: new BasicAWSCredentials(options.AccessKey, options.SecretKey),
-            clientConfig: new AmazonS3Config()
-            {
-                ServiceURL = options.ServiceUrl,
-            });
-
-        services.AddSingleton<IAmazonS3, AmazonS3Client>(sp => s3Client);
-
-        services.Configure<S3Options>(config.GetSection(nameof(S3Options)));
-
+        services.AddSingleton<IAmazonS3>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<ApplicationOptions>>().Value.S3Options;
+            return new AmazonS3Client(
+                credentials: new BasicAWSCredentials(options.AccessKey, options.SecretKey),
+                clientConfig: new AmazonS3Config()
+                {
+                    ServiceURL = options.ServiceUrl,
+                    ForcePathStyle = true,
+                });
+        });
         services.AddScoped<IS3Service, S3Service>();
 
         return services;
     }
 
-    public static IServiceCollection AddRedis(this IServiceCollection services, ConfigurationManager config)
+    private static IServiceCollection AddRedisClient(this IServiceCollection services)
     {
-        var redisSettings = new RedisOptions();
-        config.Bind(nameof(RedisOptions), redisSettings);
-
-        services.AddSingleton(Options.Create(redisSettings));
-
-        var redis = ConnectionMultiplexer.Connect(redisSettings.ConnectionString);
-        services.AddSingleton<IConnectionMultiplexer>(sp => redis);
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<ApplicationOptions>>().Value.RedisOptions;
+            return ConnectionMultiplexer.Connect(options.ConnectionString);
+        });
 
         return services;
     }
 
-    public static IServiceCollection AddElasticsearch(this IServiceCollection services)
+    private static IServiceCollection AddElasticsearch(this IServiceCollection services)
     {
-        var settings = new ElasticsearchClientSettings(new Uri("http://elasticsearch:9200"))
-            .DefaultMappingFor<UserIndexModel>(i => i.IndexName("users"))
-            .EnableDebugMode();
+        services.AddSingleton<ElasticsearchClient>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<ApplicationOptions>>().Value.ElasticSearchOptions;
 
-        var client = new ElasticsearchClient(settings);
-        services.AddSingleton(client);
+            var settings = new ElasticsearchClientSettings(new Uri(options.Uri))
+                .DefaultMappingFor<UserIndexModel>(i => i.IndexName("users"))
+                .EnableDebugMode();
+
+            return new ElasticsearchClient(settings);
+        });
+
         services.AddHostedService<ElasticsearchIndexInitializationService>();
         services.AddScoped<IUserSearchService, UserSearchService>();
 
         return services;
     }
 
-    public static IServiceCollection AddAuthServices(this IServiceCollection services)
+    private static IServiceCollection AddAuthServices(this IServiceCollection services)
     {
         services.AddSingleton<IHashHelper, BCryptHelper>();
         services.AddScoped<IClientInfoProvider, ClientInfoProvider>();

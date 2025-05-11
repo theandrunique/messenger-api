@@ -21,12 +21,15 @@ try
         .AddApplicationOptions(builder.Configuration)
         .AddCoreServices()
         .AddGatewayServices()
-        .AddDataServices(builder.Configuration)
+        .AddDataServices()
         .AddPresentation(builder.Configuration)
-        .AddInfrastructure(builder.Configuration)
-        .AddApplication(builder.Configuration);
+        .AddInfrastructure()
+        .AddApplication();
 
     var app = builder.Build();
+
+    var options = app.Services.GetRequiredService<IOptions<ApplicationOptions>>().Value;
+    Log.Information("App config: {@Config}", options);
 
     app.UseCors(MessengerConstants.Cors.PolicyName);
 

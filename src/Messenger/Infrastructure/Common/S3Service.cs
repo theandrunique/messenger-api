@@ -3,7 +3,7 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Messenger.Application.Common.Interfaces.S3;
 
-namespace Messenger.Infrastructure.Common.Files;
+namespace Messenger.Infrastructure.Common;
 
 public class S3Service : IS3Service
 {

@@ -1,5 +1,5 @@
-using Messenger.Application.Auth.Common;
 using Messenger.Application.Auth.Common.Interfaces;
+using Messenger.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,13 +17,13 @@ internal class JwtBearerOptionsConfiguration : IConfigureNamedOptions<JwtBearerO
 
     public JwtBearerOptionsConfiguration(
         ILogger<JwtBearerOptionsConfiguration> logger,
-        IOptions<AuthOptions> options,
+        IOptions<ApplicationOptions> options,
         IServiceScopeFactory scopeFactory,
         IKeyManagementService keyManagementService)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
-        _options = options.Value;
+        _options = options.Value.AuthOptions;
         _keyService = keyManagementService;
     }
 
