@@ -4,6 +4,7 @@ using Messenger.Application.Common.Interfaces;
 using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Channels;
 using Messenger.Domain.Events;
+using Messenger.Domain.ValueObjects;
 
 namespace Messenger.Application.Channels.Commands.DeleteMessage;
 
@@ -45,20 +46,27 @@ public class DeleteMessageCommandHandler : IRequestHandler<DeleteMessageCommand,
             return Errors.Channel.MessageNotFound(request.MessageId);
         }
 
-        if (message.AuthorId == _clientInfo.UserId)
+        if (message.AuthorId != _clientInfo.UserId && !channel.HasPermission(_clientInfo.UserId, ChannelPermission.MANAGE_MESSAGES))
         {
-            await _messageRepository.DeleteMessageByIdAsync(channel.Id, message.Id);
+            return Errors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_MESSAGES);
         }
-        else
-        {
-            if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.MANAGE_MESSAGES))
-            {
-                return Errors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_MESSAGES);
-            }
+        await _messageRepository.DeleteMessageByIdAsync(channel.Id, message.Id);
 
-            await _messageRepository.DeleteMessageByIdAsync(channel.Id, message.Id);
-        }
-        await _mediator.Publish(new MessageDeleteDomainEvent(channel, message.Id, _clientInfo.UserId));
+        var lastMessage = (await _messageRepository.GetMessagesAsync(
+            channelId: channel.Id,
+            before: long.MaxValue,
+            limit: 1)).FirstOrDefault();
+
+        MessageInfo? lastMessageInfo = lastMessage != null ? new MessageInfo(lastMessage) : null;
+
+        await _channelRepository.UpdateLastMessage(channel.Id, lastMessageInfo);
+
+        await _mediator.Publish(new MessageDeleteDomainEvent(
+            channel,
+            message.Id,
+            lastMessage,
+            _clientInfo.UserId));
+
         return Unit.Value;
     }
 }

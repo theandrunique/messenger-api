@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Messenger.Core;
@@ -8,15 +7,5 @@ public static class DependencyInjection
     public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
         return services;
-    }
-
-    public static void AddValidatedOptions<T>(
-        this IServiceCollection services,
-        IConfigurationSection section)
-        where T : class
-    {
-        services.AddOptions<T>()
-            .Bind(section)
-            .ValidateOnStart();
     }
 }

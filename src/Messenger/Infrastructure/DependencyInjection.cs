@@ -52,7 +52,7 @@ public static class DependencyInjection
                 clientConfig: new AmazonS3Config()
                 {
                     ServiceURL = options.ServiceUrl,
-                    ForcePathStyle = true,
+                    ForcePathStyle = options.ForcePathStyle,
                 });
         });
         services.AddScoped<IS3Service, S3Service>();

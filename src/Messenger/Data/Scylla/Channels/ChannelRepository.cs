@@ -172,4 +172,9 @@ internal class ChannelRepository : IChannelRepository
         var query = _channelsById.UpdateOwnerId(channelId, ownerId);
         return _session.ExecuteAsync(query);
     }
+
+    public Task UpdateLastMessage(long channelId, MessageInfo? newLastMessage)
+    {
+        return _session.ExecuteAsync(_channelsById.UpdateLastMessageInfo(channelId, newLastMessage));
+    }
 }

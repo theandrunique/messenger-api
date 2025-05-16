@@ -70,7 +70,7 @@ public class Attachment
     {
         if (MessageId != null)
         {
-            throw new Exception("MessageId already set.");
+            throw new InvalidOperationException("MessageId already set.");
         }
 
         MessageId = messageId;

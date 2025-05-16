@@ -13,4 +13,7 @@ public class S3Options
     [Required(ErrorMessage = "ServiceUrl is required.")]
     [Url(ErrorMessage = "ServiceUrl must be a valid URL.")]
     public string ServiceUrl { get; init; } = null!;
+
+    [Required]
+    public bool ForcePathStyle { get; init; }
 }

@@ -1,6 +1,7 @@
 using MediatR;
 using Messenger.Contracts.Common;
 using Messenger.Domain.Events;
+using Messenger.Domain.ValueObjects;
 using Messenger.Gateway.Common;
 using Messenger.Gateway.Events;
 
@@ -47,7 +48,11 @@ public class MessageGatewayEventsPublisher
     public Task Handle(MessageDeleteDomainEvent @event, CancellationToken cancellationToken)
     {
         return _gateway.PublishAsync(new GatewayEvent<MessageDeleteGatewayEvent>(
-            new MessageDeleteGatewayEvent(@event.Channel.Id, @event.MessageId),
+            new MessageDeleteGatewayEvent(
+                @event.Channel.Id,
+                @event.MessageId,
+                @event.NewLastMessage != null ? MessageSchema.From(@event.NewLastMessage) : null),
+
             @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
     }
 }

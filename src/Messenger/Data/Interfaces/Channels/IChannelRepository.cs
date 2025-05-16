@@ -15,4 +15,5 @@ public interface IChannelRepository
     Task UpdateIsLeaveStatus(long userId, long channelId, bool isLeave);
     Task UpdateChannelInfo(long channelId, ChannelUpdateDomainEvent @event);
     Task UpdateOwnerId(long channelId, long ownerId);
+    Task UpdateLastMessage(long channelId, MessageInfo? newLastMessage);
 }

@@ -80,4 +80,19 @@ public class ChannelByIdQueries
             MessageInfoDto.From(messageInfo),
             message.ChannelId);
     }
+
+    public BoundStatement UpdateLastMessageInfo(long channelId, MessageInfo? message)
+    {
+        if (message is null)
+        {
+            return _updateLastMessageInfo.Bind(null, null, channelId);
+        }
+        else
+        {
+            return _updateLastMessageInfo.Bind(
+                message.Value.Timestamp,
+                MessageInfoDto.From(message.Value),
+                channelId);
+        }
+    }
 }
