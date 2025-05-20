@@ -367,4 +367,4 @@ FodyWeavers.xsd
 .env
 .env.docker
 keys/
-
+local/
