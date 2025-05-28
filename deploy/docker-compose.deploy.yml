@@ -62,7 +62,7 @@ services:
       - EVENT_BATCH_SIZE=100
       - REDIS_URL=redis://redis:6379
       - JWKS_URL=http://app:8000/.well-known/jwks.json
-      - CORS_ORIGIN=${CLIENT_DOMAIN}
+      - CORS_ORIGIN=${CLIENT_ORIGIN}
       - CORS_METHODS=GET, POST
       - CORS_ALLOWED_HEADERS=Authorization
       - CORS_CREDENTIALS=true
