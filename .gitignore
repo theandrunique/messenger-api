@@ -368,3 +368,5 @@ FodyWeavers.xsd
 .env.docker
 keys/
 local/
+.env.deploy
+certs/

@@ -37,7 +37,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<TokenPa
         _totpHelper = totpHelper;
     }
 
-    public async Task<ErrorOr<TokenPairResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<TokenPairResponse>> Handle(
+        LoginCommand request,
+        CancellationToken cancellationToken)
     {
         User? user;
         if (request.Login.Contains("@"))

@@ -27,7 +27,9 @@ public class AuthController : ApiController
     [HttpPost("sign-up")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(UserPrivateSchema), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SignUpAsync([FromForm] SignUpRequestSchema schema, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignUpAsync(
+        [FromForm] SignUpRequestSchema schema,
+        CancellationToken cancellationToken)
     {
         var command = new RegisterCommand(
             schema.username,
@@ -43,7 +45,9 @@ public class AuthController : ApiController
     [HttpPost("sign-in")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(TokenPairResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SignInAsync([FromForm] SignInRequestSchema schema, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignInAsync(
+        [FromForm] SignInRequestSchema schema,
+        CancellationToken cancellationToken)
     {
         var command = new LoginCommand(schema.login, schema.password, schema.totp);
         var loginResult = await _mediator.Send(command, cancellationToken);
@@ -103,7 +107,7 @@ public class AuthController : ApiController
         {
             Expires = tokenPair.IssuedAt.AddDays(7),
             HttpOnly = true,
-            // Secure = true,
+            Secure = true,
         };
         Response.Cookies.Append(
             MessengerConstants.Auth.SessionCookieName,

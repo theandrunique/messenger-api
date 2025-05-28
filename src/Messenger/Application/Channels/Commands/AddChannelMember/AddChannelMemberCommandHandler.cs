@@ -78,6 +78,6 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             await _publisher.Publish(new ChannelMemberAddDomainEvent(channel, memberInfo, _clientInfo.UserId));
         }
 
-        return await Unit.Task;
+        return Unit.Value;
     }
 }

@@ -19,3 +19,7 @@ shell:
 .PHONY: logs
 logs:
 	docker compose ${ENV_FILE} -f ${APP} logs ${APP_SERVICE} -f
+
+.PHONY: up-deploy
+up-deploy:
+	docker compose --env-file deploy/.env.deploy -f deploy/docker-compose.deploy.yml up -d --build

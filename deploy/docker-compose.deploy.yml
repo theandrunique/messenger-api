@@ -1,0 +1,98 @@
+volumes:
+  scylla_data:
+  elastic_data:
+
+services:
+  redis:
+    image: redis
+    restart: always
+
+  scylla:
+    image: scylladb/scylla:6.2.3
+    restart: always
+    volumes:
+      - scylla_data:/var/lib/scylla
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'DESCRIBE keyspaces' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    container_name: app
+    restart: always
+    build:
+      target: production
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    volumes:
+      - ./keys:/app/keys
+    depends_on:
+      scylla:
+        condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik
+
+      - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+
+      - traefik.http.routers.messenger.rule=Host(`${API_DOMAIN}`)
+      - traefik.http.routers.messenger.entrypoints=http
+      - traefik.http.routers.messenger.middlewares=https-redirect
+
+      - traefik.http.routers.messenger-https.rule=Host(`${API_DOMAIN:?}`)
+      - traefik.http.routers.messenger-https.entrypoints=https
+      - traefik.http.routers.messenger-https.tls.certresolver=le
+      - traefik.http.routers.messenger-https.tls=true
+
+      - traefik.http.services.app.loadbalancer.server.port=8000
+    networks:
+      - traefik
+      - default
+
+  gateway:
+    container_name: gateway
+    restart: always
+    image: theandru/messenger-api-gateway:v0.6.0
+    environment:
+      - PORT=3030
+      - EVENT_BATCH_SIZE=100
+      - REDIS_URL=redis://redis:6379
+      - JWKS_URL=http://app:8000/.well-known/jwks.json
+      - CORS_ORIGIN=${CLIENT_DOMAIN}
+      - CORS_METHODS=GET, POST
+      - CORS_ALLOWED_HEADERS=Authorization
+      - CORS_CREDENTIALS=true
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik
+      - traefik.http.routers.gateway.rule=Host(`${GATEWAY_DOMAIN:?}`)
+      - traefik.http.routers.gateway.entrypoints=https
+      - traefik.http.routers.gateway.tls.certresolver=le
+      - traefik.http.routers.gateway.tls=true
+      - traefik.http.services.gateway.loadbalancer.server.port=3030
+    networks:
+      - traefik
+      - default
+
+  elasticsearch:
+    restart: always
+    image: elasticsearch:8.17.3
+    environment:
+      - "ES_JAVA_OPTS=-Xms256m -Xmx512m"
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data
+
+networks:
+  traefik:
+    external: true
+
+  default:
