@@ -61,8 +61,14 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             }
 
             memberToReturn.SetLeaveStatus(false);
-            await _channelRepository.UpdateIsLeaveStatus(memberToReturn.UserId, channel.Id, memberToReturn.IsLeave);
-            await _publisher.Publish(new ChannelMemberAddDomainEvent(channel, memberToReturn, _clientInfo.UserId));
+            await _channelRepository.UpdateIsLeaveStatus(
+                memberToReturn.UserId,
+                channel.Id,
+                memberToReturn.IsLeave);
+            await _publisher.Publish(new ChannelMemberAddDomainEvent(
+                channel,
+                memberToReturn,
+                _clientInfo.UserId));
         }
         else
         {
@@ -75,7 +81,10 @@ public class AddChannelMemberCommandHandler : IRequestHandler<AddChannelMemberCo
             var memberInfo = channel.AddNewMember(newMember);
 
             await _channelRepository.UpsertChannelMemberAsync(channel.Id, memberInfo);
-            await _publisher.Publish(new ChannelMemberAddDomainEvent(channel, memberInfo, _clientInfo.UserId));
+            await _publisher.Publish(new ChannelMemberAddDomainEvent(
+                channel,
+                memberInfo,
+                _clientInfo.UserId));
         }
 
         return Unit.Value;

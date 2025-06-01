@@ -32,6 +32,7 @@ public class MessengerProblemDetailsFactory : ProblemDetailsFactory
         }
         else if (statusCode == StatusCodes.Status415UnsupportedMediaType)
         {
+            httpContext.Response.StatusCode = StatusCodes.Status415UnsupportedMediaType;
             var problemDetails = new ProblemDetails
             {
                 Extensions =

@@ -5,7 +5,9 @@ namespace Messenger.Options;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplicationOptions(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddApplicationOptions(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         services
             .AddOptions<ApplicationOptions>()

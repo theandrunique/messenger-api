@@ -43,21 +43,7 @@ public static class DependencyInjection
             .WithTracing(tracing =>
             {
                 tracing
-                    .AddAspNetCoreInstrumentation(options =>
-                    {
-                        options.EnrichWithHttpResponse = (activity, response) =>
-                        {
-                            activity.DisplayName = $"{response.HttpContext.Request.Method} {response.HttpContext.Request.Path} {response.StatusCode}";
-                        };
-
-                        options.Filter = (httpContext) =>
-                        {
-                            if (httpContext.Request.Method == "OPTIONS") return false;
-                            if (httpContext.Request.Path.Value?.StartsWith("/swagger") == true) return false;
-                            return true;
-                        };
-
-                    })
+                    .AddAspNetCoreInstrumentation()
                     .AddInfrastructureInstrumentation()
                     .AddDataServicesInstrumentation()
                     .AddOtlpExporter();
