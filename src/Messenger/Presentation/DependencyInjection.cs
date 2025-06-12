@@ -78,6 +78,7 @@ public static class DependencyInjection
                         .WithHeaders(corsOptions.AllowedHeaders.ToArray())
                         .WithMethods(corsOptions.AllowedMethods.ToArray())
                         .WithExposedHeaders(corsOptions.ExposedHeaders.ToArray())
+                        .SetPreflightMaxAge(TimeSpan.FromSeconds(3600))
                         .AllowCredentials();
                 });
             });
