@@ -36,6 +36,8 @@ services:
       - traefik.enable=true
       - traefik.docker.network=traefik
 
+      - traefik.http.middlewares.server-header.headers.customresponseheaders.server=Traefik
+
       - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
       - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
 
@@ -44,6 +46,7 @@ services:
       - traefik.http.routers.messenger.middlewares=https-redirect
 
       - traefik.http.routers.messenger-https.rule=Host(`${API_DOMAIN:?}`)
+      - traefik.http.routers.messenger-https.middlewares=server-header
       - traefik.http.routers.messenger-https.entrypoints=https
       - traefik.http.routers.messenger-https.tls.certresolver=le
       - traefik.http.routers.messenger-https.tls=true
