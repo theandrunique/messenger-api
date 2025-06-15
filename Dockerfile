@@ -24,5 +24,9 @@ WORKDIR /src/Messenger/Presentation
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS production
+
+ARG APP_VERSION=unversioned
+ENV APP_VERSION=$APP_VERSION
+
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Messenger.Presentation.dll"]
