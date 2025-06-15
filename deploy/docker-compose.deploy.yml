@@ -19,12 +19,9 @@ services:
       retries: 5
 
   app:
+    image: ghcr.io/theandrunique/messenger-api:v0.1.0
     container_name: app
     restart: always
-    build:
-      target: production
-      context: ..
-      dockerfile: Dockerfile
     env_file:
       - .env
     volumes:
