@@ -33,4 +33,4 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
           build-args: |
-            APP_VERSION=${{ github.ref_name }}
+            API_VERSION=${{ github.ref_name }}

@@ -8,7 +8,7 @@ WORKDIR /src
 COPY src/Messenger/Options/*.csproj Messenger/Options/
 COPY src/Messenger/Contracts/*.csproj Messenger/Contracts/
 COPY src/Messenger/Core/*.csproj Messenger/Core/
-COPY src/Messenger/ApiErrors/*.csproj Messenger/ApiErrors/
+COPY src/Messenger/Errors/*.csproj Messenger/Errors/
 COPY src/Messenger/Data/Interfaces/*.csproj Messenger/Data/Interfaces/
 COPY src/Messenger/Data/Scylla/*.csproj Messenger/Data/Scylla/
 COPY src/Messenger/Gateway/*.csproj Messenger/Gateway/
@@ -25,8 +25,8 @@ RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS production
 
-ARG APP_VERSION=unversioned
-ENV APP_VERSION=$APP_VERSION
+ARG API_VERSION=unversioned
+ENV API_VERSION=$API_VERSION
 
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Messenger.Presentation.dll"]
