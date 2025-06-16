@@ -1,6 +1,6 @@
 using Messenger.Domain.ValueObjects;
 
-namespace Messenger.Domain.Entities;
+namespace Messenger.Domain.Auth;
 
 public class VerificationCode
 {

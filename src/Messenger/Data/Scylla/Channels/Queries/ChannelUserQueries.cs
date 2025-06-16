@@ -1,6 +1,6 @@
 using Cassandra;
-using Messenger.Domain.Entities;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Auth;
+using Messenger.Domain.Channels.ValueObjects;
 
 namespace Messenger.Data.Scylla.Channels.Queries;
 

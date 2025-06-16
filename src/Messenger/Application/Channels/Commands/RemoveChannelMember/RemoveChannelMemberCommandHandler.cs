@@ -1,9 +1,9 @@
 using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Domain.Channels;
+using Messenger.Domain.Channels.Permissions;
+using Messenger.Domain.Channels.ValueObjects;
 using Messenger.Domain.Events;
-using Messenger.Domain.ValueObjects;
 using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Commands.RemoveChannelMember;

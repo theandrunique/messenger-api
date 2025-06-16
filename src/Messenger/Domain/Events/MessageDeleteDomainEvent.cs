@@ -1,5 +1,4 @@
-using Messenger.Domain.Entities;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Channels;
 
 namespace Messenger.Domain.Events;
 

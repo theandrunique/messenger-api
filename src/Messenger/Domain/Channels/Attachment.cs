@@ -1,4 +1,4 @@
-namespace Messenger.Domain.Entities;
+namespace Messenger.Domain.Channels;
 
 public class Attachment
 {

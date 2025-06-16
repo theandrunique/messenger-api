@@ -1,4 +1,4 @@
-namespace Messenger.Domain.Channels;
+namespace Messenger.Domain.Channels.Permissions;
 
 public struct ChannelPermissionSet
 {

@@ -1,6 +1,6 @@
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
 
-namespace Messenger.Domain.ValueObjects;
+namespace Messenger.Domain.Channels.ValueObjects;
 
 public struct MessageAuthorInfo
 {

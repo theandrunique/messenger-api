@@ -1,5 +1,5 @@
 using Messenger.Data.Scylla.Common;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Channels.ValueObjects;
 
 namespace Messenger.Data.Scylla.Channels.Dto;
 

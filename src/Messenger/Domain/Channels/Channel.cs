@@ -1,7 +1,8 @@
-using Messenger.Domain.Channels;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Auth;
+using Messenger.Domain.Channels.Permissions;
+using Messenger.Domain.Channels.ValueObjects;
 
-namespace Messenger.Domain.Entities;
+namespace Messenger.Domain.Channels;
 
 public class Channel
 {

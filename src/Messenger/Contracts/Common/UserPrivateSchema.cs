@@ -1,4 +1,4 @@
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
 
 namespace Messenger.Contracts.Common;
 
@@ -14,7 +14,7 @@ public record UserPrivateSchema : UserPublicSchema
 
     private UserPrivateSchema(User user) : base(user)
     {
-        TerminateSessions = user.TerminateSessions.ToString();
+        TerminateSessions = user.SessionsLifetime.ToString();
         Mfa = user.TwoFactorAuthentication;
         Email = user.Email;
         IsEmailVerified = user.IsEmailVerified;

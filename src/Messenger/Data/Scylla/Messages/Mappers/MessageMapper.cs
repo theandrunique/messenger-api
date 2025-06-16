@@ -1,7 +1,7 @@
 using Cassandra;
 using Messenger.Data.Scylla.Common;
 using Messenger.Data.Scylla.Messages.Dto;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Channels.ValueObjects;
 
 namespace Messenger.Data.Scylla.Messages.Mappers;
 

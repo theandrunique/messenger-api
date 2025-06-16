@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using Messenger.Application.Auth.Common.Interfaces;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
 using Messenger.Options;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

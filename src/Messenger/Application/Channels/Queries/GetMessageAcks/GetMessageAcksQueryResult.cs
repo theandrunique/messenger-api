@@ -1,5 +1,5 @@
 using Messenger.Contracts.Common;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Channels.ValueObjects;
 
 namespace Messenger.Application.Channels.Queries.GetMessageAcks;
 

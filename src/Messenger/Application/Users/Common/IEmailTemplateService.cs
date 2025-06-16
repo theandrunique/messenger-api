@@ -1,4 +1,4 @@
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
 
 namespace Messenger.Application.Users.Common;
 

@@ -2,8 +2,8 @@ using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Domain.Events;
 using Messenger.Errors;
-using Messenger.Domain.Entities;
 using Messenger.Data.Interfaces.Channels;
+using Messenger.Domain.Channels;
 
 namespace Messenger.Application.Channels.Commands.AckMessage;
 

@@ -3,7 +3,7 @@ using Cassandra.Data.Linq;
 using Messenger.Data.Scylla.Users.Mappers;
 using Messenger.Data.Scylla.Users.Queries;
 using Messenger.Data.Interfaces.Users;
-using Session = Messenger.Domain.Entities.Session;
+using Session = Messenger.Domain.Auth.Session;
 
 namespace Messenger.Data.Scylla.Users;
 

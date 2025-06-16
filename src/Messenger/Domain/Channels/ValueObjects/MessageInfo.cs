@@ -1,7 +1,4 @@
-using Messenger.Domain.Channels;
-using Messenger.Domain.Entities;
-
-namespace Messenger.Domain.ValueObjects;
+namespace Messenger.Domain.Channels.ValueObjects;
 
 public struct MessageInfo
 {

@@ -2,9 +2,9 @@ using MediatR;
 using Messenger.Errors;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Domain.Channels;
 using Messenger.Domain.Events;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Channels.Permissions;
+using Messenger.Domain.Channels.ValueObjects;
 
 namespace Messenger.Application.Channels.Commands.DeleteMessage;
 

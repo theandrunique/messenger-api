@@ -3,7 +3,7 @@ using Messenger.Application.Auth.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Core;
 using Messenger.Data.Interfaces.Users;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
 using Messenger.Domain.Events;
 using Messenger.Errors;
 

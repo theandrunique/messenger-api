@@ -2,8 +2,8 @@ using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Domain.Entities;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Channels;
+using Messenger.Domain.Channels.ValueObjects;
 using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Queries.GetChannels;

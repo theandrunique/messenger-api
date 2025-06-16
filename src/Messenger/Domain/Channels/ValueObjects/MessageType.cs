@@ -1,4 +1,4 @@
-namespace Messenger.Domain.ValueObjects;
+namespace Messenger.Domain.Channels.ValueObjects;
 
 public enum MessageType
 {
