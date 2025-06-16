@@ -3,7 +3,7 @@ using Messenger.Application.Channels.Common;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Queries.GetAttachments;
 
@@ -31,11 +31,11 @@ public class GetAttachmentsQueryHandler : IRequestHandler<GetAttachmentsQuery, E
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null)
         {
-            return Errors.Channel.NotFound(request.ChannelId);
+            return Error.Channel.NotFound(request.ChannelId);
         }
         if (!channel.HasMember(_clientInfo.UserId))
         {
-            return Errors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
+            return Error.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
         var attachments = await _attachmentRepository

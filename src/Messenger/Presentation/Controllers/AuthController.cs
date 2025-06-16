@@ -7,7 +7,7 @@ using Messenger.Application.Auth.Commands.Login;
 using Messenger.Application.Auth.Commands.RefreshToken;
 using Messenger.Application.Auth.Common;
 using Messenger.Contracts.Common;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 using Messenger.Core;
 using Newtonsoft.Json;
 using Messenger.Application.Auth.Commands.Logout;
@@ -96,7 +96,7 @@ public class AuthController : ApiController
         string? sessionInfo = Request.Cookies[MessengerConstants.Auth.SessionCookieName];
         if (sessionInfo == null)
         {
-            return Problem(Errors.Auth.NoSessionInfoFound);
+            return Problem(Error.Auth.NoSessionInfoFound);
         }
         return Ok(JsonConvert.DeserializeObject<TokenPairResponse>(sessionInfo));
     }

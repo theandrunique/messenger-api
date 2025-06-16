@@ -3,7 +3,7 @@ using Messenger.Application.Common.Interfaces;
 using Messenger.Application.Users.Common;
 using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.ValueObjects;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Users.Commands.RequestVerifyEmailCode;
 
@@ -38,7 +38,7 @@ public class RequestVerifyEmailCommandHandler : IRequestHandler<RequestVerifyEma
         }
         if (user.IsEmailVerified)
         {
-            return Errors.User.EmailAlreadyVerified(user.Id);
+            return Error.User.EmailAlreadyVerified(user.Id);
         }
 
         var (otp, _) = await _verificationCodeService.CreateAsync(

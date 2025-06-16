@@ -4,7 +4,7 @@ using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Channels;
 using Messenger.Domain.Events;
 using Messenger.Domain.ValueObjects;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Commands.RemoveChannelMember;
 
@@ -26,34 +26,34 @@ public class RemoveChannelMemberCommandHandler : IRequestHandler<RemoveChannelMe
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null)
         {
-            return Errors.Channel.NotFound(request.ChannelId);
+            return Error.Channel.NotFound(request.ChannelId);
         }
 
         if (!channel.HasMember(_clientInfo.UserId))
         {
-            return Errors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
+            return Error.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
         if (channel.Type == ChannelType.DM)
         {
-            return Errors.Channel.InvalidOperationForThisChannelType;
+            return Error.Channel.InvalidOperationForThisChannelType;
         }
 
         if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.MANAGE_MEMBERS))
         {
-            return Errors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_MEMBERS);
+            return Error.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_MEMBERS);
         }
 
         var memberToRemove = channel.FindMember(request.UserId);
         if (memberToRemove is null)
         {
             // user has never been in this channel
-            return Errors.Channel.UserNotMember(request.UserId, channel.Id);
+            return Error.Channel.UserNotMember(request.UserId, channel.Id);
         }
         if (memberToRemove.IsLeave)
         {
             // user has been in this channel but left
-            return Errors.Channel.UserNotMember(request.UserId, channel.Id);
+            return Error.Channel.UserNotMember(request.UserId, channel.Id);
         }
 
         // We are not setting this, because we need to send a gateway event to user that was removed

@@ -4,7 +4,7 @@ using Messenger.Application.Common.Interfaces;
 using Messenger.Application.Users.Common;
 using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.ValueObjects;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Users.Commands.MfaTotpEnable;
 
@@ -46,17 +46,17 @@ public class MfaTotpEnableCommandHandler : IRequestHandler<MfaTotpEnableCommand,
 
         if (!user.IsEmailVerified)
         {
-            return Errors.Auth.EmailVerificationRequired;
+            return Error.Auth.EmailVerificationRequired;
         }
 
         if (!_hashHelper.Verify(user.PasswordHash, request.Password))
         {
-            return Errors.Auth.InvalidCredentials;
+            return Error.Auth.InvalidCredentials;
         }
 
         if (user.TwoFactorAuthentication)
         {
-            return Errors.Auth.TotpMfaAlreadyEnabled;
+            return Error.Auth.TotpMfaAlreadyEnabled;
         }
 
         if (request.EmailCode == null)
@@ -71,7 +71,7 @@ public class MfaTotpEnableCommandHandler : IRequestHandler<MfaTotpEnableCommand,
                 "MFA Enable Code",
                 _emailTemplateService.GenerateEmailTotpMfaEnableCode(user, otp));
 
-            return Errors.Auth.EmailCodeRequired;
+            return Error.Auth.EmailCodeRequired;
         }
 
         if (!await _verificationCodeService.VerifyAsync(
@@ -79,7 +79,7 @@ public class MfaTotpEnableCommandHandler : IRequestHandler<MfaTotpEnableCommand,
             user.Id,
             VerificationCodeScenario.TOTP_MFA_ENABLE))
         {
-            return Errors.Auth.InvalidEmailCode;
+            return Error.Auth.InvalidEmailCode;
         }
 
         user.EnableTotp2FA(_totpHelper.GenerateSecretKey(20));

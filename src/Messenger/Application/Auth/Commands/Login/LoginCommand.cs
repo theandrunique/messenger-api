@@ -1,6 +1,6 @@
 using MediatR;
 using Messenger.Application.Auth.Common;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Auth.Commands.Login;
 

@@ -1,6 +1,6 @@
 using FluentValidation;
 using MediatR;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Common.Behaviors;
 
@@ -48,7 +48,7 @@ public class ValidationBehavior<TRequest, TResponse> :
             fieldErrors[fieldError.PropertyName].Add(fieldError.ErrorMessage);
         }
 
-        var error = Errors.Common.InvalidRequestBody(fieldErrors);
+        var error = Error.Common.InvalidRequestBody(fieldErrors);
 
         return (dynamic)error;
     }

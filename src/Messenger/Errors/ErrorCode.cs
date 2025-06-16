@@ -1,4 +1,4 @@
-namespace Messenger.ApiErrors;
+namespace Messenger.Errors;
 
 public enum ErrorCode
 {

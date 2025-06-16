@@ -5,7 +5,7 @@ using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Channels;
 using Messenger.Domain.Events;
 using Messenger.Domain.ValueObjects;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 using Messenger.Application.Channels.Common;
 
 namespace Messenger.Application.Channels.Commands.UpdateChannel;
@@ -34,19 +34,19 @@ public class UpdateChannelCommandHandler : IRequestHandler<UpdateChannelCommand,
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel == null)
         {
-            return Errors.Channel.NotFound(request.ChannelId);
+            return Error.Channel.NotFound(request.ChannelId);
         }
         if (channel.Type != ChannelType.GROUP_DM)
         {
-            return Errors.Channel.InvalidOperationForThisChannelType;
+            return Error.Channel.InvalidOperationForThisChannelType;
         }
         if (!channel.HasMember(_clientInfo.UserId))
         {
-            return Errors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
+            return Error.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
         if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.MANAGE_CHANNEL))
         {
-            return Errors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_CHANNEL);
+            return Error.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_CHANNEL);
         }
 
         var domainEvent = new ChannelUpdateDomainEvent(channel, _clientInfo.UserId);

@@ -1,7 +1,7 @@
 using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Domain.Events;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 using Messenger.Domain.Entities;
 using Messenger.Data.Interfaces.Channels;
 
@@ -31,12 +31,12 @@ public class AckMessageCommandHandler : IRequestHandler<AckMessageCommand, Error
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel == null)
         {
-            return Errors.Channel.NotFound(request.ChannelId);
+            return Error.Channel.NotFound(request.ChannelId);
         }
         var memberInfo = channel.FindMember(_clientInfo.UserId);
         if (memberInfo == null)
         {
-            return Errors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
+            return Error.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
         if (memberInfo.LastReadMessageId >= request.MessageId)

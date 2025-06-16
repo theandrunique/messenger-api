@@ -1,5 +1,5 @@
 using MediatR;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 using Microsoft.AspNetCore.Http;
 
 namespace Messenger.Application.Users.Commands.UpdateAvatar;

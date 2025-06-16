@@ -1,5 +1,5 @@
 using MediatR;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 using Messenger.Contracts.Common;
 using Messenger.Data.Interfaces.Channels;
 
@@ -19,7 +19,7 @@ public class GetMessageQueryHandler : IRequestHandler<GetMessageQuery, ErrorOr<M
         var message = await _messagesRepository.GetMessageByIdOrNullAsync(request.ChannelId, request.MessageId);
         if (message == null)
         {
-            return Errors.Channel.MessageNotFound(request.MessageId);
+            return Error.Channel.MessageNotFound(request.MessageId);
         }
         return MessageSchema.From(message);
     }

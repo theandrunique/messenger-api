@@ -8,7 +8,7 @@ using Messenger.Domain.Channels;
 using Messenger.Domain.Entities;
 using Messenger.Domain.Events;
 using Messenger.Domain.ValueObjects;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Commands.AddOrEditMessage;
 
@@ -42,16 +42,16 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel is null)
         {
-            return Errors.Channel.NotFound(request.ChannelId);
+            return Error.Channel.NotFound(request.ChannelId);
         }
 
         if (!channel.HasMember(_clientInfo.UserId))
         {
-            return Errors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
+            return Error.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
         if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.SEND_MESSAGES))
         {
-            return Errors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.SEND_MESSAGES);
+            return Error.Channel.InsufficientPermissions(channel.Id, ChannelPermission.SEND_MESSAGES);
         }
 
         var initiator = channel.ActiveMembers.First(m => m.UserId == _clientInfo.UserId);
@@ -61,7 +61,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
         {
             if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.ATTACH_FILES))
             {
-                return Errors.Channel.InsufficientPermissions(channel.Id, ChannelPermission.ATTACH_FILES);
+                return Error.Channel.InsufficientPermissions(channel.Id, ChannelPermission.ATTACH_FILES);
             }
 
             var attachmentTasks = request.Attachments.Select(f =>
@@ -91,10 +91,10 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
             referencedMessage = await _messageRepository.GetMessageByIdOrNullAsync(
                 request.ChannelId,
                 request.ReferencedMessageId.Value);
-            
+
             if (referencedMessage == null)
             {
-                return Errors.Channel.MessageNotFound(request.ReferencedMessageId.Value);
+                return Error.Channel.MessageNotFound(request.ReferencedMessageId.Value);
             }
         }
 
@@ -103,12 +103,12 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
             message = await _messageRepository.GetMessageByIdOrNullAsync(request.ChannelId, request.MessageId.Value);
             if (message is null)
             {
-                return Errors.Channel.MessageNotFound(request.MessageId.Value);
+                return Error.Channel.MessageNotFound(request.MessageId.Value);
             }
 
             if (message.AuthorId != initiator.UserId)
             {
-                return Errors.Channel.MessageWasSentByAnotherUser(request.MessageId.Value);
+                return Error.Channel.MessageWasSentByAnotherUser(request.MessageId.Value);
             }
 
             message.Edit(request.Content, attachments);
