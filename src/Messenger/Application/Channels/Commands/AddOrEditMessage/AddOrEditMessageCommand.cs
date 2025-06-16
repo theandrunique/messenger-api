@@ -1,7 +1,7 @@
 using MediatR;
 using Messenger.Application.Channels.Common;
 using Messenger.Contracts.Common;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Commands.AddOrEditMessage;
 

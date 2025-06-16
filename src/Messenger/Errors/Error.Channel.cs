@@ -1,8 +1,8 @@
 using Messenger.Domain.Channels;
 
-namespace Messenger.ApiErrors;
+namespace Messenger.Errors;
 
-public static partial class Errors
+public static partial class Error
 {
     public static class Channel
     {

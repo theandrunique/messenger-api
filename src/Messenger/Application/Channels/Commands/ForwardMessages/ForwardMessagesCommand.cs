@@ -1,5 +1,5 @@
 using MediatR;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 using Messenger.Contracts.Common;
 
 namespace Messenger.Application.Channels.Commands.ForwardMessages;

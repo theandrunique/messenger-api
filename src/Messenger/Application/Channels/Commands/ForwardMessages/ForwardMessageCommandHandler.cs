@@ -1,5 +1,5 @@
 using MediatR;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Core;
@@ -36,15 +36,15 @@ public class ForwardMessagesCommandHandler : IRequestHandler<ForwardMessagesComm
         var targetChannel = await _channelRepository.GetByIdOrNullAsync(request.TargetChannelId);
         if (targetChannel == null)
         {
-            return Errors.Channel.NotFound(request.TargetChannelId);
+            return Error.Channel.NotFound(request.TargetChannelId);
         }
         if (!targetChannel.HasMember(_clientInfo.UserId))
         {
-            return Errors.Channel.UserNotMember(_clientInfo.UserId, targetChannel.Id);
+            return Error.Channel.UserNotMember(_clientInfo.UserId, targetChannel.Id);
         }
         if (!targetChannel.HasPermission(_clientInfo.UserId, ChannelPermission.SEND_MESSAGES))
         {
-            return Errors.Channel.InsufficientPermissions(targetChannel.Id, ChannelPermission.SEND_MESSAGES);
+            return Error.Channel.InsufficientPermissions(targetChannel.Id, ChannelPermission.SEND_MESSAGES);
         }
 
         var initiator = targetChannel.ActiveMembers.First(m => m.UserId == _clientInfo.UserId);

@@ -1,5 +1,5 @@
 using MediatR;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Users.Commands.VerifyEmail;
 

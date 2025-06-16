@@ -1,6 +1,6 @@
 using MediatR;
 using Messenger.Contracts.Common;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 using Microsoft.AspNetCore.Http;
 
 namespace Messenger.Application.Channels.Commands.UpdateChannel;

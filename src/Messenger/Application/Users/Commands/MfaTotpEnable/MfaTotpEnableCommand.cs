@@ -1,6 +1,6 @@
 using MediatR;
 using Messenger.Application.Users.Commands.MfaTotpEnable;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Users.Commands;
 

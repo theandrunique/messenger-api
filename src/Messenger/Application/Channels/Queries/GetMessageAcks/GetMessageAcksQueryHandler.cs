@@ -2,7 +2,7 @@ using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.ValueObjects;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Queries.GetMessageAcks;
 
@@ -27,18 +27,18 @@ public class GetMessageAcksQueryHandler : IRequestHandler<GetMessageAcksQuery, E
         var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
         if (channel == null)
         {
-            return Errors.Channel.NotFound(request.ChannelId);
+            return Error.Channel.NotFound(request.ChannelId);
         }
         if (!channel.HasMember(_clientInfo.UserId))
         {
-            return Errors.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
+            return Error.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
 
         // we dont need to get an actual message id
         var acks = await _messageAckRepository.GetAcksByMessageId(channel.Id, request.MessageId);
         if (acks.Count == 0)
         {
-            return Errors.Channel.NoMessageAcksFound(request.MessageId);
+            return Error.Channel.NoMessageAcksFound(request.MessageId);
         }
 
         var result = new Dictionary<ChannelMemberInfo, DateTimeOffset>();

@@ -6,7 +6,7 @@ using Messenger.Data.Interfaces.Channels;
 using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.Entities;
 using Messenger.Domain.Events;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Commands;
 
@@ -44,7 +44,7 @@ public class CreateChannelCommandHandler : IRequestHandler<CreateChannelCommand,
         if (members.Count != request.Members.Count)
         {
             var membersWasNotFound = request.Members.Except(members.Select(x => x.Id)).ToList();
-            return Errors.User.NotFound(membersWasNotFound);
+            return Error.User.NotFound(membersWasNotFound);
         }
 
         Channel channel = Channel.CreateGroup(

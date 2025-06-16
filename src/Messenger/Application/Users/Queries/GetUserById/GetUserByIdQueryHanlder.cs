@@ -1,7 +1,7 @@
 using MediatR;
 using Messenger.Contracts.Common;
 using Messenger.Data.Interfaces.Users;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Users.Queries.GetUserById;
 
@@ -20,7 +20,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, ErrorOr
 
         if (user == null)
         {
-            return Errors.User.NotFound(request.UserId);
+            return Error.User.NotFound(request.UserId);
         }
 
         return UserPublicSchema.From(user);

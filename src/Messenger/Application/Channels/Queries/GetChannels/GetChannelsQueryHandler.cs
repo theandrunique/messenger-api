@@ -4,7 +4,7 @@ using Messenger.Contracts.Common;
 using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Entities;
 using Messenger.Domain.ValueObjects;
-using Messenger.ApiErrors;
+using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Queries.GetChannels;
 
