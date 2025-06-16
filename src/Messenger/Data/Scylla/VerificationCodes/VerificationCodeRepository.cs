@@ -2,8 +2,8 @@ using Cassandra;
 using Messenger.Data.Scylla.VerificationCodes.Mappers;
 using Messenger.Data.Scylla.VerificationCodes.Queries;
 using Messenger.Data.Interfaces.VerificationCodes;
-using Messenger.Domain.Entities;
 using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Auth;
 
 namespace Messenger.Data.Scylla.VerificationCodes;
 

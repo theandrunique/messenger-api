@@ -2,7 +2,6 @@ using MediatR;
 using Messenger.Application.Auth.Common;
 using Messenger.Data.Interfaces.Users;
 using Messenger.Errors;
-using Messenger.Application.Auth.Common.Interfaces;
 
 namespace Messenger.Application.Auth.Commands.RefreshToken;
 
@@ -42,7 +41,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, E
         }
 
         var prevTokenId = session.TokenId;
-        var prevLastUsedTimestamp = session.LastUsedTimestamp;
+        var prevLastUsedTimestamp = session.LastRefreshTimestamp;
         session.UpdateTokenId();
 
         await _sessionRepository.UpdateTokenIdAsync(session);

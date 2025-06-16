@@ -1,7 +1,7 @@
 using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Channels;
 using Messenger.Domain.Events;
 
 namespace Messenger.Application.Channels.EventHandlers;

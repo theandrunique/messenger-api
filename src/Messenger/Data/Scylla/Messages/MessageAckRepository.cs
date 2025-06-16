@@ -3,8 +3,8 @@ using Messenger.Data.Scylla.Channels.Queries;
 using Messenger.Data.Scylla.Messages.Mappers;
 using Messenger.Data.Scylla.Messages.Queries;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using Messenger.Domain.Channels;
 
 namespace Messenger.Data.Scylla.Messages;
 

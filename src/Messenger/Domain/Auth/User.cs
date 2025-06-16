@@ -1,6 +1,6 @@
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Auth.ValueObjects;
 
-namespace Messenger.Domain.Entities;
+namespace Messenger.Domain.Auth;
 
 public class User
 {
@@ -9,7 +9,7 @@ public class User
     public DateTimeOffset UsernameUpdatedTimestamp { get; private set; }
     public string PasswordHash { get; private set; }
     public DateTimeOffset PasswordUpdatedTimestamp { get; private set; }
-    public TimeIntervals TerminateSessions { get; private set; }
+    public SessionLifetime SessionsLifetime { get; private set; }
     public string? Bio { get; private set; }
     public string GlobalName { get; private set; }
     public bool IsActive { get; private set; }
@@ -35,7 +35,7 @@ public class User
         UsernameUpdatedTimestamp = timestamp;
         PasswordHash = passwordHash;
         PasswordUpdatedTimestamp = timestamp;
-        TerminateSessions = TimeIntervals.MONTH6;
+        SessionsLifetime = SessionLifetime.MONTH6;
         GlobalName = globalName;
         IsActive = true;
         Timestamp = timestamp;
@@ -50,7 +50,7 @@ public class User
         DateTimeOffset usernameUpdatedTimestamp,
         string passwordHash,
         DateTimeOffset passwordUpdatedTimestamp,
-        TimeIntervals terminateSessions,
+        SessionLifetime sessionLifetime,
         string? bio,
         string globalName,
         bool isActive,
@@ -67,7 +67,7 @@ public class User
         UsernameUpdatedTimestamp = usernameUpdatedTimestamp;
         PasswordHash = passwordHash;
         PasswordUpdatedTimestamp = passwordUpdatedTimestamp;
-        TerminateSessions = terminateSessions;
+        SessionsLifetime = sessionLifetime;
         Bio = bio;
         GlobalName = globalName;
         IsActive = isActive;

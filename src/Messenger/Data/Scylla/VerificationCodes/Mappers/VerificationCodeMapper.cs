@@ -1,5 +1,5 @@
 using Cassandra;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
 using Messenger.Domain.ValueObjects;
 
 namespace Messenger.Data.Scylla.VerificationCodes.Mappers;

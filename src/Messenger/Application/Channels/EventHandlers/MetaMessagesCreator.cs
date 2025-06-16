@@ -3,9 +3,8 @@ using Messenger.Core;
 using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Channels;
 using Messenger.Domain.Channels.MessageMetadataTypes;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Channels.ValueObjects;
 using Messenger.Domain.Events;
-using Messenger.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace Messenger.Application.Channels.EventHandlers;

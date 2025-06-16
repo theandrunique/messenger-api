@@ -1,5 +1,5 @@
 using Cassandra;
-using Session = Messenger.Domain.Entities.Session;
+using Session = Messenger.Domain.Auth.Session;
 
 namespace Messenger.Data.Scylla.Users.Queries;
 
@@ -41,7 +41,7 @@ public class SessionQueries
             session.ClientName,
             session.Timestamp,
             session.DeviceName,
-            session.LastUsedTimestamp,
+            session.LastRefreshTimestamp,
             session.Location,
             session.TokenId);
     }
@@ -63,7 +63,7 @@ public class SessionQueries
 
     public BoundStatement UpdateTokenId(Session session)
     {
-        return _updateTokenId.Bind(session.LastUsedTimestamp, session.TokenId, session.UserId, session.Id);
+        return _updateTokenId.Bind(session.LastRefreshTimestamp, session.TokenId, session.UserId, session.Id);
     }
 
     public BoundStatement DeleteByTokenId(long userId, long sessionId)

@@ -36,7 +36,7 @@ public static partial class Error
         public static ApiError InvalidTotp
             => new ApiError(ErrorCode.AUTH_INVALID_TOTP, "Invalid totp");
 
-        public static ApiError TotpRequired(Domain.Entities.User user)
+        public static ApiError TotpRequired(Domain.Auth.User user)
             => new ApiError(
                 ErrorCode.AUTH_TOTP_REQUIRED,
                 "TOTP required",

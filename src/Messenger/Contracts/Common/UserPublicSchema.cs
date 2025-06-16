@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
+using Messenger.Domain.Channels.ValueObjects;
 using Messenger.Domain.Users;
-using Messenger.Domain.ValueObjects;
 
 namespace Messenger.Contracts.Common;
 

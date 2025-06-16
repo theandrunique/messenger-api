@@ -1,5 +1,5 @@
 using Cassandra;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
 
 namespace Messenger.Data.Scylla.Users.Queries;
 
@@ -57,7 +57,7 @@ public class UserQueries
             user.Id,
             user.Bio,
             user.Timestamp,
-            (int)user.TerminateSessions,
+            (int)user.SessionsLifetime,
             user.Email,
             user.EmailUpdatedTimestamp,
             user.GlobalName,

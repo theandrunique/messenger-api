@@ -1,7 +1,7 @@
-using Messenger.Domain.Channels;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
+using Messenger.Domain.Channels.Permissions;
 
-namespace Messenger.Domain.ValueObjects;
+namespace Messenger.Domain.Channels.ValueObjects;
 
 public class ChannelMemberInfo
 {

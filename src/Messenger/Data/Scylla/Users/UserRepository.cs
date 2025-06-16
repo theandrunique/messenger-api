@@ -4,8 +4,8 @@ using Messenger.Data.Scylla.Channels.Queries;
 using Messenger.Data.Scylla.Users.Mappers;
 using Messenger.Data.Scylla.Users.Queries;
 using Messenger.Data.Interfaces.Users;
-using Messenger.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using Messenger.Domain.Auth;
 
 namespace Messenger.Data.Scylla.Users;
 

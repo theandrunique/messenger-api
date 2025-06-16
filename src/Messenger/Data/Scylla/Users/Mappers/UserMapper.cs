@@ -1,6 +1,6 @@
 using Cassandra;
-using Messenger.Domain.Entities;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Auth;
+using Messenger.Domain.Auth.ValueObjects;
 
 namespace Messenger.Data.Scylla.Users.Mappers;
 
@@ -14,7 +14,7 @@ public static class UserMapper
             usernameUpdatedTimestamp: row.GetValue<DateTimeOffset>("usernameupdatedtimestamp"),
             passwordHash: row.GetValue<string>("passwordhash"),
             passwordUpdatedTimestamp: row.GetValue<DateTimeOffset>("passwordupdatedtimestamp"),
-            terminateSessions: (TimeIntervals)row.GetValue<int>("terminatesessions"),
+            sessionLifetime: (SessionLifetime)row.GetValue<int>("terminatesessions"),
             bio: row.GetValue<string?>("bio"),
             globalName: row.GetValue<string>("globalname"),
             isActive: row.GetValue<bool>("isactive"),

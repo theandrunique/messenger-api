@@ -1,6 +1,6 @@
 using Elastic.Clients.Elasticsearch;
 using Messenger.Application.Users.Common;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
 using Messenger.Domain.Users;
 
 namespace Messenger.Infrastructure.Users;

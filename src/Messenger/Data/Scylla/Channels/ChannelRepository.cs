@@ -3,9 +3,9 @@ using Cassandra.Data.Linq;
 using Messenger.Data.Scylla.Channels.Mappers;
 using Messenger.Data.Scylla.Channels.Queries;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Domain.Entities;
-using Messenger.Domain.ValueObjects;
 using Messenger.Domain.Events;
+using Messenger.Domain.Channels;
+using Messenger.Domain.Channels.ValueObjects;
 
 namespace Messenger.Data.Scylla.Channels;
 

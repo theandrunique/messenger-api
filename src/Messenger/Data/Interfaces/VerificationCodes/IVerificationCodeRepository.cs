@@ -1,4 +1,4 @@
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
 using Messenger.Domain.ValueObjects;
 
 namespace Messenger.Data.Interfaces.VerificationCodes;

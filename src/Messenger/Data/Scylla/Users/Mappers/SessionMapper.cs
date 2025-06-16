@@ -1,5 +1,5 @@
 using Cassandra;
-using Session = Messenger.Domain.Entities.Session;
+using Session = Messenger.Domain.Auth.Session;
 
 namespace Messenger.Data.Scylla.Users.Mappers;
 

@@ -1,8 +1,7 @@
-using Messenger.Domain.Channels;
 using Messenger.Domain.Channels.MessageMetadataTypes;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Channels.ValueObjects;
 
-namespace Messenger.Domain.Entities;
+namespace Messenger.Domain.Channels;
 
 public class Message
 {

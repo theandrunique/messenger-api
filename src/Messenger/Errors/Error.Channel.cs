@@ -1,4 +1,4 @@
-using Messenger.Domain.Channels;
+using Messenger.Domain.Channels.Permissions;
 
 namespace Messenger.Errors;
 

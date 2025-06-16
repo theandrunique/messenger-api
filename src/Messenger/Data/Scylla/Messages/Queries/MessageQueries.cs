@@ -1,6 +1,6 @@
 using Cassandra;
 using Messenger.Data.Scylla.Common;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Channels;
 
 namespace Messenger.Data.Scylla.Messages.Queries;
 

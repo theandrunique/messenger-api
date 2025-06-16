@@ -2,7 +2,7 @@ using Cassandra;
 using Messenger.Data.Scylla.Channels.Mappers;
 using Messenger.Data.Scylla.Channels.Queries;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Domain.Entities;
+using Messenger.Domain.Channels;
 
 namespace Messenger.Data.Scylla.Channels;
 

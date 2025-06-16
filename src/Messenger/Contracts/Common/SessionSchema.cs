@@ -1,4 +1,4 @@
-using Messenger.Domain.Entities;
+using Messenger.Domain.Auth;
 
 namespace Messenger.Contracts.Common;
 
@@ -22,7 +22,7 @@ public class SessionSchema
         DeviceName = session.DeviceName;
         ClientName = session.ClientName;
         Location = session.Location;
-        LastUpdateTimestamp = session.LastUsedTimestamp;
+        LastUpdateTimestamp = session.LastRefreshTimestamp;
         Timestamp = session.Timestamp;
     }
 

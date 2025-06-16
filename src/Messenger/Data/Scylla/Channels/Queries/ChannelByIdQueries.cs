@@ -1,8 +1,7 @@
-using System.Resources;
 using Cassandra;
 using Messenger.Data.Scylla.Channels.Dto;
-using Messenger.Domain.Entities;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Channels;
+using Messenger.Domain.Channels.ValueObjects;
 
 namespace Messenger.Data.Scylla.Channels.Queries;
 

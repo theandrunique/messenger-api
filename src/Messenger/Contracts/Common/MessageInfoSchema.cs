@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using Messenger.Domain.ValueObjects;
+using Messenger.Domain.Channels.ValueObjects;
 
 namespace Messenger.Contracts.Common;
 

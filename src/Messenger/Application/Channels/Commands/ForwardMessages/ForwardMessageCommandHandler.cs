@@ -4,8 +4,8 @@ using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Core;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Domain.Channels;
 using Messenger.Domain.Events;
+using Messenger.Domain.Channels.Permissions;
 
 namespace Messenger.Application.Channels.Commands.ForwardMessages;
 

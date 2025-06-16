@@ -2,10 +2,10 @@ using System.Text.RegularExpressions;
 using Messenger.Application.Common.Interfaces.S3;
 using Messenger.Core;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Domain.Entities;
 using Messenger.Errors;
 using Microsoft.Extensions.Options;
 using Messenger.Options;
+using Messenger.Domain.Channels;
 
 namespace Messenger.Application.Channels.Common;
 
