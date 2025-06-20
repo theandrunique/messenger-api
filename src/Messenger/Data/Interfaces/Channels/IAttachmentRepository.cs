@@ -1,4 +1,5 @@
 using Messenger.Domain.Channels;
+using Messenger.Domain.Messages;
 
 namespace Messenger.Data.Interfaces.Channels;
 

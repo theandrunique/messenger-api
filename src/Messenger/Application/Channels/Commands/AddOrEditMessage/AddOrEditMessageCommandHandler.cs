@@ -4,10 +4,11 @@ using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Core;
 using Messenger.Data.Interfaces.Channels;
-using Messenger.Domain.Channels;
 using Messenger.Domain.Channels.Permissions;
 using Messenger.Domain.Channels.ValueObjects;
 using Messenger.Domain.Events;
+using Messenger.Domain.Messages;
+using Messenger.Domain.Messages.ValueObjects;
 using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Commands.AddOrEditMessage;

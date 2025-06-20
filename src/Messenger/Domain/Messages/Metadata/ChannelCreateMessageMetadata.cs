@@ -1,4 +1,4 @@
-namespace Messenger.Domain.Channels.MessageMetadataTypes;
+namespace Messenger.Domain.Messages.Metadata;
 
 public struct ChannelCreateMessageMetadata : IMessageMetadata
 {

@@ -1,4 +1,5 @@
 using Messenger.Domain.Channels;
+using Messenger.Domain.Messages.Metadata;
 using Newtonsoft.Json;
 
 namespace Messenger.Data.Scylla.Common;

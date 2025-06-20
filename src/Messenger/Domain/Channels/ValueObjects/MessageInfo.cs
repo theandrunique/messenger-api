@@ -1,3 +1,7 @@
+using Messenger.Domain.Messages;
+using Messenger.Domain.Messages.Metadata;
+using Messenger.Domain.Messages.ValueObjects;
+
 namespace Messenger.Domain.Channels.ValueObjects;
 
 public struct MessageInfo

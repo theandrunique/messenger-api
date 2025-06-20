@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
-using Messenger.Domain.Channels;
-using Messenger.Domain.Channels.ValueObjects;
+using Messenger.Domain.Messages;
+using Messenger.Domain.Messages.ValueObjects;
 
 namespace Messenger.Contracts.Common;
 

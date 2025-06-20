@@ -63,10 +63,8 @@ public class ForwardMessagesCommandHandler : IRequestHandler<ForwardMessagesComm
 
             message.MakeForwarded(
                 author: initiator,
-                channelId: targetChannel.Id,
-                messageId: _idGenerator.CreateId(),
-                includeReferencedMessage: false,
-                includeOriginAuthorLink: true);
+                targetChannelId: targetChannel.Id,
+                newMessageId: _idGenerator.CreateId());
         }
 
         await _messageRepository.BulkUpsertAsync(messages);
