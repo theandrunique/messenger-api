@@ -2,9 +2,11 @@ using MediatR;
 using Messenger.Core;
 using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Channels;
-using Messenger.Domain.Channels.MessageMetadataTypes;
 using Messenger.Domain.Channels.ValueObjects;
 using Messenger.Domain.Events;
+using Messenger.Domain.Messages;
+using Messenger.Domain.Messages.Metadata;
+using Messenger.Domain.Messages.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace Messenger.Application.Channels.EventHandlers;

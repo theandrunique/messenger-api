@@ -1,7 +1,8 @@
-using Messenger.Domain.Channels.MessageMetadataTypes;
 using Messenger.Domain.Channels.ValueObjects;
+using Messenger.Domain.Messages.Metadata;
+using Messenger.Domain.Messages.ValueObjects;
 
-namespace Messenger.Domain.Channels;
+namespace Messenger.Domain.Messages;
 
 public class Message
 {
@@ -21,6 +22,7 @@ public class Message
     public MessageType Type { get; private set; }
     public long? ReferencedMessageId { get; private set; }
     public Message? ReferencedMessage { get; private set; }
+    public MessageOrigin? ForwardOrigin { get; private set; }
     public IMessageMetadata? Metadata { get; private set; }
 
     public Message(
@@ -97,44 +99,23 @@ public class Message
 
     public void MakeForwarded(
         ChannelMemberInfo author,
-        long channelId,
-        long messageId,
-        bool includeReferencedMessage,
-        bool includeOriginAuthorLink)
+        long targetChannelId,
+        long newMessageId)
     {
         Type = MessageType.FORWARD;
 
-        if (includeOriginAuthorLink)
-        {
-            var forwardMetadata = new ForwardMessageMetadata(
-                type: ForwardType.USER,
-                originAuthorGlobalName: null,
-                originAuthorId: Author.Id.ToString(),
-                originTimestamp: Timestamp
-            );
-            Metadata = forwardMetadata;
-        }
-        else
-        {
-            var forwardMetadata = new ForwardMessageMetadata(
-                type: ForwardType.HIDDEN_USER,
-                originAuthorGlobalName: Author.GlobalName,
-                originAuthorId: null,
-                originTimestamp: Timestamp
-            );
-            Metadata = forwardMetadata;
-        }
+        ForwardOrigin = new MessageOrigin(
+            MessageOriginType.USER,
+            Timestamp,
+            Author);
 
         Author = new MessageAuthorInfo(author);
         Timestamp = DateTimeOffset.UtcNow;
-        ChannelId = channelId;
-        Id = messageId;
+        ChannelId = targetChannelId;
+        Id = newMessageId;
 
-        if (!includeReferencedMessage)
-        {
-            ReferencedMessageId = null;
-            ReferencedMessage = null;
-        }
+        ReferencedMessageId = null;
+        ReferencedMessage = null;
 
         foreach (var attachment in _attachments) attachment.SetMessageId(Id);
     }

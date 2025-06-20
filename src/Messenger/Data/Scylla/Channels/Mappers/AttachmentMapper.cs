@@ -1,5 +1,5 @@
 using Cassandra;
-using Messenger.Domain.Channels;
+using Messenger.Domain.Messages;
 
 namespace Messenger.Data.Scylla.Channels.Mappers;
 

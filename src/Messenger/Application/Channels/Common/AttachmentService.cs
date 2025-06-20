@@ -6,6 +6,7 @@ using Messenger.Errors;
 using Microsoft.Extensions.Options;
 using Messenger.Options;
 using Messenger.Domain.Channels;
+using Messenger.Domain.Messages;
 
 namespace Messenger.Application.Channels.Common;
 

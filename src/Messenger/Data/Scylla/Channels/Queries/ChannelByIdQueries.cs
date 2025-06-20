@@ -2,6 +2,7 @@ using Cassandra;
 using Messenger.Data.Scylla.Channels.Dto;
 using Messenger.Domain.Channels;
 using Messenger.Domain.Channels.ValueObjects;
+using Messenger.Domain.Messages;
 
 namespace Messenger.Data.Scylla.Channels.Queries;
 
