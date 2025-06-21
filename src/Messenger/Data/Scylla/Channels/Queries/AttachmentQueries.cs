@@ -15,31 +15,44 @@ public class AttachmentQueries
     public AttachmentQueries(ISession session)
     {
         _insert = session.Prepare("""
-            INSERT INTO attachments_by_messageid (
-                channelid,
-                messageid,
-                id,
-                contenttype,
-                durationsecs,
+            INSERT INTO attachments_by_message_id (
+                channel_id,
+                message_id,
+                attachment_id,
+                content_type,
+                duration_secs,
                 filename,
-                isspoiler,
+                is_spoiler,
                 placeholder,
-                presignedurl,
-                presignedurlexpirestimestamp,
+                presigned_url,
+                presigned_url_expires_timestamp,
                 size,
                 waveform,
                 timestamp
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """);
-        _selectByChannelIdAndMessageIds = session.Prepare("SELECT * FROM attachments_by_messageid WHERE channelid = ? AND messageid IN ?");
 
-        _selectByChannelIdAndId = session.Prepare("SELECT * FROM attachments_by_id WHERE channelid = ? AND id = ?");
+        _selectByChannelIdAndMessageIds = session.Prepare("""
+            SELECT *
+            FROM attachments_by_message_id
+            WHERE channel_id = ? AND message_id IN ?
+        """);
 
-        _selectByChannelId = session.Prepare("SELECT * FROM attachments_by_id WHERE channelid = ? AND id < ? LIMIT ?");
+        _selectByChannelIdAndId = session.Prepare("SELECT * FROM attachments_by_id WHERE channel_id = ? AND attachment_id = ?");
 
-        _removeByChannelIdAndMessageId = session.Prepare("DELETE FROM attachments_by_messageid WHERE channelid = ? AND messageid = ?");
+        _selectByChannelId = session.Prepare("SELECT * FROM attachments_by_id WHERE channel_id = ? AND attachment_id < ? LIMIT ?");
 
-        _updatePreSignedUrl = session.Prepare("UPDATE attachments_by_messageid SET presignedurl = ?, presignedurlexpirestimestamp = ? WHERE channelid = ? AND messageid = ? AND id = ?");
+        _removeByChannelIdAndMessageId = session.Prepare("DELETE FROM attachments_by_message_id WHERE channel_id = ? AND message_id = ?");
+
+        _updatePreSignedUrl = session.Prepare("""
+            UPDATE attachments_by_message_id
+            SET presigned_url = ?,
+                presigned_url_expires_timestamp = ?
+            WHERE
+                channel_id = ?
+                AND message_id = ?
+                AND attachment_id = ?
+        """);
     }
 
     public BoundStatement Insert(Attachment attachment)

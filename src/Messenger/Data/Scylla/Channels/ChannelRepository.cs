@@ -77,14 +77,14 @@ internal class ChannelRepository : IChannelRepository
     {
         var query = _channelUsers.SelectByChannelId(channelId);
         var result = await _session.ExecuteAsync(query);
-        return result.Select(row => row.GetValue<long>("userid"));
+        return result.Select(row => row.GetValue<long>("user_id"));
     }
 
     public async Task<Channel?> GetDMChannelOrNullAsync(long userId1, long userId2)
     {
         var query = _privateChannels.SelectByUserIds(userId1, userId2);
         var result = await _session.ExecuteAsync(query);
-        var channelId = result.FirstOrDefault()?.GetValue<long>("channelid");
+        var channelId = result.FirstOrDefault()?.GetValue<long>("channel_id");
         if (channelId is null)
         {
             return default;
@@ -115,7 +115,7 @@ internal class ChannelRepository : IChannelRepository
     public async Task<List<Channel>> GetUserChannelsAsync(long userId)
     {
         var channelIds = (await _session.ExecuteAsync(_channelUsers.SelectByUserId(userId)))
-            .Select(c => c.GetValue<long>("channelid"))
+            .Select(c => c.GetValue<long>("channel_id"))
             .ToList();
 
         var channelsDataTask = _session.ExecuteAsync(_channelsById.SelectByIds(channelIds));
@@ -130,7 +130,7 @@ internal class ChannelRepository : IChannelRepository
         var channelsMembers = (await channelsMembersTask)
             .Select(r => new
             {
-                channelId = r.GetValue<long>("channelid"),
+                channelId = r.GetValue<long>("channel_id"),
                 member = ChannelMapper.MapChannelUser(r)
             }).ToList();
 

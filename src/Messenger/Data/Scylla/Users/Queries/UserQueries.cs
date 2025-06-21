@@ -18,37 +18,38 @@ public class UserQueries
     {
         _insert = session.Prepare("""
             INSERT INTO auth.users (
-                id,
+                user_id,
                 bio,
                 timestamp,
-                terminatesessions,
+                sessions_lifetime,
                 email,
-                emailupdatedtimestamp,
-                globalname,
-                isactive,
-                isemailverified,
-                totpkey,
-                passwordhash,
-                passwordupdatedtimestamp,
-                twofactorauthentication,
+                email_updated_timestamp,
+                global_name,
+                is_active,
+                is_email_verified,
+                totp_key,
+                password_hash,
+                password_updated_timestamp,
+                two_factor_authentication,
                 username,
-                usernameupdatedtimestamp,
-                image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                username_updated_timestamp,
+                image
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """);
 
-        _selectById = session.Prepare("SELECT * FROM auth.users WHERE id = ?");
+        _selectById = session.Prepare("SELECT * FROM auth.users WHERE user_id = ?");
 
-        _selectByIds = session.Prepare("SELECT * FROM auth.users WHERE id IN ?");
+        _selectByIds = session.Prepare("SELECT * FROM auth.users WHERE user_id IN ?");
 
-        _updateEmailInfo = session.Prepare("UPDATE auth.users SET email = ?, emailupdatedtimestamp = ?, isemailverified = ? WHERE id = ?");
+        _updateEmailInfo = session.Prepare("UPDATE auth.users SET email = ?, email_updated_timestamp = ?, is_email_verified = ? WHERE user_id = ?");
 
-        _updateUsernameInfo = session.Prepare("UPDATE auth.users SET username = ?, usernameupdatedtimestamp = ? WHERE id = ?");
+        _updateUsernameInfo = session.Prepare("UPDATE auth.users SET username = ?, username_updated_timestamp = ? WHERE user_id = ?");
 
-        _updateMfaStatusKey = session.Prepare("UPDATE auth.users SET totpkey = ?, twofactorauthentication = ? WHERE id = ?");
+        _updateMfaStatusKey = session.Prepare("UPDATE auth.users SET totp_key = ?, two_factor_authentication = ? WHERE user_id = ?");
 
-        _updateEmailVerified = session.Prepare("UPDATE auth.users SET isemailverified = ? WHERE id = ?");
+        _updateEmailVerified = session.Prepare("UPDATE auth.users SET is_email_verified = ? WHERE user_id = ?");
 
-        _updateAvatar = session.Prepare("UPDATE auth.users SET image = ? WHERE id = ?");
+        _updateAvatar = session.Prepare("UPDATE auth.users SET image = ? WHERE user_id = ?");
     }
 
     public BoundStatement Insert(User user)

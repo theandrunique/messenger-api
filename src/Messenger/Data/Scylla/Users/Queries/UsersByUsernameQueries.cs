@@ -11,12 +11,11 @@ public class UsersByUsernameQueries
     public UsersByUsernameQueries(ISession session)
     {
         _insert = session.Prepare("""
-            INSERT INTO auth.users_by_username (username, userid)
-            VALUES (?, ?)
+            INSERT INTO auth.users_by_username (username, user_id) VALUES (?, ?)
             IF NOT EXISTS
         """);
 
-        _select = session.Prepare("SELECT userid FROM auth.users_by_username WHERE username = ?");
+        _select = session.Prepare("SELECT user_id FROM auth.users_by_username WHERE username = ?");
 
         _delete = session.Prepare("DELETE FROM auth.users_by_username WHERE username = ?");
     }

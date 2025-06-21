@@ -8,13 +8,13 @@ public static class SessionMapper
     internal static Session Map(Row row)
     {
         return new Session(
-            id: row.GetValue<long>("id"),
-            userId: row.GetValue<long>("userid"),
-            tokenId: row.GetValue<Guid>("tokenid"),
-            deviceName: row.GetValue<string>("devicename"),
-            clientName: row.GetValue<string>("clientname"),
+            id: row.GetValue<long>("session_id"),
+            userId: row.GetValue<long>("user_id"),
+            tokenId: row.GetValue<Guid>("token_id"),
+            deviceName: row.GetValue<string>("device_name"),
+            clientName: row.GetValue<string>("client_name"),
             location: row.GetValue<string>("location"),
-            lastUsedTimestamp: row.GetValue<DateTimeOffset>("lastusedtimestamp"),
+            lastUsedTimestamp: row.GetValue<DateTimeOffset>("last_used_timestamp"),
             timestamp: row.GetValue<DateTimeOffset>("timestamp")
         );
     }

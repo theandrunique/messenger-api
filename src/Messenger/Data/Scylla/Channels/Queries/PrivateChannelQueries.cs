@@ -10,9 +10,9 @@ public class PrivateChannelQueries
 
     public PrivateChannelQueries(ISession session)
     {
-        _insert = session.Prepare("INSERT INTO private_channels (userid1, userid2, channelid) VALUES (?, ?, ?)");
+        _insert = session.Prepare("INSERT INTO private_channels (user_id1, user_id2, channel_id) VALUES (?, ?, ?)");
 
-        _selectByUserIds = session.Prepare("SELECT * FROM private_channels WHERE userid1 = ? AND userid2 = ?");
+        _selectByUserIds = session.Prepare("SELECT * FROM private_channels WHERE user_id1 = ? AND user_id2 = ?");
     }
 
     public BoundStatement Insert(Channel channel)

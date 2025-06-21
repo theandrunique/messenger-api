@@ -11,9 +11,9 @@ public static class VerificationCodeMapper
         return new VerificationCode(
             identifier: row.GetValue<string>("identifier"),
             scenario: (VerificationCodeScenario)row.GetValue<int>("scenario"),
-            codeHash: row.GetValue<string>("codehash"),
+            codeHash: row.GetValue<string>("code_hash"),
             timestamp: row.GetValue<DateTimeOffset>("timestamp"),
-            expiresTimestamp: row.GetValue<DateTimeOffset>("expirestimestamp"),
+            expiresTimestamp: row.GetValue<DateTimeOffset>("expires_timestamp"),
             attempts: row.GetValue<int>("attempts")
         );
     }

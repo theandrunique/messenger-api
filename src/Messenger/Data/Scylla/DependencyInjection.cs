@@ -47,7 +47,16 @@ public static class DependencyInjection
             var session = cluster.Connect();
 
             session.UserDefinedTypes.Define(
-                UdtMap.For<MessageInfoDto>("messageinfo"));
+                UdtMap.For<MessageInfoDto>("message_info")
+                    .Map(p => p.Id, "id")
+                    .Map(p => p.AuthorId, "author_id")
+                    .Map(p => p.TargetUserId, "target_user_id")
+                    .Map(p => p.Content, "content")
+                    .Map(p => p.Timestamp, "timestamp")
+                    .Map(p => p.EditedTimestamp, "edited_timestamp")
+                    .Map(p => p.AttachmentsCount, "attachments_count")
+                    .Map(p => p.Type, "type")
+                    .Map(p => p.Metadata, "metadata"));
 
             return session;
         });

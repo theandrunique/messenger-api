@@ -107,7 +107,7 @@ public class AuthController : ApiController
         {
             Expires = tokenPair.IssuedAt.AddDays(7),
             HttpOnly = true,
-            Secure = true,
+            // Secure = true,
         };
         Response.Cookies.Append(
             MessengerConstants.Auth.SessionCookieName,
