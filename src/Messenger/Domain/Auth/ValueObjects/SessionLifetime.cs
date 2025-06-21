@@ -6,5 +6,5 @@ public enum SessionLifetime
     MONTH,
     MONTH3,
     MONTH6,
-    YEAR,
+    MONTH12,
 }

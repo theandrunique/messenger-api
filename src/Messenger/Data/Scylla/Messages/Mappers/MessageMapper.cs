@@ -10,9 +10,9 @@ public static class MessageMapper
     public static MessageAuthorInfo MapMessageAuthorInfo(Row row)
     {
         return new MessageAuthorInfo(
-            id: row.GetValue<long>("userid"),
+            id: row.GetValue<long>("user_id"),
             username: row.GetValue<string>("username"),
-            globalName: row.GetValue<string>("globalname"),
+            globalName: row.GetValue<string>("global_name"),
             image: row.GetValue<string?>("image")
         );
     }
@@ -21,16 +21,16 @@ public static class MessageMapper
     {
         return new MessageData()
         {
-            Id = row.GetValue<long>("id"),
-            ChannelId = row.GetValue<long>("channelid"),
-            AuthorId = row.GetValue<long>("authorid"),
-            TargetUserId = row.GetValue<long?>("targetuserid"),
+            Id = row.GetValue<long>("message_id"),
+            ChannelId = row.GetValue<long>("channel_id"),
+            AuthorId = row.GetValue<long>("author_id"),
+            TargetUserId = row.GetValue<long?>("target_user_id"),
             Content = row.GetValue<string>("content"),
             Timestamp = row.GetValue<DateTimeOffset>("timestamp"),
-            EditedTimestamp = row.GetValue<DateTimeOffset?>("editedtimestamp"),
+            EditedTimestamp = row.GetValue<DateTimeOffset?>("edited_timestamp"),
             Pinned = row.GetValue<bool>("pinned"),
             Type = (MessageType)row.GetValue<int>("type"),
-            ReferencedMessageId = row.GetValue<long?>("referencedmessageid"),
+            ReferencedMessageId = row.GetValue<long?>("referenced_message_id"),
             Metadata = MessageMetadataConverter.ToValue(row.GetValue<string?>("metadata")),
         };
     }

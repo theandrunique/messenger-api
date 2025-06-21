@@ -12,9 +12,9 @@ public class MessageAckQueries
     {
         _insert = session.Prepare("""
             INSERT INTO message_acks (
-                channelid,
-                userid,
-                lastreadmessageid,
+                channel_id,
+                user_id,
+                last_read_message_id,
                 timestamp
             ) VALUES (?, ?, ?, ?)
             USING TTL ?;
@@ -23,8 +23,8 @@ public class MessageAckQueries
         _selectByMessageId = session.Prepare("""
             SELECT *
             FROM message_acks
-            WHERE channelid = ?
-                AND lastreadmessageid >= ?
+            WHERE channel_id = ?
+                AND last_read_message_id >= ?
         """);
     }
 

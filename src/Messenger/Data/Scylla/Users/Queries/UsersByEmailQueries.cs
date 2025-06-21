@@ -11,12 +11,11 @@ public class UsersByEmailQueries
     public UsersByEmailQueries(ISession session)
     {
         _insert = session.Prepare("""
-            INSERT INTO auth.users_by_email (email, userid)
-            VALUES (?, ?)
+            INSERT INTO auth.users_by_email (email, user_id) VALUES (?, ?)
             IF NOT EXISTS
         """);
 
-        _select = session.Prepare("SELECT userid FROM auth.users_by_email WHERE email = ?");
+        _select = session.Prepare("SELECT user_id FROM auth.users_by_email WHERE email = ?");
 
         _delete = session.Prepare("DELETE FROM auth.users_by_email WHERE email = ?");
     }

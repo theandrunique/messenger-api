@@ -86,7 +86,7 @@ public class UserRepository : IUserRepository
     {
         var userId = (await _session.ExecuteAsync(_usersByEmail.Select(email)))
             .FirstOrDefault()
-            ?.GetValue<long>("userid");
+            ?.GetValue<long>("user_id");
 
         if (userId == null) return null;
 
@@ -100,7 +100,7 @@ public class UserRepository : IUserRepository
     {
         var userId = (await _session.ExecuteAsync(_usersByUsername.Select(username)))
             .FirstOrDefault()
-            ?.GetValue<long>("userid");
+            ?.GetValue<long>("user_id");
 
         if (userId == null) return null;
 
@@ -114,7 +114,7 @@ public class UserRepository : IUserRepository
     {
         var userId = (await _session.ExecuteAsync(_usersByEmail.Select(email)))
             .FirstOrDefault()
-            ?.GetValue<long>("userid");
+            ?.GetValue<long>("user_id");
 
         return userId != null;
     }
@@ -123,7 +123,7 @@ public class UserRepository : IUserRepository
     {
         var userId = (await _session.ExecuteAsync(_usersByUsername.Select(username)))
             .FirstOrDefault()
-            ?.GetValue<long>("userid");
+            ?.GetValue<long>("user_id");
 
         return userId != null;
     }
@@ -131,7 +131,7 @@ public class UserRepository : IUserRepository
     public async Task UpdateAvatarAsync(User user)
     {
         var channelIds = (await _session.ExecuteAsync(_channelUsers.SelectChannelIdsByUserId(user.Id)))
-            .Select(row => row.GetValue<long>("channelid"));
+            .Select(row => row.GetValue<long>("channel_id"));
 
         var batch = new BatchStatement()
             .Add(_users.UpdateAvatar(user.Id, user.Image))
@@ -184,7 +184,7 @@ public class UserRepository : IUserRepository
         if (!isSuccess) return false;
 
         var channelIds = (await _session.ExecuteAsync(_channelUsers.SelectChannelIdsByUserId(userId)))
-            .Select(row => row.GetValue<long>("channelid"));
+            .Select(row => row.GetValue<long>("channel_id"));
 
         var batch = new BatchStatement()
             .Add(_usersByUsername.Delete(oldUsername))

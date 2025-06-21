@@ -17,9 +17,9 @@ public class VerificationCodeQueries
             INSERT INTO auth.verification_codes (
                 identifier,
                 scenario,
-                codehash,
+                code_hash,
                 timestamp,
-                expirestimestamp,
+                expires_timestamp,
                 attempts
             ) VALUES (?, ?, ?, ?, ?, ?) USING TTL ?
             """);

@@ -50,7 +50,7 @@ public class User
         DateTimeOffset usernameUpdatedTimestamp,
         string passwordHash,
         DateTimeOffset passwordUpdatedTimestamp,
-        SessionLifetime sessionLifetime,
+        SessionLifetime sessionsLifetime,
         string? bio,
         string globalName,
         bool isActive,
@@ -67,7 +67,7 @@ public class User
         UsernameUpdatedTimestamp = usernameUpdatedTimestamp;
         PasswordHash = passwordHash;
         PasswordUpdatedTimestamp = passwordUpdatedTimestamp;
-        SessionsLifetime = sessionLifetime;
+        SessionsLifetime = sessionsLifetime;
         Bio = bio;
         GlobalName = globalName;
         IsActive = isActive;

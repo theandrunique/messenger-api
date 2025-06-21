@@ -21,34 +21,34 @@ public class ChannelUserQueries
     {
         _insert = session.Prepare("""
             INSERT INTO channel_users_by_user_id (
-                userid,
-                channelid,
-                lastreadmessageid,
+                user_id,
+                channel_id,
+                last_read_message_id,
                 username,
-                globalname,
+                global_name,
                 image,
-                permissionoverwrites,
-                isleave
+                permission_overwrites,
+                is_leave
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """);
 
-        _selectByChannelId = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channelid = ?");
+        _selectByChannelId = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channel_id = ?");
 
-        _selectByChannelIds = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channelid IN ?");
+        _selectByChannelIds = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channel_id IN ?");
 
-        _selectByUserId = session.Prepare("SELECT * FROM channel_users_by_user_id WHERE userid = ?");
+        _selectByUserId = session.Prepare("SELECT * FROM channel_users_by_user_id WHERE user_id = ?");
 
-        _selectByChannelIdAndUserIds = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channelid = ? AND userid IN ?");
+        _selectByChannelIdAndUserIds = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channel_id = ? AND user_id IN ?");
 
-        _selectChannelIdsByUserId = session.Prepare("SELECT channelid FROM channel_users_by_user_id WHERE userid = ?");
+        _selectChannelIdsByUserId = session.Prepare("SELECT channel_id FROM channel_users_by_user_id WHERE user_id = ?");
 
-        _updateLastReadMessageId = session.Prepare("UPDATE channel_users_by_user_id SET lastreadmessageid = ? WHERE userid = ? AND channelid = ?");
+        _updateLastReadMessageId = session.Prepare("UPDATE channel_users_by_user_id SET last_read_message_id = ? WHERE user_id = ? AND channel_id = ?");
 
-        _updateUserInfo = session.Prepare("UPDATE channel_users_by_user_id SET globalname = ?, image = ? WHERE userid = ? AND channelid IN ?");
+        _updateUserInfo = session.Prepare("UPDATE channel_users_by_user_id SET global_name = ?, image = ? WHERE user_id = ? AND channel_id IN ?");
 
-        _updateUsername = session.Prepare("UPDATE channel_users_by_user_id SET username = ? WHERE userid = ? AND channelid IN ?");
+        _updateUsername = session.Prepare("UPDATE channel_users_by_user_id SET username = ? WHERE user_id = ? AND channel_id IN ?");
 
-        _updateIsLeave = session.Prepare("UPDATE channel_users_by_user_id SET isleave = ? WHERE userid = ? AND channelid = ?");
+        _updateIsLeave = session.Prepare("UPDATE channel_users_by_user_id SET is_leave = ? WHERE user_id = ? AND channel_id = ?");
     }
 
     public BoundStatement Insert(long channelId, ChannelMemberInfo member)

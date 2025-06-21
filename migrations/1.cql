@@ -9,174 +9,184 @@ USE messenger;
 
 -- TYPES
 
-CREATE TYPE messenger.messageinfo (
+CREATE TYPE messenger.message_info (
     id bigint,
-    authorid bigint,
-    targetuserid bigint,
+    author_id bigint,
+    target_user_id bigint,
     content text,
     timestamp timestamp,
-    editedtimestamp timestamp,
-    attachmentscount int,
+    edited_timestamp timestamp,
+    attachments_count int,
     type int,
     metadata text
 );
 
 -- TABLES
 
-CREATE TABLE messenger.attachments_by_messageid (
-    channelid bigint,
-    id bigint,
-    messageid bigint,
-    contenttype text,
-    durationsecs float,
+CREATE TABLE messenger.attachments_by_message_id (
+    channel_id bigint,
+    attachment_id bigint,
+    message_id bigint,
+    content_type text,
+    duration_secs float,
     filename text,
-    isspoiler boolean,
+    is_spoiler boolean,
     placeholder text,
-    presignedurl text,
-    presignedurlexpirestimestamp timestamp,
+    presigned_url text,
+    presigned_url_expires_timestamp timestamp,
     size bigint,
     waveform text,
     timestamp timestamp,
 
-    PRIMARY KEY ((channelid), messageid, id)
+    PRIMARY KEY ((channel_id), message_id, attachment_id)
 );
 
 CREATE MATERIALIZED VIEW attachments_by_id AS
     SELECT
-        channelid,
-        id,
-        messageid,
-        contenttype,
-        durationsecs,
+        channel_id,
+        attachment_id,
+        message_id,
+        content_type,
+        duration_secs,
         filename,
-        isspoiler,
+        is_spoiler,
         placeholder,
-        presignedurl,
-        presignedurlexpirestimestamp,
+        presigned_url,
+        presigned_url_expires_timestamp,
         size,
         waveform,
         timestamp
-    FROM messenger.attachments_by_messageid
+    FROM messenger.attachments_by_message_id
     WHERE
-        channelid IS NOT NULL
-        AND id IS NOT NULL
-        AND messageid IS NOT NULL
-    PRIMARY KEY (channelid, id, messageid)
-    WITH CLUSTERING ORDER BY (id DESC);
+        channel_id IS NOT NULL
+        AND attachment_id IS NOT NULL
+        AND message_id IS NOT NULL
+    PRIMARY KEY (channel_id, attachment_id, message_id)
+    WITH CLUSTERING ORDER BY (attachment_id DESC);
 
 CREATE TABLE messenger.channel_users_by_user_id (
-    userid bigint,
-    channelid bigint,
-    lastreadmessageid bigint,
+    user_id bigint,
+    channel_id bigint,
+    last_read_message_id bigint,
     username text,
-    globalname text,
+    global_name text,
     image text,
-    permissionoverwrites bigint,
-    isleave boolean,
+    permission_overwrites bigint,
+    is_leave boolean,
 
-    PRIMARY KEY (userid, channelid)
+    PRIMARY KEY (user_id, channel_id)
 );
 
 CREATE MATERIALIZED VIEW messenger.channel_users_by_channel_id AS
-    SELECT userid, channelid, lastreadmessageid, username, globalname, image, permissionoverwrites, isleave
+    SELECT
+        user_id,
+        channel_id,
+        last_read_message_id,
+        username,
+        global_name,
+        image,
+        permission_overwrites,
+        is_leave
     FROM messenger.channel_users_by_user_id
-    WHERE channelid IS NOT NULL AND userid IS NOT NULL
-    PRIMARY KEY(channelid, userid);
+    WHERE
+        channel_id IS NOT NULL
+        AND user_id IS NOT NULL
+    PRIMARY KEY(channel_id, user_id);
 
 CREATE TABLE messenger.channels_by_id (
-    channelid bigint,
-    channeltype int,
+    channel_id bigint,
+    type int,
     name text,
-    ownerid bigint,
+    owner_id bigint,
     image text,
-    lastmessage messageinfo,
-    lastmessagetimestamp timestamp,
-    permissionoverwrites bigint,
+    last_message message_info,
+    last_message_timestamp timestamp,
+    permission_overwrites bigint,
 
-    PRIMARY KEY ((channelid))
+    PRIMARY KEY ((channel_id))
 );
 
 CREATE TABLE messenger.messages (
-    channelid bigint,
-    id bigint,
-    authorid bigint,
-    targetuserid bigint,
+    channel_id bigint,
+    message_id bigint,
+    author_id bigint,
+    target_user_id bigint,
     content text,
     timestamp timestamp,
-    editedtimestamp timestamp,
+    edited_timestamp timestamp,
     pinned boolean,
     type int,
-    referencedmessageid bigint,
+    referenced_message_id bigint,
     metadata text,
 
-    PRIMARY KEY ((channelid), id)
-) WITH CLUSTERING ORDER BY (id DESC);
+    PRIMARY KEY ((channel_id), message_id)
+) WITH CLUSTERING ORDER BY (message_id DESC);
 
 CREATE TABLE messenger.message_acks (
-    channelid bigint,
-    userid bigint,
-    lastreadmessageid bigint,
+    channel_id bigint,
+    user_id bigint,
+    last_read_message_id bigint,
     timestamp timestamp,
 
-    PRIMARY KEY ((channelid), lastreadmessageid, userid)
-) WITH CLUSTERING ORDER BY (lastreadmessageid DESC);
+    PRIMARY KEY ((channel_id), last_read_message_id, user_id)
+) WITH CLUSTERING ORDER BY (last_read_message_id DESC);
 
 CREATE TABLE messenger.private_channels (
-    userid1 bigint,
-    userid2 bigint,
-    channelid bigint,
+    user_id1 bigint,
+    user_id2 bigint,
+    channel_id bigint,
 
-    PRIMARY KEY ((userid1, userid2))
+    PRIMARY KEY ((user_id1, user_id2))
 );
 
 CREATE TABLE auth.sessions (
-    userid bigint,
-    id bigint,
-    clientname text,
+    user_id bigint,
+    session_id bigint,
+    client_name text,
     timestamp timestamp,
-    devicename text,
-    lastusedtimestamp timestamp,
+    device_name text,
+    last_used_timestamp timestamp,
     location text,
-    tokenid uuid,
+    token_id uuid,
 
-    PRIMARY KEY ((userid), id)
+    PRIMARY KEY ((user_id), session_id)
 );
 
-CREATE INDEX sessions_tokenid_idx ON auth.sessions(tokenid);
+CREATE INDEX sessions_token_id_idx ON auth.sessions(token_id);
 
 
 CREATE TABLE auth.users (
-    id bigint,
+    user_id bigint,
     bio text,
     timestamp timestamp,
-    terminatesessions int,
+    sessions_lifetime int,
     email text,
-    emailupdatedtimestamp timestamp,
-    globalname text,
-    isactive boolean,
-    isemailverified boolean,
-    totpkey blob,
-    passwordhash text,
-    passwordupdatedtimestamp timestamp,
-    twofactorauthentication boolean,
+    email_updated_timestamp timestamp,
+    global_name text,
+    is_active boolean,
+    is_email_verified boolean,
+    totp_key blob,
+    password_hash text,
+    password_updated_timestamp timestamp,
+    two_factor_authentication boolean,
     username text,
-    usernameupdatedtimestamp timestamp,
+    username_updated_timestamp timestamp,
     image text,
 
-    PRIMARY KEY ((id))
+    PRIMARY KEY ((user_id))
 );
 
 
 CREATE TABLE auth.users_by_username (
     username text,
-    userid bigint,
+    user_id bigint,
 
     PRIMARY KEY ((username))
 );
 
 CREATE TABLE auth.users_by_email (
     email text,
-    userid bigint,
+    user_id bigint,
 
     PRIMARY KEY ((email))
 );
@@ -185,9 +195,9 @@ CREATE TABLE auth.users_by_email (
 CREATE TABLE auth.verification_codes (
     identifier text, -- email, phone, etc
     scenario int,   -- (enum) reset_password, verify_email, etc
-    codehash text,
+    code_hash text,
     timestamp timestamp,
-    expirestimestamp timestamp,
+    expires_timestamp timestamp,
     attempts int,
     PRIMARY KEY ((identifier, scenario))
 );

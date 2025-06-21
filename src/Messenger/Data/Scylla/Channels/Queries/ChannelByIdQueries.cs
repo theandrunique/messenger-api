@@ -18,19 +18,28 @@ public class ChannelByIdQueries
 
     public ChannelByIdQueries(ISession session)
     {
-        _insert = session.Prepare("INSERT INTO channels_by_id (channelid, channeltype, name, ownerid, image, permissionoverwrites) VALUES (?, ?, ?, ?, ?, ?)");
+        _insert = session.Prepare("""
+            INSERT INTO channels_by_id (
+                channel_id,
+                type,
+                name,
+                owner_id,
+                image,
+                permission_overwrites
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """);
 
-        _selectById = session.Prepare("SELECT * FROM channels_by_id WHERE channelid = ?");
+        _selectById = session.Prepare("SELECT * FROM channels_by_id WHERE channel_id = ?");
 
-        _selectByIds = session.Prepare("SELECT * FROM channels_by_id WHERE channelid IN ?");
+        _selectByIds = session.Prepare("SELECT * FROM channels_by_id WHERE channel_id IN ?");
 
-        _updateName = session.Prepare("UPDATE channels_by_id SET name = ? WHERE channelid = ?");
+        _updateName = session.Prepare("UPDATE channels_by_id SET name = ? WHERE channel_id = ?");
 
-        _updateImage = session.Prepare("UPDATE channels_by_id SET image = ? WHERE channelid = ?");
+        _updateImage = session.Prepare("UPDATE channels_by_id SET image = ? WHERE channel_id = ?");
 
-        _updateOwnerId = session.Prepare("UPDATE channels_by_id SET ownerid = ? WHERE channelid = ?");
+        _updateOwnerId = session.Prepare("UPDATE channels_by_id SET owner_id = ? WHERE channel_id = ?");
 
-        _updateLastMessageInfo = session.Prepare("UPDATE channels_by_id SET lastmessagetimestamp = ?, lastmessage = ? WHERE channelid = ?");
+        _updateLastMessageInfo = session.Prepare("UPDATE channels_by_id SET last_message_timestamp = ?, last_message = ? WHERE channel_id = ?");
     }
 
     public BoundStatement Insert(Channel channel)

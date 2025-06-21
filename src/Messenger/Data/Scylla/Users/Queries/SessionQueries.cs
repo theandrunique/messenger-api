@@ -16,21 +16,22 @@ public class SessionQueries
     {
         _insert = session.Prepare("""
             INSERT INTO auth.sessions (
-                userid,
-                id,
-                clientname,
+                user_id,
+                session_id,
+                client_name,
                 timestamp,
-                devicename,
-                lastusedtimestamp,
+                device_name,
+                last_used_timestamp,
                 location,
-                tokenid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                token_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """);
 
-        _selectByUserIdAndId = session.Prepare("SELECT * FROM auth.sessions WHERE userid = ? AND id = ?");
-        _selectByTokenId = session.Prepare("SELECT * FROM auth.sessions WHERE tokenid = ?");
-        _selectByUserId = session.Prepare("SELECT * FROM auth.sessions WHERE userid = ?");
-        _updateTokenId = session.Prepare("UPDATE auth.sessions SET lastusedtimestamp = ?, tokenid = ? WHERE userid = ? AND id = ?");
-        _deleteByTokenId = session.Prepare("DELETE FROM auth.sessions WHERE userid = ? AND id = ?");
+        _selectByUserIdAndId = session.Prepare("SELECT * FROM auth.sessions WHERE user_id = ? AND session_id = ?");
+        _selectByTokenId = session.Prepare("SELECT * FROM auth.sessions WHERE token_id = ?");
+        _selectByUserId = session.Prepare("SELECT * FROM auth.sessions WHERE user_id = ?");
+        _updateTokenId = session.Prepare("UPDATE auth.sessions SET last_used_timestamp = ?, token_id = ? WHERE user_id = ? AND session_id = ?");
+        _deleteByTokenId = session.Prepare("DELETE FROM auth.sessions WHERE user_id = ? AND session_id = ?");
     }
 
     public BoundStatement Insert(Session session)

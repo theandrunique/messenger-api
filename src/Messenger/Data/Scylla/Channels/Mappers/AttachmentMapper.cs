@@ -8,14 +8,14 @@ public class AttachmentMapper
     public static Attachment Map(Row row)
     {
         return new Attachment(
-            row.GetValue<long>("id"),
-            row.GetValue<long>("messageid"),
-            row.GetValue<long>("channelid"),
-            row.GetValue<string>("filename"),
-            row.GetValue<string>("contenttype"),
-            row.GetValue<long>("size"),
-            row.GetValue<string>("presignedurl"),
-            row.GetValue<DateTimeOffset>("presignedurlexpirestimestamp"),
-            row.GetValue<DateTimeOffset>("timestamp"));
+            id: row.GetValue<long>("attachment_id"),
+            messageId: row.GetValue<long>("message_id"),
+            channelId: row.GetValue<long>("channel_id"),
+            filename: row.GetValue<string>("filename"),
+            contentType: row.GetValue<string>("content_type"),
+            size: row.GetValue<long>("size"),
+            preSignedUrl: row.GetValue<string>("presigned_url"),
+            preSignedUrlExpiresTimestamp: row.GetValue<DateTimeOffset>("presigned_url_expires_timestamp"),
+            timestamp: row.GetValue<DateTimeOffset>("timestamp"));
     }
 }

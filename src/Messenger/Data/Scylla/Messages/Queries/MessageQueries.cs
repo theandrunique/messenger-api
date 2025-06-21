@@ -16,26 +16,27 @@ public class MessageQueries
     {
         _insert = session.Prepare("""
             INSERT INTO messages (
-                channelid,
-                id,
-                authorid,
-                targetuserid,
+                channel_id,
+                message_id,
+                author_id,
+                target_user_id,
                 content,
                 timestamp,
-                editedtimestamp,
+                edited_timestamp,
                 pinned,
-                referencedmessageid,
+                referenced_message_id,
                 type,
-                metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                metadata
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """);
 
-        _selectById = session.Prepare("SELECT * FROM messages WHERE channelid = ? AND id = ?");
+        _selectById = session.Prepare("SELECT * FROM messages WHERE channel_id = ? AND message_id = ?");
 
-        _selectByIds = session.Prepare("SELECT * FROM messages WHERE channelid = ? AND id IN ?");
+        _selectByIds = session.Prepare("SELECT * FROM messages WHERE channel_id = ? AND message_id IN ?");
 
-        _selectByChannelId = session.Prepare("SELECT * FROM messages WHERE channelid = ? AND id < ? ORDER BY id DESC LIMIT ?");
+        _selectByChannelId = session.Prepare("SELECT * FROM messages WHERE channel_id = ? AND message_id < ? ORDER BY message_id DESC LIMIT ?");
 
-        _deleteById = session.Prepare("DELETE FROM messages WHERE channelid = ? AND id = ?");
+        _deleteById = session.Prepare("DELETE FROM messages WHERE channel_id = ? AND message_id = ?");
     }
 
     public BoundStatement Insert(Message message)
