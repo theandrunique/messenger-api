@@ -75,17 +75,12 @@ public class Channel
         return member;
     }
 
-    public ChannelMemberInfo? FindMember(long userId)
-    {
-        return _members.FirstOrDefault(m => m.UserId == userId);
-    }
-
     public bool HasMember(long userId)
     {
         return _members.Any(m => m.UserId == userId && !m.IsLeave);
     }
 
-    public bool HasPermission(long userId, ChannelPermission permissions)
+    public bool MemberHasPermission(long userId, ChannelPermission permissions)
     {
         return _members.Any(m => m.UserId == userId
             && CalculatePermissions(m).HasPermission(permissions));

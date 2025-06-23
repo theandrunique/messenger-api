@@ -2,9 +2,9 @@ using Cassandra;
 using Messenger.Data.Scylla.Channels.Queries;
 using Messenger.Data.Scylla.Messages.Mappers;
 using Messenger.Data.Scylla.Messages.Queries;
-using Messenger.Data.Interfaces.Channels;
 using Microsoft.Extensions.Logging;
 using Messenger.Domain.Channels;
+using Messenger.Domain.Data.Messages;
 
 namespace Messenger.Data.Scylla.Messages;
 

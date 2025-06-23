@@ -1,7 +1,8 @@
 using MediatR;
 using Messenger.Application.Common.Interfaces;
-using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Channels.ValueObjects;
+using Messenger.Domain.Data.Channels;
+using Messenger.Domain.Data.Messages;
 using Messenger.Errors;
 
 namespace Messenger.Application.Channels.Queries.GetMessageAcks;
@@ -45,7 +46,7 @@ public class GetMessageAcksQueryHandler : IRequestHandler<GetMessageAcksQuery, E
 
         foreach (var ack in acks)
         {
-            var member = channel.FindMember(ack.UserId);
+            var member = channel.ActiveMembers.FirstOrDefault(m => m.UserId == ack.UserId);
             if (member != null)
             {
                 result.Add(member, ack.Timestamp);

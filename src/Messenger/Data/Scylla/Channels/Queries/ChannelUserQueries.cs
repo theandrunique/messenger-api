@@ -8,6 +8,7 @@ public class ChannelUserQueries
 {
     private readonly PreparedStatement _insert;
     private readonly PreparedStatement _selectByChannelId;
+    private readonly PreparedStatement _selectMemberIdsByChannelId;
     private readonly PreparedStatement _selectByChannelIds;
     private readonly PreparedStatement _selectByUserId;
     private readonly PreparedStatement _selectByChannelIdAndUserIds;
@@ -33,6 +34,8 @@ public class ChannelUserQueries
             """);
 
         _selectByChannelId = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channel_id = ?");
+
+        _selectMemberIdsByChannelId = session.Prepare("SELECT user_id, is_leave FROM channel_users_by_channel_id WHERE channel_id = ?");
 
         _selectByChannelIds = session.Prepare("SELECT * FROM channel_users_by_channel_id WHERE channel_id IN ?");
 
@@ -69,6 +72,11 @@ public class ChannelUserQueries
     public BoundStatement SelectByChannelId(long channelId)
     {
         return _selectByChannelId.Bind(channelId);
+    }
+
+    public BoundStatement SelectMemberIdsByChannelId(long channelId)
+    {
+        return _selectMemberIdsByChannelId.Bind(channelId);
     }
 
     public BoundStatement SelectByChannelIds(IEnumerable<long> channelIds)

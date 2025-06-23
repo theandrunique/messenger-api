@@ -2,10 +2,10 @@ using Cassandra;
 using Cassandra.Data.Linq;
 using Messenger.Data.Scylla.Channels.Mappers;
 using Messenger.Data.Scylla.Channels.Queries;
-using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Events;
 using Messenger.Domain.Channels;
 using Messenger.Domain.Channels.ValueObjects;
+using Messenger.Domain.Data.Channels;
 
 namespace Messenger.Data.Scylla.Channels;
 
@@ -73,11 +73,10 @@ internal class ChannelRepository : IChannelRepository
         return channelData.ToEntity();
     }
 
-    public async Task<IEnumerable<long>> GetMemberIdsFromChannelByIdAsync(long channelId)
+    public async Task<IEnumerable<(long userId, bool isLeave)>> GetMemberIdsFromChannelByIdAsync(long channelId)
     {
-        var query = _channelUsers.SelectByChannelId(channelId);
-        var result = await _session.ExecuteAsync(query);
-        return result.Select(row => row.GetValue<long>("user_id"));
+        return (await _session.ExecuteAsync(_channelUsers.SelectMemberIdsByChannelId(channelId)))
+            .Select(row => (userId: row.GetValue<long>("user_id"), isLeave: row.GetValue<bool>("is_leave")));
     }
 
     public async Task<Channel?> GetDMChannelOrNullAsync(long userId1, long userId2)

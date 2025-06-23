@@ -1,12 +1,12 @@
 using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
-using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Events;
 using Messenger.Errors;
 using Messenger.Application.Channels.Common;
 using Messenger.Domain.Channels.ValueObjects;
 using Messenger.Domain.Channels.Permissions;
+using Messenger.Domain.Data.Channels;
 
 namespace Messenger.Application.Channels.Commands.UpdateChannel;
 
@@ -16,22 +16,30 @@ public class UpdateChannelCommandHandler : IRequestHandler<UpdateChannelCommand,
     private readonly IClientInfoProvider _clientInfo;
     private readonly IMediator _mediator;
     private readonly ChannelImageService _channelImageService;
+    private readonly IChannelLoaderFactory _channelLoaderFactory;
 
     public UpdateChannelCommandHandler(
         IChannelRepository channelRepository,
         IClientInfoProvider clientInfo,
         IMediator mediator,
-        ChannelImageService channelImageService)
+        ChannelImageService channelImageService,
+        IChannelLoaderFactory channelLoaderFactory)
     {
         _channelRepository = channelRepository;
         _clientInfo = clientInfo;
         _mediator = mediator;
         _channelImageService = channelImageService;
+        _channelLoaderFactory = channelLoaderFactory;
     }
 
     public async Task<ErrorOr<ChannelSchema>> Handle(UpdateChannelCommand request, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
+        var channel = await _channelLoaderFactory
+            .CreateLoader()
+            .WithId(request.ChannelId)
+            .WithMember(_clientInfo.UserId)
+            .LoadAsync();
+
         if (channel == null)
         {
             return Error.Channel.NotFound(request.ChannelId);
@@ -44,7 +52,7 @@ public class UpdateChannelCommandHandler : IRequestHandler<UpdateChannelCommand,
         {
             return Error.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
-        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.MANAGE_CHANNEL))
+        if (!channel.MemberHasPermission(_clientInfo.UserId, ChannelPermission.MANAGE_CHANNEL))
         {
             return Error.Channel.InsufficientPermissions(channel.Id, ChannelPermission.MANAGE_CHANNEL);
         }

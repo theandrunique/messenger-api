@@ -2,14 +2,14 @@ using Messenger.Domain.Channels;
 using Messenger.Domain.Channels.ValueObjects;
 using Messenger.Domain.Events;
 
-namespace Messenger.Data.Interfaces.Channels;
+namespace Messenger.Domain.Data.Channels;
 
 public interface IChannelRepository
 {
     Task UpsertAsync(Channel channel);
     Task<List<Channel>> GetUserChannelsAsync(long userId);
     Task<Channel?> GetByIdOrNullAsync(long channelId);
-    Task<IEnumerable<long>> GetMemberIdsFromChannelByIdAsync(long channelId);
+    Task<IEnumerable<(long userId, bool isLeave)>> GetMemberIdsFromChannelByIdAsync(long channelId);
     Task<Channel?> GetDMChannelOrNullAsync(long userId1, long userId2);
     Task UpsertChannelMemberAsync(long channelId, ChannelMemberInfo member);
     Task UpdateIsLeaveStatus(long userId, long channelId, bool isLeave);

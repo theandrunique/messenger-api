@@ -1,6 +1,6 @@
 using MediatR;
 using Messenger.Application.Auth.Common;
-using Messenger.Data.Interfaces.Users;
+using Messenger.Domain.Data.Auth;
 using Messenger.Errors;
 
 namespace Messenger.Application.Auth.Commands.RefreshToken;

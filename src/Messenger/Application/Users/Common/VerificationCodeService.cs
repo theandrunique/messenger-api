@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Messenger.Application.Auth.Common.Interfaces;
-using Messenger.Data.Interfaces.VerificationCodes;
 using Messenger.Domain.Auth;
+using Messenger.Domain.Data.Auth;
 using Messenger.Domain.ValueObjects;
 
 namespace Messenger.Application.Users.Common;

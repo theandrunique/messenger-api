@@ -1,8 +1,8 @@
 using MediatR;
 using Messenger.Core;
-using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Channels;
 using Messenger.Domain.Channels.ValueObjects;
+using Messenger.Domain.Data.Messages;
 using Messenger.Domain.Events;
 using Messenger.Domain.Messages;
 using Messenger.Domain.Messages.Metadata;

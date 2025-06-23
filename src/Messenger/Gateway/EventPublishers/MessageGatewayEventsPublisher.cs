@@ -1,7 +1,6 @@
 using MediatR;
 using Messenger.Contracts.Common;
 using Messenger.Domain.Events;
-using Messenger.Domain.ValueObjects;
 using Messenger.Gateway.Common;
 using Messenger.Gateway.Events;
 
@@ -20,39 +19,38 @@ public class MessageGatewayEventsPublisher
         _gateway = gateway;
     }
 
-    public Task Handle(MessageCreateDomainEvent @event, CancellationToken cancellationToken)
+    public async Task Handle(MessageCreateDomainEvent @event, CancellationToken cancellationToken)
     {
         var messageSchema = MessageSchema.From(@event.Message);
 
-        return _gateway.PublishAsync(new GatewayEvent<MessageCreateGatewayEvent>(
+        await _gateway.PublishAsync(new GatewayEvent<MessageCreateGatewayEvent>(
             new MessageCreateGatewayEvent(messageSchema, @event.Channel.Type),
-            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
+            @event.Channel.Id));
     }
 
-    public Task Handle(MessageUpdateDomainEvent @event, CancellationToken cancellationToken)
+    public async Task Handle(MessageUpdateDomainEvent @event, CancellationToken cancellationToken)
     {
         var messageSchema = MessageSchema.From(@event.Message);
 
-        return _gateway.PublishAsync(new GatewayEvent<MessageUpdateGatewayEvent>(
+        await _gateway.PublishAsync(new GatewayEvent<MessageUpdateGatewayEvent>(
             new MessageUpdateGatewayEvent(messageSchema, @event.Channel.Type),
-            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
+            @event.Channel.Id));
     }
 
-    public Task Handle(MessageAckDomainEvent @event, CancellationToken cancellationToken)
+    public async Task Handle(MessageAckDomainEvent @event, CancellationToken cancellationToken)
     {
-        return _gateway.PublishAsync(new GatewayEvent<MessageAckGatewayEvent>(
+        await _gateway.PublishAsync(new GatewayEvent<MessageAckGatewayEvent>(
             new MessageAckGatewayEvent(@event.Channel.Id, @event.messageId, @event.initiatorId),
-            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
+            @event.Channel.Id));
     }
 
-    public Task Handle(MessageDeleteDomainEvent @event, CancellationToken cancellationToken)
+    public async Task Handle(MessageDeleteDomainEvent @event, CancellationToken cancellationToken)
     {
-        return _gateway.PublishAsync(new GatewayEvent<MessageDeleteGatewayEvent>(
+        await _gateway.PublishAsync(new GatewayEvent<MessageDeleteGatewayEvent>(
             new MessageDeleteGatewayEvent(
                 @event.Channel.Id,
                 @event.MessageId,
                 @event.NewLastMessage != null ? MessageSchema.From(@event.NewLastMessage) : null),
-
-            @event.Channel.ActiveMembers.Select(m => m.UserId.ToString())));
+            @event.Channel.Id));
     }
 }

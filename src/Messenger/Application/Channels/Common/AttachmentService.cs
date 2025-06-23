@@ -1,12 +1,11 @@
 using System.Text.RegularExpressions;
 using Messenger.Application.Common.Interfaces.S3;
 using Messenger.Core;
-using Messenger.Data.Interfaces.Channels;
 using Messenger.Errors;
 using Microsoft.Extensions.Options;
 using Messenger.Options;
-using Messenger.Domain.Channels;
 using Messenger.Domain.Messages;
+using Messenger.Domain.Data.Messages;
 
 namespace Messenger.Application.Channels.Common;
 

@@ -1,7 +1,7 @@
 using MediatR;
 using Messenger.Errors;
 using Messenger.Contracts.Common;
-using Messenger.Data.Interfaces.Channels;
+using Messenger.Domain.Data.Messages;
 
 namespace Messenger.Application.Channels.Queries.GetMessage;
 

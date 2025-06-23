@@ -1,6 +1,6 @@
 using MediatR;
 using Messenger.Application.Common.Interfaces;
-using Messenger.Data.Interfaces.Users;
+using Messenger.Domain.Data.Auth;
 
 namespace Messenger.Application.Auth.Commands.Logout;
 
