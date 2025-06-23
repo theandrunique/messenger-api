@@ -30,8 +30,13 @@ public class ChannelGatewayEventsPublisher
 
     public async Task Handle(ChannelUpdateDomainEvent @event, CancellationToken cancellationToken)
     {
+        var e = new ChannelUpdateGatewayEvent(@event.Channel.Id);
+
+        e.Image = @event.NewImage;
+        e.Name = @event.NewName;
+
         await _gateway.PublishAsync(new GatewayEvent<ChannelUpdateGatewayEvent>(
-            new ChannelUpdateGatewayEvent(ChannelSchema.From(@event.Channel)),
+            payload: e,
             @event.Channel.Id));
     }
 
