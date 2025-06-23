@@ -2,38 +2,45 @@ using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Domain.Events;
 using Messenger.Errors;
-using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Channels;
+using Messenger.Domain.Data.Messages;
+using Messenger.Domain.Data.Channels;
 
 namespace Messenger.Application.Channels.Commands.AckMessage;
 
 public class AckMessageCommandHandler : IRequestHandler<AckMessageCommand, ErrorOr<Unit>>
 {
-    private readonly IChannelRepository _channelRepository;
     private readonly IClientInfoProvider _clientInfo;
     private readonly IPublisher _publisher;
     private readonly IMessageAckRepository _messageAckRepository;
+    private readonly IChannelLoaderFactory _channelLoaderFactory;
 
     public AckMessageCommandHandler(
-        IChannelRepository channelRepository,
         IClientInfoProvider clientInfo,
         IPublisher publisher,
-        IMessageAckRepository messageAckRepository)
+        IMessageAckRepository messageAckRepository,
+        IChannelLoaderFactory channelLoaderFactory)
     {
-        _channelRepository = channelRepository;
         _clientInfo = clientInfo;
         _publisher = publisher;
         _messageAckRepository = messageAckRepository;
+        _channelLoaderFactory = channelLoaderFactory;
     }
 
     public async Task<ErrorOr<Unit>> Handle(AckMessageCommand request, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
+        var channel = await _channelLoaderFactory
+            .CreateLoader()
+            .WithId(request.ChannelId)
+            .WithMember(_clientInfo.UserId)
+            .LoadAsync();
+
         if (channel == null)
         {
             return Error.Channel.NotFound(request.ChannelId);
         }
-        var memberInfo = channel.FindMember(_clientInfo.UserId);
+
+        var memberInfo = channel.ActiveMembers.FirstOrDefault(m => m.UserId == _clientInfo.UserId);
         if (memberInfo == null)
         {
             return Error.Channel.UserNotMember(_clientInfo.UserId, channel.Id);

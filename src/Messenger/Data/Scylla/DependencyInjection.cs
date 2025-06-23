@@ -9,15 +9,14 @@ using Messenger.Data.Scylla.Users;
 using Messenger.Data.Scylla.Users.Queries;
 using Messenger.Data.Scylla.VerificationCodes;
 using Messenger.Data.Scylla.VerificationCodes.Queries;
-using Messenger.Data.Interfaces.Channels;
-using Messenger.Data.Interfaces.Users;
-using Messenger.Data.Interfaces.VerificationCodes;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Messenger.Options;
 using Microsoft.Extensions.Options;
+using Messenger.Domain.Data.Messages;
+using Messenger.Domain.Data.Auth;
+using Messenger.Domain.Data.Channels;
 
 namespace Messenger.Data.Scylla;
 
@@ -68,6 +67,9 @@ public static class DependencyInjection
         services.AddScoped<IChannelRepository, ChannelRepository>();
         services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
         services.AddScoped<IMessageAckRepository, MessageAckRepository>();
+
+        services.AddScoped<IChannelLoaderFactory, ChannelLoaderFactory>();
+        services.AddScoped<IChannelLoader, ChannelLoader>();
 
         services.AddSingleton<UserQueries>();
         services.AddSingleton<ChannelByIdQueries>();

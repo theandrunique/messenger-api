@@ -1,4 +1,5 @@
 using System.Reflection;
+using Messenger.Gateway.Common;
 using Messenger.Gateway.Serializers;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IGatewayService, MessengerGatewayService>();
         services.AddSingleton<IEventSerializer, JsonEventSerializer>();
+        services.AddScoped<EventReceiversProvider>();
 
         services.AddMediatR(config =>
         {

@@ -2,9 +2,9 @@ using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Core;
-using Messenger.Data.Interfaces.Channels;
-using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.Channels;
+using Messenger.Domain.Data.Auth;
+using Messenger.Domain.Data.Channels;
 using Messenger.Domain.Events;
 using Messenger.Errors;
 

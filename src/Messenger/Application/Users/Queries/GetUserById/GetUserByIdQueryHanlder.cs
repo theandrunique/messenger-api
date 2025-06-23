@@ -1,6 +1,6 @@
 using MediatR;
 using Messenger.Contracts.Common;
-using Messenger.Data.Interfaces.Users;
+using Messenger.Domain.Data.Auth;
 using Messenger.Errors;
 
 namespace Messenger.Application.Users.Queries.GetUserById;

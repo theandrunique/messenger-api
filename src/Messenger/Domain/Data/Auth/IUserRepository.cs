@@ -1,6 +1,6 @@
 using Messenger.Domain.Auth;
 
-namespace Messenger.Data.Interfaces.Users;
+namespace Messenger.Domain.Data.Auth;
 
 public interface IUserRepository
 {

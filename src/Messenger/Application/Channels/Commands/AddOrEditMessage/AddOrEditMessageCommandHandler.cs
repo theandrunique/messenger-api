@@ -3,9 +3,10 @@ using Messenger.Application.Channels.Common;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Core;
-using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Channels.Permissions;
 using Messenger.Domain.Channels.ValueObjects;
+using Messenger.Domain.Data.Channels;
+using Messenger.Domain.Data.Messages;
 using Messenger.Domain.Events;
 using Messenger.Domain.Messages;
 using Messenger.Domain.Messages.ValueObjects;
@@ -15,52 +16,56 @@ namespace Messenger.Application.Channels.Commands.AddOrEditMessage;
 
 public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCommand, ErrorOr<MessageSchema>>
 {
-    private readonly IChannelRepository _channelRepository;
     private readonly AttachmentService _attachmentService;
     private readonly IMessageRepository _messageRepository;
     private readonly IIdGenerator _idGenerator;
     private readonly IPublisher _publisher;
     private readonly IClientInfoProvider _clientInfo;
+    private readonly IChannelLoaderFactory _channelLoaderFactory;
 
     public AddOrEditMessageCommandHandler(
-        IChannelRepository channelRepository,
         IMessageRepository messageRepository,
         AttachmentService attachmentService,
         IIdGenerator idGenerator,
         IPublisher publisher,
-        IClientInfoProvider clientInfo)
+        IClientInfoProvider clientInfo,
+        IChannelLoaderFactory channelLoaderFactory)
     {
-        _channelRepository = channelRepository;
         _messageRepository = messageRepository;
         _attachmentService = attachmentService;
         _idGenerator = idGenerator;
         _publisher = publisher;
         _clientInfo = clientInfo;
+        _channelLoaderFactory = channelLoaderFactory;
     }
 
     public async Task<ErrorOr<MessageSchema>> Handle(AddOrEditMessageCommand request, CancellationToken cancellationToken)
     {
-        var channel = await _channelRepository.GetByIdOrNullAsync(request.ChannelId);
+        var channel = await _channelLoaderFactory
+            .CreateLoader()
+            .WithId(request.ChannelId)
+            .WithMember(_clientInfo.UserId)
+            .LoadAsync();
+
         if (channel is null)
         {
             return Error.Channel.NotFound(request.ChannelId);
         }
 
-        if (!channel.HasMember(_clientInfo.UserId))
+        var initiator = channel.ActiveMembers.FirstOrDefault(m => m.UserId == _clientInfo.UserId);
+        if (initiator == null)
         {
             return Error.Channel.UserNotMember(_clientInfo.UserId, channel.Id);
         }
-        if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.SEND_MESSAGES))
+        if (!channel.MemberHasPermission(_clientInfo.UserId, ChannelPermission.SEND_MESSAGES))
         {
             return Error.Channel.InsufficientPermissions(channel.Id, ChannelPermission.SEND_MESSAGES);
         }
 
-        var initiator = channel.ActiveMembers.First(m => m.UserId == _clientInfo.UserId);
-
         List<Attachment>? attachments = null;
         if (request.Attachments?.Count > 0)
         {
-            if (!channel.HasPermission(_clientInfo.UserId, ChannelPermission.ATTACH_FILES))
+            if (!channel.MemberHasPermission(_clientInfo.UserId, ChannelPermission.ATTACH_FILES))
             {
                 return Error.Channel.InsufficientPermissions(channel.Id, ChannelPermission.ATTACH_FILES);
             }

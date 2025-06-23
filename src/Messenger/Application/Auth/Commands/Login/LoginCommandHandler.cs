@@ -3,8 +3,8 @@ using Messenger.Application.Auth.Common;
 using Messenger.Application.Auth.Common.Interfaces;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Core;
-using Messenger.Data.Interfaces.Users;
 using Messenger.Domain.Auth;
+using Messenger.Domain.Data.Auth;
 using Messenger.Errors;
 
 namespace Messenger.Application.Auth.Commands.Login;

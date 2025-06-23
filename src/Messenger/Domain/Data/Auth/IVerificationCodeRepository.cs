@@ -1,7 +1,7 @@
 using Messenger.Domain.Auth;
 using Messenger.Domain.ValueObjects;
 
-namespace Messenger.Data.Interfaces.VerificationCodes;
+namespace Messenger.Domain.Data.Auth;
 
 public interface IVerificationCodeRepository
 {

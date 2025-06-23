@@ -3,9 +3,10 @@ using Messenger.Errors;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Contracts.Common;
 using Messenger.Core;
-using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Events;
 using Messenger.Domain.Channels.Permissions;
+using Messenger.Domain.Data.Channels;
+using Messenger.Domain.Data.Messages;
 
 namespace Messenger.Application.Channels.Commands.ForwardMessages;
 
@@ -42,7 +43,7 @@ public class ForwardMessagesCommandHandler : IRequestHandler<ForwardMessagesComm
         {
             return Error.Channel.UserNotMember(_clientInfo.UserId, targetChannel.Id);
         }
-        if (!targetChannel.HasPermission(_clientInfo.UserId, ChannelPermission.SEND_MESSAGES))
+        if (!targetChannel.MemberHasPermission(_clientInfo.UserId, ChannelPermission.SEND_MESSAGES))
         {
             return Error.Channel.InsufficientPermissions(targetChannel.Id, ChannelPermission.SEND_MESSAGES);
         }

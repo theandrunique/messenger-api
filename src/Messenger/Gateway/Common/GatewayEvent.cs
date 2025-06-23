@@ -5,11 +5,11 @@ public class GatewayEvent<T> where T : IGatewayEventPayload
     public const string Source = "messenger-api";
     public GatewayEventType EventType => Payload.EventType;
     public T Payload { get; }
-    public List<string> Recipients { get; }
+    public long ChannelId { get; }
 
-    public GatewayEvent(T payload, IEnumerable<string> recipients)
+    public GatewayEvent(T payload, long channelId)
     {
         Payload = payload;
-        Recipients = recipients.ToList();
+        ChannelId = channelId;
     }
 }

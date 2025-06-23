@@ -8,7 +8,6 @@ public class ChannelMemberAddGatewayEvent : IGatewayEventPayload
 {
     [JsonIgnore]
     public GatewayEventType EventType => GatewayEventType.CHANNEL_MEMBER_ADD;
-
     public string ChannelId { get; init; }
     public UserPublicSchema User { get; init; }
 

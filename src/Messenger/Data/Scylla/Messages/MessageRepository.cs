@@ -4,10 +4,10 @@ using Messenger.Data.Scylla.Channels.Mappers;
 using Messenger.Data.Scylla.Channels.Queries;
 using Messenger.Data.Scylla.Messages.Mappers;
 using Messenger.Data.Scylla.Messages.Queries;
-using Messenger.Data.Interfaces.Channels;
 using Messenger.Data.Scylla.Messages.Dto;
 using Messenger.Domain.Messages;
 using Messenger.Domain.Messages.ValueObjects;
+using Messenger.Domain.Data.Messages;
 
 namespace Messenger.Data.Scylla.Messages;
 
@@ -52,7 +52,7 @@ internal class MessageRepository : IMessageRepository
     public async Task BulkUpsertAsync(List<Message> messages)
     {
         var batch = new BatchStatement();
-        
+
         foreach (var message in messages)
         {
             batch.Add(_messages.Insert(message));
@@ -105,7 +105,7 @@ internal class MessageRepository : IMessageRepository
         var channelUsersDictionary = (await userInfosTask)
             .Select(MessageMapper.MapMessageAuthorInfo)
             .ToDictionary(c => c.Id);
-        
+
         FillAuthorAndTargetUser(messageData, channelUsersDictionary);
 
         if (messageData.ReferencedMessage != null)
@@ -136,7 +136,7 @@ internal class MessageRepository : IMessageRepository
             .Where(m => m.ReferencedMessageId.HasValue)
             .Select(m => m.ReferencedMessageId!.Value)
             .ToHashSet();
-        
+
         var loadedMessageIds = messagesData.Select(m => m.Id).ToHashSet();
         referencedIds.ExceptWith(loadedMessageIds);
 
@@ -147,7 +147,7 @@ internal class MessageRepository : IMessageRepository
                 .Select(MessageMapper.Map)
                 .ToArray();
         }
-        
+
         var allMessages = messagesData.Concat(referencedMessagesData).ToArray();
 
         var userIds = allMessages
@@ -175,7 +175,7 @@ internal class MessageRepository : IMessageRepository
 
         foreach (var m in allMessages)
             m.Attachments = attachmentsByMessageId[m.Id].ToList();
-        
+
         var refDict = allMessages.ToDictionary(m => m.Id);
 
         foreach (var m in messagesData)

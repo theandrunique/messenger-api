@@ -1,7 +1,7 @@
 using MediatR;
 using Messenger.Application.Common.Interfaces;
 using Messenger.Application.Users.Common;
-using Messenger.Data.Interfaces.Users;
+using Messenger.Domain.Data.Auth;
 using Messenger.Domain.Events;
 using Messenger.Errors;
 

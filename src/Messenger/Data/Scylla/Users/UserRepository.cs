@@ -3,9 +3,9 @@ using Cassandra.Data.Linq;
 using Messenger.Data.Scylla.Channels.Queries;
 using Messenger.Data.Scylla.Users.Mappers;
 using Messenger.Data.Scylla.Users.Queries;
-using Messenger.Data.Interfaces.Users;
 using Microsoft.Extensions.Logging;
 using Messenger.Domain.Auth;
+using Messenger.Domain.Data.Auth;
 
 namespace Messenger.Data.Scylla.Users;
 

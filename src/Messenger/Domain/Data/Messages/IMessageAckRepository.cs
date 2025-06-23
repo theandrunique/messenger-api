@@ -1,6 +1,6 @@
 using Messenger.Domain.Channels;
 
-namespace Messenger.Data.Interfaces.Channels;
+namespace Messenger.Domain.Data.Messages;
 
 public interface IMessageAckRepository
 {

@@ -1,7 +1,7 @@
 using MediatR;
 using Messenger.Application.Common.Interfaces;
-using Messenger.Data.Interfaces.Channels;
 using Messenger.Domain.Channels;
+using Messenger.Domain.Data.Messages;
 using Messenger.Domain.Events;
 
 namespace Messenger.Application.Channels.EventHandlers;
@@ -24,7 +24,7 @@ public class UpdateReadStatusHandler : INotificationHandler<MessageCreateDomainE
 
     public async Task Handle(MessageCreateDomainEvent @event, CancellationToken cancellationToken)
     {
-        var memberInfo = @event.Channel.FindMember(_clientInfo.UserId);
+        var memberInfo = @event.Channel.ActiveMembers.FirstOrDefault(m => m.UserId == _clientInfo.UserId);
 
         if (memberInfo == null)
         {
