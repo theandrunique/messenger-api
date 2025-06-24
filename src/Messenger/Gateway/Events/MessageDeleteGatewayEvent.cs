@@ -4,7 +4,7 @@ using Messenger.Gateway.Common;
 
 namespace Messenger.Gateway.Events;
 
-public class MessageDeleteGatewayEvent : IGatewayEventPayload
+public class MessageDeleteGatewayEvent : IGatewayEvent
 {
     [JsonIgnore]
     public GatewayEventType EventType => GatewayEventType.MESSAGE_DELETE;

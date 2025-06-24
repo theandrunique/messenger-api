@@ -11,7 +11,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IGatewayService, MessengerGatewayService>();
         services.AddSingleton<IEventSerializer, JsonEventSerializer>();
-        services.AddScoped<EventReceiversProvider>();
+        services.AddScoped<ChannelRecipientsProvider>();
 
         services.AddMediatR(config =>
         {

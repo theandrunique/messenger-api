@@ -13,19 +13,21 @@ public class ChannelGatewayEventsPublisher
       INotificationHandler<ChannelMemberRemoveDomainEvent>
 {
     private readonly IGatewayService _gateway;
+    private readonly ChannelRecipientsProvider _recipientsProvider;
 
-    public ChannelGatewayEventsPublisher(IGatewayService gateway)
+    public ChannelGatewayEventsPublisher(IGatewayService gateway, ChannelRecipientsProvider recipientsProvider)
     {
         _gateway = gateway;
+        _recipientsProvider = recipientsProvider;
     }
 
     public async Task Handle(ChannelMemberAddDomainEvent @event, CancellationToken cancellationToken)
     {
         var member = UserPublicSchema.From(@event.MemberInfo);
 
-        await _gateway.PublishAsync(new GatewayEvent<ChannelMemberAddGatewayEvent>(
+        await _gateway.PublishAsync(
             new ChannelMemberAddGatewayEvent(member, @event.Channel.Id),
-            @event.Channel.Id));
+            await _recipientsProvider.GetRecipients(@event.Channel.Id));
     }
 
     public async Task Handle(ChannelUpdateDomainEvent @event, CancellationToken cancellationToken)
@@ -35,24 +37,25 @@ public class ChannelGatewayEventsPublisher
         e.Image = @event.NewImage;
         e.Name = @event.NewName;
 
-        await _gateway.PublishAsync(new GatewayEvent<ChannelUpdateGatewayEvent>(
-            payload: e,
-            @event.Channel.Id));
+        await _gateway.PublishAsync(e, await _recipientsProvider.GetRecipients(@event.Channel.Id));
     }
 
     public async Task Handle(ChannelMemberRemoveDomainEvent @event, CancellationToken cancellationToken)
     {
         var member = UserPublicSchema.From(@event.MemberInfo);
 
-        await _gateway.PublishAsync(new GatewayEvent<ChannelMemberRemoveGatewayEvent>(
+        var recipients = await _recipientsProvider.GetRecipients(@event.Channel.Id);
+        recipients.Add(@event.MemberInfo.UserId);
+
+        await _gateway.PublishAsync(
             new ChannelMemberRemoveGatewayEvent(member, @event.Channel.Id),
-            @event.Channel.Id));
+            recipients);
     }
 
     public async Task Handle(ChannelCreateDomainEvent @event, CancellationToken cancellationToken)
     {
-        await _gateway.PublishAsync(new GatewayEvent<ChannelCreateGatewayEvent>(
+        await _gateway.PublishAsync(
             new ChannelCreateGatewayEvent(ChannelSchema.From(@event.Channel)),
-            @event.Channel.Id));
+            await _recipientsProvider.GetRecipients(@event.Channel.Id));
     }
 }

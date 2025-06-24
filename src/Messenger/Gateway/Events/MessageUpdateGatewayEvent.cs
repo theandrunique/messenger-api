@@ -5,7 +5,7 @@ using Messenger.Gateway.Common;
 
 namespace Messenger.Gateway.Events;
 
-public class MessageUpdateGatewayEvent : IGatewayEventPayload
+public class MessageUpdateGatewayEvent : IGatewayEvent
 {
     [JsonIgnore]
     public GatewayEventType EventType => GatewayEventType.MESSAGE_UPDATE;
