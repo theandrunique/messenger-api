@@ -4,7 +4,7 @@ using Messenger.Gateway.Common;
 
 namespace Messenger.Gateway.Events;
 
-public class ChannelMemberAddGatewayEvent : IGatewayEventPayload
+public class ChannelMemberAddGatewayEvent : IGatewayEvent
 {
     [JsonIgnore]
     public GatewayEventType EventType => GatewayEventType.CHANNEL_MEMBER_ADD;

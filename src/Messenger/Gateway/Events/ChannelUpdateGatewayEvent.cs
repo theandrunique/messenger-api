@@ -3,7 +3,7 @@ using Messenger.Gateway.Common;
 
 namespace Messenger.Gateway.Events;
 
-public class ChannelUpdateGatewayEvent : IGatewayEventPayload
+public class ChannelUpdateGatewayEvent : IGatewayEvent
 {
     [JsonIgnore]
     public GatewayEventType EventType => GatewayEventType.CHANNEL_UPDATE;

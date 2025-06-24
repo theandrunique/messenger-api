@@ -1,6 +1,6 @@
 namespace Messenger.Gateway.Common;
 
-public interface IGatewayEventPayload
+public interface IGatewayEvent
 {
     GatewayEventType EventType { get; }
 }

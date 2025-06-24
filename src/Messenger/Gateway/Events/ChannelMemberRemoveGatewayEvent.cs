@@ -4,7 +4,7 @@ using Messenger.Gateway.Common;
 
 namespace Messenger.Gateway.Events;
 
-public class ChannelMemberRemoveGatewayEvent : IGatewayEventPayload
+public class ChannelMemberRemoveGatewayEvent : IGatewayEvent
 {
     [JsonIgnore]
     public GatewayEventType EventType => GatewayEventType.CHANNEL_MEMBER_REMOVE;

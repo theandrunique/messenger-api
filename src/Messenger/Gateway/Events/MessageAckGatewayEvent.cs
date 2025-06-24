@@ -3,7 +3,7 @@ using Messenger.Gateway.Common;
 
 namespace Messenger.Gateway.Events;
 
-public class MessageAckGatewayEvent : IGatewayEventPayload
+public class MessageAckGatewayEvent : IGatewayEvent
 {
     [JsonIgnore]
     public GatewayEventType EventType => GatewayEventType.MESSAGE_ACK;

@@ -5,7 +5,7 @@ using Messenger.Gateway.Common;
 
 namespace Messenger.Gateway.Events;
 
-public class MessageCreateGatewayEvent : IGatewayEventPayload
+public class MessageCreateGatewayEvent : IGatewayEvent
 {
     [JsonIgnore]
     public GatewayEventType EventType => GatewayEventType.MESSAGE_CREATE;
