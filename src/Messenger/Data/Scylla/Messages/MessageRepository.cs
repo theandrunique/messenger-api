@@ -39,7 +39,7 @@ internal class MessageRepository : IMessageRepository
 
         var batch = new BatchStatement()
             .Add(_messages.Insert(message))
-            .Add(_channelsById.UpdateLastMessageInfo(message));
+            .Add(_channelsById.UpdateLastMessageId(message.ChannelId, message.Id));
 
         foreach (var attachment in message.Attachments)
         {
@@ -53,6 +53,9 @@ internal class MessageRepository : IMessageRepository
     {
         var batch = new BatchStatement();
 
+        long channelId = messages.First().ChannelId;
+        long lastMessageId = messages.Last().Id;
+
         foreach (var message in messages)
         {
             batch.Add(_messages.Insert(message));
@@ -62,7 +65,7 @@ internal class MessageRepository : IMessageRepository
             }
         }
 
-        batch.Add(_channelsById.UpdateLastMessageInfo(messages.Last()));
+        batch.Add(_channelsById.UpdateLastMessageId(channelId, lastMessageId));
 
         await _session.ExecuteAsync(batch);
     }
@@ -121,6 +124,14 @@ internal class MessageRepository : IMessageRepository
             messageData.ReferencedMessage.Attachments = attachmentsByMessageId[messageData.ReferencedMessage.Id].ToList();
 
         return messageData.ToEntity();
+    }
+
+    public async Task<List<Message>> GetLastMessages(List<long> channelIds)
+    {
+        return (await _session.ExecuteAsync(_messages.SelectByPartition(channelIds, 1)))
+            .Select(MessageMapper.Map)
+            .Select(m => m.ToEntity())
+            .ToList();
     }
 
     public async Task<IEnumerable<Message>> GetMessagesAsync(long channelId, long before, int limit)

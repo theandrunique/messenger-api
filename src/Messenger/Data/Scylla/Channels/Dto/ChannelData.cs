@@ -11,8 +11,7 @@ public struct ChannelData
     public string? Name { get; set; }
     public string? Image { get; set; }
     public ChannelType Type { get; set; }
-    public DateTimeOffset? LastMessageTimestamp { get; set; }
-    public MessageInfoDto? LastMessage { get; set; }
+    public long? LastMessageId { get; set; }
     public ChannelPermissionSet? PermissionOverwrites { get; set; }
     public List<ChannelMemberInfo>? Members { get; set; }
 
@@ -29,8 +28,7 @@ public struct ChannelData
             name: Name,
             image: Image,
             type: Type,
-            lastMessageTimestamp: LastMessageTimestamp,
-            lastMessage: LastMessage.HasValue ? LastMessage.Value.ToValue() : null,
+            lastMessageId: LastMessageId,
             permissionOverwrites: PermissionOverwrites,
             members: Members
         );

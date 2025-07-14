@@ -13,8 +13,7 @@ public class Channel
     public string? Name { get; private set; }
     public string? Image { get; private set; }
     public ChannelType Type { get; private set; }
-    public DateTimeOffset? LastMessageTimestamp { get; private set; }
-    public MessageInfo? LastMessage { get; private set; }
+    public long? LastMessageId { get; private set; }
     public ChannelPermissionSet? PermissionOverwrites { get; private set; }
     public List<ChannelMemberInfo> AllMembers => _members.ToList();
     public List<ChannelMemberInfo> ActiveMembers => _members.Where(m => !m.IsLeave).ToList();
@@ -27,7 +26,7 @@ public class Channel
         }
         var membersInfo = members.Select(user => new ChannelMemberInfo(user)).ToList();
 
-        var channel = new Channel(id, null, null, null, ChannelType.DM, null, null, null, membersInfo);
+        var channel = new Channel(id, null, null, null, ChannelType.DM, null, null, membersInfo);
         return channel;
     }
 
@@ -37,7 +36,7 @@ public class Channel
             .Select(user => new ChannelMemberInfo(user))
             .ToList();
 
-        var channel = new Channel(id, ownerId, name, null, ChannelType.GROUP_DM, null, null, null, membersInfo);
+        var channel = new Channel(id, ownerId, name, null, ChannelType.GROUP_DM, null, null, membersInfo);
         return channel;
     }
 
@@ -47,8 +46,7 @@ public class Channel
         string? name,
         string? image,
         ChannelType type,
-        DateTimeOffset? lastMessageTimestamp,
-        MessageInfo? lastMessage,
+        long? lastMessageId,
         ChannelPermissionSet? permissionOverwrites,
         List<ChannelMemberInfo> members)
     {
@@ -57,8 +55,7 @@ public class Channel
         Name = name;
         Image = image;
         Type = type;
-        LastMessageTimestamp = lastMessageTimestamp;
-        LastMessage = lastMessage;
+        LastMessageId = lastMessageId;
         PermissionOverwrites = permissionOverwrites;
         _members = members;
     }

@@ -134,7 +134,7 @@ public class AddOrEditMessageCommandHandler : IRequestHandler<AddOrEditMessageCo
 
             await _messageRepository.UpsertAsync(message);
 
-            if (channel.LastMessage == null && channel.Type == ChannelType.DM)
+            if (channel.LastMessageId == null && channel.Type == ChannelType.DM)
             {
                 await _publisher.Publish(new ChannelCreateDomainEvent(channel));
             }

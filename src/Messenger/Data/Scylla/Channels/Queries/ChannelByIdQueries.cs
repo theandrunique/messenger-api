@@ -1,8 +1,5 @@
 using Cassandra;
-using Messenger.Data.Scylla.Channels.Dto;
 using Messenger.Domain.Channels;
-using Messenger.Domain.Channels.ValueObjects;
-using Messenger.Domain.Messages;
 
 namespace Messenger.Data.Scylla.Channels.Queries;
 
@@ -14,7 +11,7 @@ public class ChannelByIdQueries
     private readonly PreparedStatement _updateName;
     private readonly PreparedStatement _updateImage;
     private readonly PreparedStatement _updateOwnerId;
-    private readonly PreparedStatement _updateLastMessageInfo;
+    private readonly PreparedStatement _updateLastMessageId;
 
     public ChannelByIdQueries(ISession session)
     {
@@ -39,7 +36,7 @@ public class ChannelByIdQueries
 
         _updateOwnerId = session.Prepare("UPDATE channels_by_id SET owner_id = ? WHERE channel_id = ?");
 
-        _updateLastMessageInfo = session.Prepare("UPDATE channels_by_id SET last_message_timestamp = ?, last_message = ? WHERE channel_id = ?");
+        _updateLastMessageId = session.Prepare("UPDATE channels_by_id SET last_message_id = ? WHERE channel_id = ?");
     }
 
     public BoundStatement Insert(Channel channel)
@@ -80,28 +77,8 @@ public class ChannelByIdQueries
         return _updateOwnerId.Bind(ownerId, channelId);
     }
 
-    public BoundStatement UpdateLastMessageInfo(Message message)
+    public BoundStatement UpdateLastMessageId(long channelId, long? lastMessageId)
     {
-        var messageInfo = new MessageInfo(message);
-
-        return _updateLastMessageInfo.Bind(
-            messageInfo.Timestamp,
-            MessageInfoDto.From(messageInfo),
-            message.ChannelId);
-    }
-
-    public BoundStatement UpdateLastMessageInfo(long channelId, MessageInfo? message)
-    {
-        if (message is null)
-        {
-            return _updateLastMessageInfo.Bind(null, null, channelId);
-        }
-        else
-        {
-            return _updateLastMessageInfo.Bind(
-                message.Value.Timestamp,
-                MessageInfoDto.From(message.Value),
-                channelId);
-        }
+        return _updateLastMessageId.Bind(lastMessageId, channelId);
     }
 }

@@ -172,8 +172,8 @@ internal class ChannelRepository : IChannelRepository
         return _session.ExecuteAsync(query);
     }
 
-    public Task UpdateLastMessage(long channelId, MessageInfo? newLastMessage)
+    public Task UpdateLastMessageId(long channelId, long? lastMessageId)
     {
-        return _session.ExecuteAsync(_channelsById.UpdateLastMessageInfo(channelId, newLastMessage));
+        return _session.ExecuteAsync(_channelsById.UpdateLastMessageId(channelId, lastMessageId));
     }
 }

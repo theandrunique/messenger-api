@@ -18,8 +18,7 @@ public static class ChannelMapper
             Name = row.GetValue<string?>("name"),
             Image = row.GetValue<string?>("image"),
             Type = (ChannelType)row.GetValue<int>("type"),
-            LastMessageTimestamp = row.GetValue<DateTimeOffset?>("last_message_timestamp"),
-            LastMessage = row.GetValue<MessageInfoDto?>("last_message"),
+            LastMessageId = row.GetValue<long?>("last_message_id"),
             PermissionOverwrites = permissionOverwrites.HasValue
                 ? new ChannelPermissionSet((ulong)permissionOverwrites.Value)
                 : null,

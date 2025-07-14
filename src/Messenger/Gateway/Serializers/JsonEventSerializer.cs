@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,13 +12,13 @@ internal class JsonEventSerializer : IEventSerializer
         Converters = { new JsonStringEnumConverter() },
     };
 
-    public T? Deserialize<T>(string json)
+    public T? Deserialize<T>(byte[] data)
     {
-        return JsonSerializer.Deserialize<T>(json, _settings);
+        return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(data), _settings);
     }
 
-    public string Serialize<T>(T obj)
+    public byte[] Serialize<T>(T obj)
     {
-        return JsonSerializer.Serialize<T>(obj, _settings);
+        return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(obj, _settings));
     }
 }

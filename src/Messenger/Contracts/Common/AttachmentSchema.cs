@@ -1,4 +1,3 @@
-using Messenger.Domain.Channels;
 using Messenger.Domain.Messages;
 
 namespace Messenger.Contracts.Common;

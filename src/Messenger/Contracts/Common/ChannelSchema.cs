@@ -13,6 +13,7 @@ public record ChannelSchema
     public string? Name { get; init; }
     public string? Image { get; init; }
     public ChannelType Type { get; init; }
+    public string? LastMessageId { get; init; }
     public string? LastReadMessageId { get; init; }
     public string? MaxReadMessageId { get; init; }
     public MessageInfoSchema? LastMessage { get; init; }
@@ -25,6 +26,7 @@ public record ChannelSchema
         Name = channel.Name;
         Image = channel.Image;
         Type = channel.Type;
+        LastMessageId = channel.LastMessageId.ToString();
 
         Members = channel.ActiveMembers.Where(m => !m.IsLeave).Select(UserPublicSchema.From).ToList();
         if (userId != null)

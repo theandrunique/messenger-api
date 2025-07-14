@@ -1,7 +1,6 @@
 using Cassandra;
 using Cassandra.OpenTelemetry;
 using Messenger.Data.Scylla.Channels;
-using Messenger.Data.Scylla.Channels.Dto;
 using Messenger.Data.Scylla.Channels.Queries;
 using Messenger.Data.Scylla.Messages;
 using Messenger.Data.Scylla.Messages.Queries;
@@ -43,21 +42,7 @@ public static class DependencyInjection
                 .WithRetryPolicy(new LoggingRetryPolicy(new DefaultRetryPolicy()))
                 .Build();
 
-            var session = cluster.Connect();
-
-            session.UserDefinedTypes.Define(
-                UdtMap.For<MessageInfoDto>("message_info")
-                    .Map(p => p.Id, "id")
-                    .Map(p => p.AuthorId, "author_id")
-                    .Map(p => p.TargetUserId, "target_user_id")
-                    .Map(p => p.Content, "content")
-                    .Map(p => p.Timestamp, "timestamp")
-                    .Map(p => p.EditedTimestamp, "edited_timestamp")
-                    .Map(p => p.AttachmentsCount, "attachments_count")
-                    .Map(p => p.Type, "type")
-                    .Map(p => p.Metadata, "metadata"));
-
-            return session;
+            return cluster.Connect();
         });
 
         services.AddScoped<IMessageRepository, MessageRepository>();

@@ -10,6 +10,7 @@ public class MessageQueries
     private readonly PreparedStatement _selectById;
     private readonly PreparedStatement _selectByIds;
     private readonly PreparedStatement _selectByChannelId;
+    private readonly PreparedStatement _selectByPartition;
     private readonly PreparedStatement _deleteById;
 
     public MessageQueries(ISession session)
@@ -35,6 +36,13 @@ public class MessageQueries
         _selectByIds = session.Prepare("SELECT * FROM messages WHERE channel_id = ? AND message_id IN ?");
 
         _selectByChannelId = session.Prepare("SELECT * FROM messages WHERE channel_id = ? AND message_id < ? ORDER BY message_id DESC LIMIT ?");
+
+        _selectByPartition = session.Prepare("""
+            SELECT *
+            FROM messages
+            WHERE channel_id IN ?
+            PER PARTITION LIMIT ?
+        """);
 
         _deleteById = session.Prepare("DELETE FROM messages WHERE channel_id = ? AND message_id = ?");
     }
@@ -68,6 +76,11 @@ public class MessageQueries
     public BoundStatement SelectByChannelId(long channelId, long before, int limit)
     {
         return _selectByChannelId.Bind(channelId, before, limit);
+    }
+
+    public BoundStatement SelectByPartition(IEnumerable<long> channelIds, int limit)
+    {
+        return _selectByPartition.Bind(channelIds, limit);
     }
 
     public BoundStatement DeleteById(long channelId, long messageId)

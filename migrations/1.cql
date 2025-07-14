@@ -7,20 +7,6 @@ AND tablets = {'enabled': false};
 
 USE messenger;
 
--- TYPES
-
-CREATE TYPE messenger.message_info (
-    id bigint,
-    author_id bigint,
-    target_user_id bigint,
-    content text,
-    timestamp timestamp,
-    edited_timestamp timestamp,
-    attachments_count int,
-    type int,
-    metadata text
-);
-
 -- TABLES
 
 CREATE TABLE messenger.attachments_by_message_id (
@@ -99,8 +85,7 @@ CREATE TABLE messenger.channels_by_id (
     name text,
     owner_id bigint,
     image text,
-    last_message message_info,
-    last_message_timestamp timestamp,
+    last_message_id bigint,
     permission_overwrites bigint,
 
     PRIMARY KEY ((channel_id))

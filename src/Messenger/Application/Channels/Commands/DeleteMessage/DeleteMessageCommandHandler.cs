@@ -68,9 +68,7 @@ public class DeleteMessageCommandHandler : IRequestHandler<DeleteMessageCommand,
             before: long.MaxValue,
             limit: 1)).FirstOrDefault();
 
-        MessageInfo? lastMessageInfo = lastMessage != null ? new MessageInfo(lastMessage) : null;
-
-        await _channelRepository.UpdateLastMessage(channel.Id, lastMessageInfo);
+        await _channelRepository.UpdateLastMessageId(channel.Id, lastMessage?.Id);
 
         await _mediator.Publish(new MessageDeleteDomainEvent(
             channel,

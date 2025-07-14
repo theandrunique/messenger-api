@@ -25,7 +25,7 @@ public class GetChannelsQueryHandler : IRequestHandler<GetChannelsQuery, ErrorOr
 
         channels = channels
             .Where(c => c.HasMember(_clientInfo.UserId))
-            .Where(c => !(c.Type == ChannelType.DM && c.LastMessage == null))
+            .Where(c => !(c.Type == ChannelType.DM && c.LastMessageId == null))
             .ToList();
 
         return ChannelSchema.From(channels, _clientInfo.UserId);
